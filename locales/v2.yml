@@ -1,0 +1,290 @@
+_version: 2
+
+abbreviation:
+  en: Abbreviation
+  id: Singkatan
+add:
+  en: Add
+  id: Tambah
+append:
+  en: Append
+  id: Tambah
+attach:
+  en: Attach
+  id: Lampirkan
+block:
+  en: Block
+  id: Blok
+balance:
+  en: Balance
+  id: Saldo
+balance_history:
+  en: Balance history
+  id: Riwayat saldo
+capital:
+  en: Capital
+  id: Ibu kota
+chat:
+  en: Chat
+  id: Chat
+chat_group:
+  en: Chat group
+  id: Grup chat
+city:
+  en: City
+  id: Kota
+code:
+  en: Code
+  id: Kode
+country:
+  en: Country
+  id: Negara
+country_code:
+  en: Country code
+  id: Kode negara
+country_id:
+  en: Country ID
+  id: ID negara
+create:
+  en: Create
+  id: Buat
+created_at:
+  en: Created at
+  id: Dibuat pada
+created_by:
+  en: Created by
+  id: Dibuat oleh
+currency:
+  en: Currency
+  id: Kurensi
+currency_name:
+  en: Currency name
+  id: Nama kurensi
+currency_symbol:
+  en: Currency symbol
+  id: Simbol kurensi
+department:
+  en: Department
+  id: Departemen
+dead:
+  en: Dead
+  id: Mati
+dead_at:
+  en: Dead at
+  id: Mati pada
+delete:
+  en: Delete
+  id: Hapus
+deleted_at:
+  en: Deleted at
+  id: Dihapus pada
+domicile:
+  en: Domicile
+  id: Domisili
+download:
+  en: Download
+  id: Unduh
+edit:
+  en: Edit
+  id: Edit
+end:
+  en: End
+  id: Selesai
+end_at:
+  en: End at
+  id: Selesai pada
+emoji:
+  en: Emoji
+  id: Emoji
+extra_info:
+  en: Extra info
+  id: Info extra
+fips_code:
+  en: FIPS code
+  id: Kode FIPS
+flag:
+  en: Flag
+  id: Bendera
+follow:
+  en: Follow
+  id: Ikuti
+friend:
+  en: Friend
+  id: Teman
+friend_group:
+  en: Friend group
+  id: Grup teman
+group:
+  en: Group
+  id: Grup
+group_creator:
+  en: Group creator
+  id: Pembuat grup
+group_member:
+  en: Group member
+  id: Anggota grup
+insert:
+  en: Insert
+  id: Sisipkan
+is_public:
+  en: Is public?
+  id: Publik?
+is_private:
+  en: Is private?
+  id: Privat?
+is_suspended:
+  en: Is suspended?
+  id: Ditangguhkan?
+job:
+  en: Job
+  id: Pekerjaan
+job_project:
+  en: Job project
+  id: Proyek pekerjaan
+job_skill:
+  en: Job skill
+  id: Keahlian pekerjaan
+latitude:
+  en: Latitude
+  id: Latitude
+longitude:
+  en: Longitude
+  id: Longitude
+member:
+  en: Member
+  id: Anggota
+member_id:
+  en: Member ID
+  id: ID anggota
+member_name:
+  en: Member name
+  id: Nama anggota
+name:
+  en: Name
+  id: Nama
+nationality:
+  en: Nationality
+  id: KebangsaanNama
+native:
+  en: Native
+  id: Asal
+numeric:
+  en: Numeric
+  id: Numerik
+numeric_code:
+  en: Numeric code
+  id: Kode numerik
+own:
+  en: Own
+  id: Memiliki
+owned_by:
+  en: Owned by
+  id: Dimiliki oleh
+owner:
+  en: Owner
+  id: Pemilik
+person:
+  en: Person
+  id: Orang
+phone_code:
+  en: Phone code
+  id: Kode telpon
+prefecture:
+  en: Prefecture
+  id: Prefektur
+prefecture_id:
+  en: Prefecture ID
+  id: ID prefektur
+prefecture_name:
+  en: Prefecture name
+  id: Nama prefektur
+private:
+  en: Private
+  id: Privat
+province:
+  en: Province
+  id: Provinsi
+province_id:
+  en: Province ID
+  id: ID provinsi
+province_name:
+  en: Province name
+  id: Nama provinsi
+public:
+  en: Public
+  id: Publik
+receive:
+  en: Receive
+  id: Terima
+receiver:
+  en: Receiver
+  id: Penerima
+ref_id:
+  en: Ref ID
+  id: ID ref
+region:
+  en: Region
+  id: Region
+region_id:
+  en: Region ID
+  id: ID region
+region_name:
+  en: Region name
+  id: Nama region
+send:
+  en: Send
+  id: Kirim
+sender:
+  en: Sender
+  id: Pengirim
+skill:
+  en: Skill
+  id: Keahlian
+start:
+  en: Start
+  id: Mulai
+start_at:
+  en: Start at
+  id: Mulai pada
+state:
+  en: State
+  id: Negara bagian
+state_code:
+  en: State code
+  id: Kode negara bagian
+state_id:
+  en: State ID
+  id: ID negara bagian
+subregion:
+  en: Subregion
+  id: Subregion
+subregion_id:
+  en: Subregion ID
+  id: ID subregion
+subregion_name:
+  en: Subregion name
+  id: Nama subregion
+suspend:
+  en: Suspend
+  id: Tangguhkan
+target:
+  en: Target
+  id: Target
+timezone:
+  en: Timezone
+  id: Zona waktu
+top_level_domain:
+  en: Top level domain
+  id: Domain level atas
+translation:
+  en: Translation
+  id: Translasi
+updated_at:
+  en: Updated at
+  id: Diupdate pada
+updated_by:
+  en: Updated by
+  id: Diupdate oleh
+wiki_data_id:
+  en: Wiki Data ID
+  id: ID Data Wiki

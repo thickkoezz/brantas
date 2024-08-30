@@ -8,6 +8,7 @@ use salvo::server::ServerHandle;
 use salvo::catcher::Catcher;
 use salvo::conn::rustls::{Keycert, RustlsConfig};
 use salvo::prelude::*;
+
 mod app_error;
 mod app_writer;
 mod config;
