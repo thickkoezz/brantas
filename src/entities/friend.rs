@@ -5,45 +5,45 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "friend")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub invitor_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub invitee_id: Uuid,
-    pub created_at: DateTime,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub invitor_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub invitee_id: Uuid,
+  pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::InviteeId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    UserAccount2,
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::InvitorId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    UserAccount1,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::InviteeId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  UserAccount2,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::InvitorId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  UserAccount1,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(
-        entity = "super::user_account::Entity",
-        def = "Relation::UserAccount2.def()"
-    )]
-    UserAccount2,
-    #[sea_orm(
-        entity = "super::user_account::Entity",
-        def = "Relation::UserAccount1.def()"
-    )]
-    UserAccount1,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::UserAccount2.def()"
+  )]
+  UserAccount2,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::UserAccount1.def()"
+  )]
+  UserAccount1,
 }

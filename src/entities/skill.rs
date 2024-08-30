@@ -5,59 +5,59 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "skill")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub person_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub created_at: DateTime,
-    pub updated_at: Option<DateTime>,
-    pub deleted_at: Option<DateTime>,
-    pub name: String,
-    #[sea_orm(column_type = "Text", nullable)]
-    pub description: Option<String>,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub person_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub created_at: DateTime,
+  pub updated_at: Option<DateTime>,
+  pub deleted_at: Option<DateTime>,
+  pub name: String,
+  #[sea_orm(column_type = "Text", nullable)]
+  pub description: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::job_skill::Entity")]
-    JobSkill,
-    #[sea_orm(
-        belongs_to = "super::person::Entity",
-        from = "Column::PersonId",
-        to = "super::person::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    Person,
-    #[sea_orm(has_many = "super::project_skill::Entity")]
-    ProjectSkill,
+  #[sea_orm(has_many = "super::job_skill::Entity")]
+  JobSkill,
+  #[sea_orm(
+    belongs_to = "super::person::Entity",
+    from = "Column::PersonId",
+    to = "super::person::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  Person,
+  #[sea_orm(has_many = "super::project_skill::Entity")]
+  ProjectSkill,
 }
 
 impl Related<super::job_skill::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::JobSkill.def()
-    }
+  fn to() -> RelationDef {
+    Relation::JobSkill.def()
+  }
 }
 
 impl Related<super::person::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Person.def()
-    }
+  fn to() -> RelationDef {
+    Relation::Person.def()
+  }
 }
 
 impl Related<super::project_skill::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ProjectSkill.def()
-    }
+  fn to() -> RelationDef {
+    Relation::ProjectSkill.def()
+  }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(entity = "super::job_skill::Entity")]
-    JobSkill,
-    #[sea_orm(entity = "super::person::Entity")]
-    Person,
-    #[sea_orm(entity = "super::project_skill::Entity")]
-    ProjectSkill,
+  #[sea_orm(entity = "super::job_skill::Entity")]
+  JobSkill,
+  #[sea_orm(entity = "super::person::Entity")]
+  Person,
+  #[sea_orm(entity = "super::project_skill::Entity")]
+  ProjectSkill,
 }

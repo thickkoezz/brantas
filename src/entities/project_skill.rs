@@ -5,71 +5,71 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "project_skill")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub person_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub project_created_at: DateTime,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub skill_created_at: DateTime,
-    pub deleted_at: Option<DateTime>,
-    #[sea_orm(column_type = "Text", nullable)]
-    pub description: Option<String>,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub person_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub project_created_at: DateTime,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub skill_created_at: DateTime,
+  pub deleted_at: Option<DateTime>,
+  #[sea_orm(column_type = "Text", nullable)]
+  pub description: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::person::Entity",
-        from = "Column::PersonId",
-        to = "super::person::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    Person,
-    #[sea_orm(
-        belongs_to = "super::project::Entity",
-        from = "(Column::PersonId, Column::ProjectCreatedAt)",
-        to = "(super::project::Column::PersonId, super::project::Column::CreatedAt)",
-        on_update = "NoAction",
-        on_delete = "NoAction"
-    )]
-    Project,
-    #[sea_orm(
-        belongs_to = "super::skill::Entity",
-        from = "(Column::PersonId, Column::SkillCreatedAt)",
-        to = "(super::skill::Column::PersonId, super::skill::Column::CreatedAt)",
-        on_update = "NoAction",
-        on_delete = "NoAction"
-    )]
-    Skill,
+  #[sea_orm(
+    belongs_to = "super::person::Entity",
+    from = "Column::PersonId",
+    to = "super::person::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  Person,
+  #[sea_orm(
+    belongs_to = "super::project::Entity",
+    from = "(Column::PersonId, Column::ProjectCreatedAt)",
+    to = "(super::project::Column::PersonId, super::project::Column::CreatedAt)",
+    on_update = "NoAction",
+    on_delete = "NoAction"
+  )]
+  Project,
+  #[sea_orm(
+    belongs_to = "super::skill::Entity",
+    from = "(Column::PersonId, Column::SkillCreatedAt)",
+    to = "(super::skill::Column::PersonId, super::skill::Column::CreatedAt)",
+    on_update = "NoAction",
+    on_delete = "NoAction"
+  )]
+  Skill,
 }
 
 impl Related<super::person::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Person.def()
-    }
+  fn to() -> RelationDef {
+    Relation::Person.def()
+  }
 }
 
 impl Related<super::project::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Project.def()
-    }
+  fn to() -> RelationDef {
+    Relation::Project.def()
+  }
 }
 
 impl Related<super::skill::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Skill.def()
-    }
+  fn to() -> RelationDef {
+    Relation::Skill.def()
+  }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(entity = "super::person::Entity")]
-    Person,
-    #[sea_orm(entity = "super::project::Entity")]
-    Project,
-    #[sea_orm(entity = "super::skill::Entity")]
-    Skill,
+  #[sea_orm(entity = "super::person::Entity")]
+  Person,
+  #[sea_orm(entity = "super::project::Entity")]
+  Project,
+  #[sea_orm(entity = "super::skill::Entity")]
+  Skill,
 }

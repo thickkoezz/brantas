@@ -5,59 +5,59 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "chat_group")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub creator_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub created_at: DateTime,
-    pub updated_at: Option<DateTime>,
-    pub deleted_at: Option<DateTime>,
-    pub name: Option<String>,
-    pub is_public: bool,
-    pub is_suspended: bool,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub creator_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub created_at: DateTime,
+  pub updated_at: Option<DateTime>,
+  pub deleted_at: Option<DateTime>,
+  pub name: Option<String>,
+  pub is_public: bool,
+  pub is_suspended: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::chat_group_member::Entity")]
-    ChatGroupMember,
-    #[sea_orm(has_many = "super::group_chat::Entity")]
-    GroupChat,
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::CreatorId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    UserAccount,
+  #[sea_orm(has_many = "super::chat_group_member::Entity")]
+  ChatGroupMember,
+  #[sea_orm(has_many = "super::group_chat::Entity")]
+  GroupChat,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::CreatorId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  UserAccount,
 }
 
 impl Related<super::chat_group_member::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ChatGroupMember.def()
-    }
+  fn to() -> RelationDef {
+    Relation::ChatGroupMember.def()
+  }
 }
 
 impl Related<super::group_chat::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::GroupChat.def()
-    }
+  fn to() -> RelationDef {
+    Relation::GroupChat.def()
+  }
 }
 
 impl Related<super::user_account::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UserAccount.def()
-    }
+  fn to() -> RelationDef {
+    Relation::UserAccount.def()
+  }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(entity = "super::chat_group_member::Entity")]
-    ChatGroupMember,
-    #[sea_orm(entity = "super::group_chat::Entity")]
-    GroupChat,
-    #[sea_orm(entity = "super::user_account::Entity")]
-    UserAccount,
+  #[sea_orm(entity = "super::chat_group_member::Entity")]
+  ChatGroupMember,
+  #[sea_orm(entity = "super::group_chat::Entity")]
+  GroupChat,
+  #[sea_orm(entity = "super::user_account::Entity")]
+  UserAccount,
 }

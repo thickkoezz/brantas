@@ -5,67 +5,67 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "note_edit_history")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub note_owner_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub note_created_at: DateTime,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub editor_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub created_at: DateTime,
-    pub title: String,
-    #[sea_orm(column_type = "Text")]
-    pub content: String,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub note_owner_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub note_created_at: DateTime,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub editor_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub created_at: DateTime,
+  pub title: String,
+  #[sea_orm(column_type = "Text")]
+  pub content: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::note::Entity",
-        from = "(Column::NoteOwnerId, Column::NoteCreatedAt)",
-        to = "(super::note::Column::OwnerId, super::note::Column::CreatedAt)",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    Note,
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::EditorId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    UserAccount2,
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::NoteOwnerId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    UserAccount1,
+  #[sea_orm(
+    belongs_to = "super::note::Entity",
+    from = "(Column::NoteOwnerId, Column::NoteCreatedAt)",
+    to = "(super::note::Column::OwnerId, super::note::Column::CreatedAt)",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  Note,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::EditorId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  UserAccount2,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::NoteOwnerId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  UserAccount1,
 }
 
 impl Related<super::note::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Note.def()
-    }
+  fn to() -> RelationDef {
+    Relation::Note.def()
+  }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(entity = "super::note::Entity")]
-    Note,
-    #[sea_orm(
-        entity = "super::user_account::Entity",
-        def = "Relation::UserAccount2.def()"
-    )]
-    UserAccount2,
-    #[sea_orm(
-        entity = "super::user_account::Entity",
-        def = "Relation::UserAccount1.def()"
-    )]
-    UserAccount1,
+  #[sea_orm(entity = "super::note::Entity")]
+  Note,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::UserAccount2.def()"
+  )]
+  UserAccount2,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::UserAccount1.def()"
+  )]
+  UserAccount1,
 }

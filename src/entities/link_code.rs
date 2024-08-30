@@ -5,37 +5,37 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "link_code")]
 pub struct Model {
-    pub link_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub code: String,
-    pub created_at: DateTime,
-    pub expired_at: Option<DateTime>,
-    pub is_public: bool,
-    pub is_code_manually_typed: bool,
+  pub link_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub code: String,
+  pub created_at: DateTime,
+  pub expired_at: Option<DateTime>,
+  pub is_public: bool,
+  pub is_code_manually_typed: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::link::Entity",
-        from = "Column::LinkId",
-        to = "super::link::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Cascade"
-    )]
-    Link,
+  #[sea_orm(
+    belongs_to = "super::link::Entity",
+    from = "Column::LinkId",
+    to = "super::link::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Cascade"
+  )]
+  Link,
 }
 
 impl Related<super::link::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Link.def()
-    }
+  fn to() -> RelationDef {
+    Relation::Link.def()
+  }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(entity = "super::link::Entity")]
-    Link,
+  #[sea_orm(entity = "super::link::Entity")]
+  Link,
 }

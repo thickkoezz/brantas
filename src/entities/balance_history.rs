@@ -5,38 +5,38 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "balance_history")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub owner_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub created_at: DateTime,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub ref_id: Uuid,
-    #[sea_orm(column_type = "Decimal(Some((18, 2)))")]
-    pub amount: Decimal,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub owner_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub created_at: DateTime,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub ref_id: Uuid,
+  #[sea_orm(column_type = "Decimal(Some((18, 2)))")]
+  pub amount: Decimal,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::OwnerId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    UserAccount,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::OwnerId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  UserAccount,
 }
 
 impl Related<super::user_account::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UserAccount.def()
-    }
+  fn to() -> RelationDef {
+    Relation::UserAccount.def()
+  }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(entity = "super::user_account::Entity")]
-    UserAccount,
+  #[sea_orm(entity = "super::user_account::Entity")]
+  UserAccount,
 }

@@ -5,64 +5,64 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "post_share")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub post_owner_id: Uuid,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub post_created_at: DateTime,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub target_id: Uuid,
-    pub created_at: DateTime,
-    pub can_comment: bool,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub post_owner_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub post_created_at: DateTime,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub target_id: Uuid,
+  pub created_at: DateTime,
+  pub can_comment: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::post::Entity",
-        from = "(Column::PostOwnerId, Column::PostCreatedAt)",
-        to = "(super::post::Column::OwnerId, super::post::Column::CreatedAt)",
-        on_update = "Cascade",
-        on_delete = "Cascade"
-    )]
-    Post,
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::TargetId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Cascade"
-    )]
-    UserAccount2,
-    #[sea_orm(
-        belongs_to = "super::user_account::Entity",
-        from = "Column::PostOwnerId",
-        to = "super::user_account::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Restrict"
-    )]
-    UserAccount1,
+  #[sea_orm(
+    belongs_to = "super::post::Entity",
+    from = "(Column::PostOwnerId, Column::PostCreatedAt)",
+    to = "(super::post::Column::OwnerId, super::post::Column::CreatedAt)",
+    on_update = "Cascade",
+    on_delete = "Cascade"
+  )]
+  Post,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::TargetId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Cascade"
+  )]
+  UserAccount2,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::PostOwnerId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  UserAccount1,
 }
 
 impl Related<super::post::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Post.def()
-    }
+  fn to() -> RelationDef {
+    Relation::Post.def()
+  }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-    #[sea_orm(entity = "super::post::Entity")]
-    Post,
-    #[sea_orm(
-        entity = "super::user_account::Entity",
-        def = "Relation::UserAccount2.def()"
-    )]
-    UserAccount2,
-    #[sea_orm(
-        entity = "super::user_account::Entity",
-        def = "Relation::UserAccount1.def()"
-    )]
-    UserAccount1,
+  #[sea_orm(entity = "super::post::Entity")]
+  Post,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::UserAccount2.def()"
+  )]
+  UserAccount2,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::UserAccount1.def()"
+  )]
+  UserAccount1,
 }
