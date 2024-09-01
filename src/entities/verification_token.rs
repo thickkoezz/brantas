@@ -9,7 +9,7 @@ pub struct Model {
   pub identifier: String,
   #[sea_orm(column_type = "Text", unique)]
   pub token: String,
-  pub expires: DateTime,
+  pub expires: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -12,8 +12,9 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub group_created_at: DateTime,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub content: String,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

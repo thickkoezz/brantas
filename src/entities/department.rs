@@ -17,9 +17,9 @@ pub struct Model {
   pub dead_at: Option<Date>,
   #[sea_orm(column_type = "JsonBinary", nullable)]
   pub extra_info: Option<Json>,
-  pub created_at: DateTime,
-  pub updated_at: Option<DateTime>,
-  pub deleted_at: Option<DateTime>,
+  pub created_at: DateTimeWithTimeZone,
+  pub updated_at: Option<DateTimeWithTimeZone>,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
   pub parent_id: Option<Uuid>,
   pub logo: Option<String>,
 }

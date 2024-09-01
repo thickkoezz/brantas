@@ -13,6 +13,7 @@ pub struct Model {
   pub member_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTime,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

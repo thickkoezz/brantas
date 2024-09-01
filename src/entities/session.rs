@@ -10,7 +10,7 @@ pub struct Model {
   #[sea_orm(column_type = "Text", unique)]
   pub session_token: String,
   pub user_account_id: Uuid,
-  pub expires: DateTime,
+  pub expires: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

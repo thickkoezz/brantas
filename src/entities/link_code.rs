@@ -8,10 +8,11 @@ pub struct Model {
   pub link_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
   pub code: String,
-  pub created_at: DateTime,
-  pub expired_at: Option<DateTime>,
+  pub created_at: DateTimeWithTimeZone,
+  pub expired_at: Option<DateTimeWithTimeZone>,
   pub is_public: bool,
   pub is_code_manually_typed: bool,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

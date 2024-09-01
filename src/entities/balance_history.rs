@@ -8,11 +8,12 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
   pub ref_id: Uuid,
   #[sea_orm(column_type = "Decimal(Some((18, 2)))")]
   pub amount: Decimal,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

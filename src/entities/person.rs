@@ -7,9 +7,9 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub id: Uuid,
-  pub created_at: DateTime,
-  pub updated_at: Option<DateTime>,
-  pub deleted_at: Option<DateTime>,
+  pub created_at: DateTimeWithTimeZone,
+  pub updated_at: Option<DateTimeWithTimeZone>,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
   pub first_name: String,
   pub middle_name: Option<String>,
   pub last_name: Option<String>,
@@ -22,7 +22,7 @@ pub struct Model {
   pub photo: Option<String>,
   #[sea_orm(column_type = "Text", nullable)]
   pub email: Option<String>,
-  pub is_email_verified: Option<DateTime>,
+  pub is_email_verified: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -3,6 +3,12 @@ _version: 2
 abbreviation:
   en: Abbreviation
   id: Singkatan
+access:
+  en: Access
+  id: Akses
+accept:
+  en: Accept
+  id: Terima
 add:
   en: Add
   id: Tambah
@@ -24,6 +30,9 @@ balance_history:
 capital:
   en: Capital
   id: Ibu kota
+change:
+  en: Change
+  id: Ganti
 chat:
   en: Chat
   id: Chat
@@ -63,6 +72,12 @@ currency_name:
 currency_symbol:
   en: Currency symbol
   id: Simbol kurensi
+database_connection_failed:
+  en: Database connection failed,
+  id: Koneksi database gagal,
+database_connection_succeeded:
+  en: Database connection succeeded,
+  id: Koneksi database sukses,
 department:
   en: Department
   id: Departemen
@@ -78,6 +93,9 @@ delete:
 deleted_at:
   en: Deleted at
   id: Dihapus pada
+deny:
+  en: Deny
+  id: Bantah
 domicile:
   en: Domicile
   id: Domisili
@@ -93,9 +111,15 @@ end:
 end_at:
   en: End at
   id: Selesai pada
+email:
+  en: Email
+  id: Email
 emoji:
   en: Emoji
   id: Emoji
+english:
+  en: English
+  id: Bahasa Inggris
 extra_info:
   en: Extra info
   id: Info extra
@@ -123,9 +147,18 @@ group_creator:
 group_member:
   en: Group member
   id: Anggota grup
+incorrect_x:
+  en: Incorrect %{x}
+  id: %{x} salah
+indonesian:
+  en: Indonesian
+  id: Bahasa Indonesia
 insert:
   en: Insert
   id: Sisipkan
+invalid_x:
+  en: Invalid %{x}
+  id: %{x} tidak valid
 is_public:
   en: Is public?
   id: Publik?
@@ -168,6 +201,30 @@ nationality:
 native:
   en: Native
   id: Asal
+not_added:
+  en: Not added
+  id: Belum ditambah
+not_changed:
+  en: Not changed
+  id: Belum diganti
+not_created:
+  en: Not created
+  id: Belum dibuat
+not_deleted:
+  en: Not deleted
+  id: Belum dihapus
+not_edited:
+  en: Not edited
+  id: Belum diedit
+not_saved:
+  en: Not saved
+  id: Belum disimpan
+not_set:
+  en: Not set
+  id: Belum diset
+not_verified:
+  en: Not verified
+  id: Belum terverifikasi
 numeric:
   en: Numeric
   id: Numerik
@@ -183,6 +240,9 @@ owned_by:
 owner:
   en: Owner
   id: Pemilik
+password:
+  en: Password
+  id: Katasandi
 person:
   en: Person
   id: Orang
@@ -222,6 +282,9 @@ receiver:
 ref_id:
   en: Ref ID
   id: ID ref
+refuse:
+  en: Resufe
+  id: Tolak
 region:
   en: Region
   id: Region
@@ -231,12 +294,24 @@ region_id:
 region_name:
   en: Region name
   id: Nama region
+reject:
+  en: Reject
+  id: Tolak
 send:
   en: Send
   id: Kirim
 sender:
   en: Sender
   id: Pengirim
+sign_in:
+  en: Sign in
+  id: Masuk
+sign_up:
+  en: Sign up
+  id: Daftar
+sign_out:
+  en: Sign out
+  id: Keluar
 skill:
   en: Skill
   id: Keahlian
@@ -279,12 +354,66 @@ top_level_domain:
 translation:
   en: Translation
   id: Translasi
+unauthorized:
+  en: Unauthorized
+  id: Tidak sah
+unauthorized_access:
+  en: Unauthorized access
+  id: Akses tidak sah
+upload:
+  en: Upload
+  id: Unggah
 updated_at:
   en: Updated at
   id: Diupdate pada
 updated_by:
   en: Updated by
   id: Diupdate oleh
+user:
+  en: User
+  id: Pengguna
+username:
+  en: Username
+  id: Username
+verify:
+  en: Verify
+  id: Verifikasi
 wiki_data_id:
   en: Wiki Data ID
   id: ID Data Wiki
+x_not_addable:
+  en: %{x} not addable
+  id: %{x} tidak bisa ditambah
+x_not_creatable:
+  en: %{x} not creatable
+  id: %{x} tidak bisa dibuat
+x_not_created:
+  en: %{x} not created
+  id: %{x} tidak dibuat
+x_not_deletable:
+  en: %{x} not deleted
+  id: %{x} tidak bisa dihapus
+x_not_deleted:
+  en: %{x} not deleted
+  id: %{x} tidak dihapus
+x_not_editable:
+  en: %{x} not editable
+  id: %{x} tidak bisa diedit
+x_not_edited:
+  en: %{x} not edited
+  id: %{x} tidak diedit
+x_not_exist:
+  en: %{x} not exist
+  id: %{x} tidak ada
+x_not_found:
+  en: %{x} not found
+  id: %{x} tidak ditemukan
+x_not_saved:
+  en: %{x} not saved
+  id: %{x} tidak disimpan
+x_not_set:
+  en: %{x} not set
+  id: %{x} tidak diset
+x_not_verified:
+  en: %{x} not verified
+  id: %{x} belum terverifikasi

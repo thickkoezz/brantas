@@ -8,14 +8,15 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub note_owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub note_created_at: DateTime,
+  pub note_created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
   pub editor_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub title: String,
   #[sea_orm(column_type = "Text")]
   pub content: String,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

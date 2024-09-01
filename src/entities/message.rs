@@ -10,8 +10,9 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub receiver_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub message: String,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

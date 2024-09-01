@@ -11,8 +11,8 @@ pub struct Model {
   pub administrator_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
   pub department_id: Uuid,
-  pub created_at: DateTime,
-  pub deleted_at: Option<DateTime>,
+  pub created_at: DateTimeWithTimeZone,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

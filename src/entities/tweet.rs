@@ -8,17 +8,19 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub tweet: String,
   pub is_published: bool,
   pub hashtag: Option<String>,
   pub replied_owner_id: Option<Uuid>,
-  pub replied_created_at: Option<DateTime>,
+  pub replied_created_at: Option<DateTimeWithTimeZone>,
   pub retweet_owner_id: Option<Uuid>,
-  pub retweet_created_at: Option<DateTime>,
+  pub retweet_created_at: Option<DateTimeWithTimeZone>,
   pub react_count: i32,
   pub reply_count: i32,
   pub retweet_count: i32,
+  pub updated_at: Option<DateTimeWithTimeZone>,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

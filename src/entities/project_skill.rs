@@ -8,10 +8,10 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub person_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub project_created_at: DateTime,
+  pub project_created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub skill_created_at: DateTime,
-  pub deleted_at: Option<DateTime>,
+  pub skill_created_at: DateTimeWithTimeZone,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
   #[sea_orm(column_type = "Text", nullable)]
   pub description: Option<String>,
 }

@@ -11,13 +11,13 @@ pub struct Model {
   #[sea_orm(unique)]
   pub email: String,
   #[sea_orm(unique)]
-  pub username: String,
+  pub username: Option<String>,
   pub picture: Option<String>,
   pub password: Option<String>,
   pub salt: Option<String>,
-  pub created_at: DateTime,
-  pub updated_at: Option<DateTime>,
-  pub deleted_at: Option<DateTime>,
+  pub created_at: DateTimeWithTimeZone,
+  pub updated_at: Option<DateTimeWithTimeZone>,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
   #[sea_orm(column_type = "Decimal(Some((18, 2)))")]
   pub balance: Decimal,
   pub is_super_admin: bool,
@@ -39,7 +39,7 @@ pub struct Model {
   pub id_token: Option<String>,
   #[sea_orm(column_type = "Text", nullable)]
   pub session_state: Option<String>,
-  pub expires_at: Option<DateTime>,
+  pub expires_at: Option<DateTimeWithTimeZone>,
   pub refresh_token_expires_in: Option<i32>,
 }
 

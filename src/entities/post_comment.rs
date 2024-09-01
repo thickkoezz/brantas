@@ -8,11 +8,11 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub commented_post_owner_id: Uuid,
-  pub commented_post_created_at: DateTime,
-  pub updated_at: Option<DateTime>,
-  pub deleted_at: Option<DateTime>,
+  pub commented_post_created_at: DateTimeWithTimeZone,
+  pub updated_at: Option<DateTimeWithTimeZone>,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
   pub content: String,
   pub react_count: i32,
 }

@@ -9,9 +9,9 @@ pub struct Model {
   pub socmed_url: String,
   #[sea_orm(primary_key, auto_increment = false)]
   pub owner_id: Uuid,
-  pub created_at: DateTime,
-  pub updated_at: Option<DateTime>,
-  pub deleted_at: Option<DateTime>,
+  pub created_at: DateTimeWithTimeZone,
+  pub updated_at: Option<DateTimeWithTimeZone>,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
