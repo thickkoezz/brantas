@@ -14,16 +14,16 @@ use sea_orm::{EntityTrait, Set, ActiveModelTrait, QueryFilter, ColumnTrait};
 use uuid::Uuid;
 use rust_i18n::t;
 
-pub async fn add_user(req: UserAddRequest) -> AppResult<UserResponse> {
+pub async fn add_user_account(req: UserAddRequest) -> AppResult<UserResponse> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   let salt = SaltString::generate(rand::thread_rng());
   let model = user_account::ActiveModel {
     id: Set(Uuid::new_v4()),
     owner_id: Default::default(),
     email: Default::default(),
-    username: Set(req.username.clone()),
+    username: Set(Option::from(req.username.clone())),
     picture: Default::default(),
-    password: Set(Option::from(rand_utils::hash_password(req.password, salt).await?)),
+    password: Set(Option::from(rand_utils::hash_password(req.password, salt.clone()).await?)),
     salt: Set(Option::from(salt.to_string())),
     created_at: Default::default(),
     updated_at: Default::default(),
@@ -65,10 +65,10 @@ pub async fn login(req: UserLoginRequest) -> AppResult<UserLoginResponse> {
     {
       return Err(anyhow::anyhow!(t!("incorrect_x", x = t!("password"))).into());
     }
-    let (token, exp) = get_token(user.username.clone(), user.id.to_string().clone())?;
+    let (token, exp) = get_token(user.username.clone().unwrap(), user.id.to_string().clone())?;
     let res = UserLoginResponse {
       id: user.id.to_string(),
-      username: user.username,
+      username: user.username.unwrap(),
       token,
       exp,
     };
@@ -76,40 +76,43 @@ pub async fn login(req: UserLoginRequest) -> AppResult<UserLoginResponse> {
   }
 }
 
-pub async fn update_user(req: UserUpdateRequest) -> AppResult<UserResponse> {
+pub async fn update_user_account(req: UserUpdateRequest) -> AppResult<UserResponse> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
 
-  let user = UserAccount::find_by_id(req.id).one(db).await?;
+  let id = Uuid::try_parse(req.id.as_str()).unwrap();
+  let user = UserAccount::find_by_id(id).one(db).await?;
   if user.is_none() {
     return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user"))).into());
   }
   let mut user: user_account::ActiveModel = user.unwrap().into();
 
-  user.username = Set(req.username.to_owned());
-  user.password = Set(rand_utils::hash_password(req.password, user.salt.clone()).await?);
+  let salt = SaltString::from_b64(user.salt.clone().unwrap().unwrap().as_str()).unwrap();
+  let password = rand_utils::hash_password(req.password, salt.clone()).await?;
+  user.username = Set(Option::from(req.username.to_owned()));
+  user.password = Set(Option::from(password));
 
   let user: user_account::Model = user.update(db).await?;
 
   Ok(UserResponse {
-    id: user.id,
-    username: user.username,
+    id: user.id.to_string(),
+    username: user.username.unwrap(),
   })
 }
 
-pub async fn delete_user(id: String) -> AppResult<()> {
+pub async fn delete_user_account(id: Uuid) -> AppResult<()> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   UserAccount::delete_by_id(id).exec(db).await?;
   Ok(())
 }
 
-pub async fn users() -> AppResult<Vec<UserResponse>> {
+pub async fn get_user_accounts() -> AppResult<Vec<UserResponse>> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   let users = UserAccount::find().all(db).await?;
   let res = users
     .into_iter()
     .map(|user| UserResponse {
-      id: user.id,
-      username: user.username,
+      id: String::from(user.id),
+      username: user.username.unwrap(),
     })
     .collect::<Vec<_>>();
   Ok(res)

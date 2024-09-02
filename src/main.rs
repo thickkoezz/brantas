@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate rust_i18n;
+i18n!("../locales");
+
 use crate::db::init_db_conn;
 use tokio::signal;
 use tracing::info;

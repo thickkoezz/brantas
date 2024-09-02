@@ -4,17 +4,12 @@ use crate::{
     UserAddRequest, UserLoginRequest, UserLoginResponse, UserResponse, UserUpdateRequest,
   },
   middleware::jwt::decode_token,
-  services::user,
+  services::user_account,
 };
 use askama::Template;
-use salvo::{
-  oapi::endpoint,
-  http::cookie::Cookie,
-  oapi::extract::{JsonBody, PathParam},
-  writing::{Redirect, Text},
-  Request, Response,
-};
+use salvo::{oapi::endpoint, http::cookie::Cookie, oapi::extract::{JsonBody, PathParam}, writing::{Redirect, Text}, Request, Response, handler};
 use salvo::Writer;
+use uuid::Uuid;
 
 #[derive(Template)]
 #[template(path = "login.html")]
@@ -27,7 +22,7 @@ pub async fn login_page(res: &mut Response) -> AppResult<()> {
   if let Some(cookie) = cookie {
     let token = cookie.value().to_string();
     if decode_token(&token) {
-      res.render(Redirect::other("/users"));
+      res.render(Redirect::other("/user_accounts"));
       return Ok(());
     } else {}
   }
@@ -45,7 +40,7 @@ pub struct UserListPageTemplate {}
 pub struct UserListTemplate {}
 
 #[endpoint]
-pub async fn user_list_page(req: &mut Request, res: &mut Response) -> AppResult<()> {
+pub async fn user_account_list_page(req: &mut Request, res: &mut Response) -> AppResult<()> {
   let is_fragment = req.headers().get("X-Fragment-Header");
   match is_fragment {
     Some(_) => {
@@ -59,9 +54,10 @@ pub async fn user_list_page(req: &mut Request, res: &mut Response) -> AppResult<
   }
   Ok(())
 }
+
 #[endpoint(tags("comm"))]
 pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
-  let result: AppResult<UserLoginResponse> = user::login(req.0).await;
+  let result: AppResult<UserLoginResponse> = user_account::login(req.0).await;
   match result {
     Ok(data) => {
       let jwt_token = data.token.clone();
@@ -75,31 +71,31 @@ pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
   }
 }
 
-#[endpoint(tags("users"))]
-pub async fn post_add_user(new_user: JsonBody<UserAddRequest>) -> AppWriter<UserResponse> {
-  let result = user::add_user(new_user.0).await;
+#[endpoint(tags("user_accounts"))]
+pub async fn post_add_user_account(new_user: JsonBody<UserAddRequest>) -> AppWriter<UserResponse> {
+  let result = user_account::add_user_account(new_user.0).await;
   AppWriter(result)
 }
 
-#[endpoint(tags("users"),
+#[endpoint(tags("user_accounts"),
   parameters(
     ("id", description = "user id"),
   ))]
-pub async fn put_update_user(req: &mut Request) -> AppResult<AppWriter<UserResponse>> {
+pub async fn put_update_user_account(req: &mut Request) -> AppResult<AppWriter<UserResponse>> {
   let req: UserUpdateRequest = req.extract().await?;
-  let result = user::update_user(req).await;
+  let result = user_account::update_user_account(req).await;
   Ok(AppWriter(result))
 }
 
-#[endpoint(tags("users"))]
-pub async fn delete_user(id: PathParam<String>) -> AppWriter<()> {
-  let result = user::delete_user(id.0).await;
+#[endpoint(tags("user_accounts"))]
+pub async fn delete_user_account(id: PathParam<Uuid>) -> AppWriter<()> {
+  let result = user_account::delete_user_account(id.0).await;
   AppWriter(result)
 }
 
-#[endpoint(tags("users"))]
-pub async fn get_users() -> AppWriter<Vec<UserResponse>> {
-  let result = user::users().await;
+#[endpoint(tags("user_accounts"))]
+pub async fn get_user_accounts() -> AppWriter<Vec<UserResponse>> {
+  let result = user_account::get_user_accounts().await;
   AppWriter(result)
 }
 

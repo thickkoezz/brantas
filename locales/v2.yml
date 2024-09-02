@@ -73,11 +73,11 @@ currency_symbol:
   en: Currency symbol
   id: Simbol kurensi
 database_connection_failed:
-  en: Database connection failed,
-  id: Koneksi database gagal,
+  en: Database connection failed
+  id: Koneksi database gagal
 database_connection_succeeded:
-  en: Database connection succeeded,
-  id: Koneksi database sukses,
+  en: Database connection succeeded
+  id: Koneksi database sukses
 department:
   en: Department
   id: Departemen
