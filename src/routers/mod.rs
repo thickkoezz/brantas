@@ -6,14 +6,14 @@ use salvo::{
 
 use self::{
   demo::hello,
-  user::{
+  user_account::{
     delete_user_account, get_user_accounts, login_page, post_add_user_account, post_login, put_update_user_account,
     user_account_list_page,
   },
 };
 
 pub mod demo;
-pub mod user;
+pub mod user_account;
 mod static_routers;
 
 pub fn router() -> Router {

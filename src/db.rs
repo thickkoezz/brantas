@@ -2,6 +2,7 @@ use crate::config::CFG;
 use std::time::Duration;
 use sea_orm::{entity::prelude::DatabaseConnection, ConnectOptions, Database};
 use tokio::sync::OnceCell;
+
 pub static DB: OnceCell<DatabaseConnection> = OnceCell::const_new();
 
 pub async fn init_db_conn() {

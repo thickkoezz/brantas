@@ -12,6 +12,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
   pub message: String,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 

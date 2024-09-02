@@ -1,7 +1,7 @@
 use crate::{
   app_writer::{AppWriter, AppResult, ErrorResponseBuilder},
-  dtos::user::{
-    UserAddRequest, UserLoginRequest, UserLoginResponse, UserResponse, UserUpdateRequest,
+  dtos::user_account::{
+    UserAccountAddRequest, UserAccountLoginRequest, UserAccountLoginResponse, UserAccountResponse, UserAccountUpdateRequest,
   },
   middleware::jwt::decode_token,
   services::user_account,
@@ -56,8 +56,8 @@ pub async fn user_account_list_page(req: &mut Request, res: &mut Response) -> Ap
 }
 
 #[endpoint(tags("comm"))]
-pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
-  let result: AppResult<UserLoginResponse> = user_account::login(req.0).await;
+pub async fn post_login(req: JsonBody<UserAccountLoginRequest>, res: &mut Response) {
+  let result: AppResult<UserAccountLoginResponse> = user_account::login(req.0).await;
   match result {
     Ok(data) => {
       let jwt_token = data.token.clone();
@@ -72,7 +72,7 @@ pub async fn post_login(req: JsonBody<UserLoginRequest>, res: &mut Response) {
 }
 
 #[endpoint(tags("user_accounts"))]
-pub async fn post_add_user_account(new_user: JsonBody<UserAddRequest>) -> AppWriter<UserResponse> {
+pub async fn post_add_user_account(new_user: JsonBody<UserAccountAddRequest>) -> AppWriter<UserAccountResponse> {
   let result = user_account::add_user_account(new_user.0).await;
   AppWriter(result)
 }
@@ -81,8 +81,8 @@ pub async fn post_add_user_account(new_user: JsonBody<UserAddRequest>) -> AppWri
   parameters(
     ("id", description = "user id"),
   ))]
-pub async fn put_update_user_account(req: &mut Request) -> AppResult<AppWriter<UserResponse>> {
-  let req: UserUpdateRequest = req.extract().await?;
+pub async fn put_update_user_account(req: &mut Request) -> AppResult<AppWriter<UserAccountResponse>> {
+  let req: UserAccountUpdateRequest = req.extract().await?;
   let result = user_account::update_user_account(req).await;
   Ok(AppWriter(result))
 }
@@ -94,7 +94,7 @@ pub async fn delete_user_account(id: PathParam<Uuid>) -> AppWriter<()> {
 }
 
 #[endpoint(tags("user_accounts"))]
-pub async fn get_user_accounts() -> AppWriter<Vec<UserResponse>> {
+pub async fn get_user_accounts() -> AppWriter<Vec<UserAccountResponse>> {
   let result = user_account::get_user_accounts().await;
   AppWriter(result)
 }

@@ -11,8 +11,9 @@ pub struct Model {
   pub post_created_at: DateTime,
   #[sea_orm(primary_key, auto_increment = false)]
   pub target_id: Uuid,
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub can_comment: bool,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

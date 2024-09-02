@@ -10,7 +10,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub group_creator_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub group_created_at: DateTime,
+  pub group_created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
   pub content: String,
