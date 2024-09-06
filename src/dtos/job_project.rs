@@ -6,7 +6,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct JobProjectAddRequest {
   pub organization_id: Uuid,
   pub person_id: Uuid,
   pub job_created_at: DateTimeWithTimeZone,
@@ -15,7 +15,7 @@ pub struct AddRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct JobProjectResponse {
   pub organization_id: Uuid,
   pub person_id: Uuid,
   pub job_created_at: DateTimeWithTimeZone,

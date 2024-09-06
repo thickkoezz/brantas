@@ -6,14 +6,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct BalanceHistoryAddRequest {
   pub owner_id: Uuid,
   pub ref_id: Uuid,
   pub amount: Decimal,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct BalanceHistoryUpdateRequest {
   pub owner_id: Uuid,
   pub ref_id: Uuid,
   pub amount: Decimal,

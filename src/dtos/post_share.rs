@@ -6,7 +6,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct PostShareAddRequest {
   pub post_owner_id: Uuid,
   pub post_created_at: DateTime,
   pub target_id: Uuid,
@@ -14,7 +14,7 @@ pub struct AddRequest {
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct PostShareUpdateRequest {
   pub post_owner_id: Uuid,
   pub post_created_at: DateTime,
   pub target_id: Uuid,
@@ -23,7 +23,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct PostShareResponse {
   pub post_owner_id: Uuid,
   pub post_created_at: DateTime,
   pub target_id: Uuid,

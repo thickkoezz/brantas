@@ -33,7 +33,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  SelfRef,
+  Parent,
   #[sea_orm(has_many = "super::job::Entity")]
   Job,
   #[sea_orm(
@@ -70,14 +70,14 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef.def()")]
-  SelfRef,
+  #[sea_orm(entity = "Entity", def = "Relation::Parent.def()")]
+  Parent,
   #[sea_orm(entity = "super::job::Entity")]
   Job,
   #[sea_orm(entity = "super::organization::Entity")]
   Organization,
   #[sea_orm(entity = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef.def().rev()")]
-  SelfRefReverse,
+  #[sea_orm(entity = "Entity", def = "Relation::Parent.def().rev()")]
+  Child,
 }

@@ -22,7 +22,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  Follower,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::TargetId",
@@ -30,7 +30,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  Target,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
@@ -39,12 +39,12 @@ impl ActiveModelBehavior for ActiveModel {}
 pub enum RelatedEntity {
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::Follower.def()"
   )]
-  UserAccount2,
+  Follower,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
+    def = "Relation::Target.def()"
   )]
-  UserAccount1,
+  Target,
 }

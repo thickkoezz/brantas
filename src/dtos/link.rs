@@ -6,7 +6,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct LinkAddRequest {
   pub id: Uuid,
   pub owner_id: Uuid,
   pub link_url: String,
@@ -15,7 +15,7 @@ pub struct AddRequest {
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct LinkUpdateRequest {
   pub id: Uuid,
   pub owner_id: Uuid,
   pub updated_at: Option<DateTimeWithTimeZone>,
@@ -26,7 +26,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct LinkResponse {
   pub id: Uuid,
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,

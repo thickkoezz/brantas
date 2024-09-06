@@ -40,7 +40,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  SelfRef,
+  Parent,
   #[sea_orm(has_many = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
 }
@@ -87,10 +87,10 @@ pub enum RelatedEntity {
   JobProject,
   #[sea_orm(entity = "super::job_skill::Entity")]
   JobSkill,
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef.def()")]
-  SelfRef,
+  #[sea_orm(entity = "Entity", def = "Relation::Parent.def()")]
+  Parent,
   #[sea_orm(entity = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef.def().rev()")]
-  SelfRefReverse,
+  #[sea_orm(entity = "Entity", def = "Relation::Parent.def().rev()")]
+  Child,
 }

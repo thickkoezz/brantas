@@ -6,14 +6,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct DirectChatAddRequest {
   pub sender_id: Uuid,
   pub receiver_id: Uuid,
   pub content: String,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct DirectChatUpdateRequest {
   pub sender_id: Uuid,
   pub receiver_id: Uuid,
   pub content: String,
@@ -22,7 +22,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct DirectChatResponse {
   pub sender_id: Uuid,
   pub receiver_id: Uuid,
   pub created_at: DateTimeWithTimeZone,

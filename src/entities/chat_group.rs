@@ -29,7 +29,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Creator,
 }
 
 impl Related<super::chat_group_member::Entity> for Entity {
@@ -46,7 +46,7 @@ impl Related<super::group_chat::Entity> for Entity {
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Creator.def()
   }
 }
 
@@ -59,5 +59,5 @@ pub enum RelatedEntity {
   #[sea_orm(entity = "super::group_chat::Entity")]
   GroupChat,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Creator,
 }

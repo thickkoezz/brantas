@@ -13,6 +13,7 @@ use crate::{
 use sea_orm::{EntityTrait, Set, ActiveModelTrait, QueryFilter, ColumnTrait};
 use uuid::Uuid;
 use rust_i18n::t;
+use super::DeletionMode;
 
 pub async fn add_user_account(req: UserAccountAddRequest) -> AppResult<UserAccountResponse> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -150,7 +151,10 @@ pub async fn update_user_account(req: UserAccountUpdateRequest) -> AppResult<Use
   })
 }
 
-pub async fn delete_user_account(id: Uuid) -> AppResult<()> {
+pub async fn delete_user_account(
+  deletion_mode: DeletionMode,
+  id: Uuid
+) -> AppResult<()> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   UserAccount::delete_by_id(id).exec(db).await?;
   Ok(())

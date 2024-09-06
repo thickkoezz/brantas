@@ -6,14 +6,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct ChatGroupMemberAddRequest {
   pub group_creator_id: Uuid,
   pub group_created_at: DateTime,
   pub member_id: Uuid,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct ChatGroupMemberUpdateRequest {
   pub group_creator_id: Uuid,
   pub group_created_at: DateTime,
   pub member_id: Uuid,
@@ -21,7 +21,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct ChatGroupMemberResponse {
   pub group_creator_id: Uuid,
   pub group_created_at: DateTime,
   pub member_id: Uuid,

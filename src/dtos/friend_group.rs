@@ -6,13 +6,13 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct FriendGroupAddRequest {
   pub owner_id: Uuid,
   pub name: String,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct FriendGroupUpdateRequest {
   pub owner_id: Uuid,
   pub name: String,
   pub updated_at: Option<DateTimeWithTimeZone>,
@@ -20,7 +20,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct FriendGroupResponse {
   pub owner_id: Uuid,
   pub name: String,
   pub created_at: DateTimeWithTimeZone,

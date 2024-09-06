@@ -8,11 +8,11 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub group_creator_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub group_created_at: DateTime,
+  pub group_created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
   pub member_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
@@ -33,7 +33,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Member,
 }
 
 impl Related<super::chat_group::Entity> for Entity {
@@ -44,7 +44,7 @@ impl Related<super::chat_group::Entity> for Entity {
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Member.def()
   }
 }
 
@@ -55,5 +55,5 @@ pub enum RelatedEntity {
   #[sea_orm(entity = "super::chat_group::Entity")]
   ChatGroup,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Member,
 }

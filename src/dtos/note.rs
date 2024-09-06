@@ -6,14 +6,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct NoteAddRequest {
   pub owner_id: Uuid,
   pub title: String,
   pub content: String,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct NoteUpdateRequest {
   pub owner_id: Uuid,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
@@ -22,7 +22,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct NoteResponse {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub updated_at: Option<DateTimeWithTimeZone>,

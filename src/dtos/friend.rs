@@ -6,13 +6,13 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct FriendAddRequest {
   pub invitor_id: Uuid,
   pub invitee_id: Uuid,
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct FriendResponse {
   pub invitor_id: Uuid,
   pub invitee_id: Uuid,
   pub created_at: DateTimeWithTimeZone,

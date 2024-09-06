@@ -6,7 +6,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct NoteEditHistoryAddRequest {
   pub note_owner_id: Uuid,
   pub note_created_at: DateTimeWithTimeZone,
   pub editor_id: Uuid,
@@ -15,7 +15,7 @@ pub struct AddRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct NoteEditHistoryResponse {
   pub note_owner_id: Uuid,
   pub note_created_at: DateTimeWithTimeZone,
   pub editor_id: Uuid,

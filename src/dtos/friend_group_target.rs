@@ -6,14 +6,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct FriendGroupTargetAddRequest {
   pub group_owner_id: Uuid,
   pub group_name: String,
   pub target_id: Uuid,
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct FriendGroupTargetResponse {
   pub group_owner_id: Uuid,
   pub group_name: String,
   pub target_id: Uuid,

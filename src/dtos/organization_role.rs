@@ -6,7 +6,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct OrganizationRoleAddRequest {
   pub organization_id: Uuid,
   pub name: String,
   pub description: Option<String>,
@@ -14,7 +14,7 @@ pub struct AddRequest {
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct OrganizationRoleUpdateRequest {
   pub organization_id: Uuid,
   pub name: String,
   pub description: Option<String>,
@@ -24,7 +24,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct OrganizationRoleResponse {
   pub organization_id: Uuid,
   pub name: String,
   pub description: Option<String>,

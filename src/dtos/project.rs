@@ -1,12 +1,12 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
-use sea_orm::prelude::{Date, DateTimeWithTimeZone, Json};
+use sea_orm::prelude::{Date, DateTimeWithTimeZone};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct ProjectAddRequest {
   pub person_id: Uuid,
   pub name: String,
   pub description: Option<String>,
@@ -15,7 +15,7 @@ pub struct AddRequest {
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct ProjectUpdateRequest {
   pub person_id: Uuid,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
@@ -26,7 +26,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct ProjectResponse {
   pub person_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub updated_at: Option<DateTimeWithTimeZone>,

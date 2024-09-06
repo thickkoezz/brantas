@@ -6,13 +6,13 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct FollowAddRequest {
   pub follower_id: Uuid,
   pub target_id: Uuid,
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct FollowResponse {
   pub follower_id: Uuid,
   pub target_id: Uuid,
   pub created_at: DateTimeWithTimeZone,

@@ -6,7 +6,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct TweetAddRequest {
   pub owner_id: Uuid,
   pub tweet: String,
   pub is_published: bool,
@@ -21,7 +21,7 @@ pub struct AddRequest {
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct TweetUpdateRequest {
   pub owner_id: Uuid,
   pub tweet: String,
   pub is_published: bool,
@@ -38,7 +38,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct TweetResponse {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub tweet: String,

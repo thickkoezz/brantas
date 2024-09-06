@@ -6,7 +6,7 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct PostCommentAddRequest {
   pub owner_id: Uuid,
   pub commented_post_owner_id: Uuid,
   pub commented_post_created_at: DateTimeWithTimeZone,
@@ -15,7 +15,7 @@ pub struct AddRequest {
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct PostCommentUpdateRequest {
   pub owner_id: Uuid,
   pub commented_post_owner_id: Uuid,
   pub commented_post_created_at: DateTimeWithTimeZone,
@@ -26,7 +26,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct PostCommentResponse {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub commented_post_owner_id: Uuid,

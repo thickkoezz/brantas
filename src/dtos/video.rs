@@ -6,14 +6,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct VideoAddRequest {
   pub owner_id: Uuid,
   pub photo: String,
   pub size: i32,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct VideoUpdateRequest {
   pub owner_id: Uuid,
   pub photo: String,
   pub size: i32,
@@ -21,7 +21,7 @@ pub struct UpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct VideoResponse {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub photo: String,

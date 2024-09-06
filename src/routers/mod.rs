@@ -1,14 +1,12 @@
 use crate::middleware::jwt::jwt_middleware;
 use salvo::{
-  prelude::{CatchPanic, Logger, OpenApi, Scalar},
-  Router,
+  prelude::{CatchPanic, Logger, OpenApi, Scalar}, Router,
 };
 
 use self::{
   demo::hello,
   user_account::{
-    delete_user_account, get_user_accounts, login_page, post_add_user_account, post_login, put_update_user_account,
-    user_account_list_page,
+    user_account_routes, login_page, post_login,
   },
 };
 
@@ -22,17 +20,8 @@ pub fn router() -> Router {
     Router::with_path("/api/login").post(post_login),
   ];
 
-  let mut need_auth_routers = vec![
-    Router::with_path("user_accounts")
-      .get(user_account_list_page),
-    Router::with_path("/api/user_accounts").get(get_user_accounts)
-      .post(post_add_user_account)
-      .push(
-        Router::with_path("<id>")
-          .put(put_update_user_account)
-          .delete(delete_user_account),
-      ),
-  ];
+  let mut need_auth_routers: Vec<Router> = Vec::new();
+  need_auth_routers.append(&mut crate::routers::user_account::user_account_routes());
 
   let static_routers = static_routers::create_static_routers();
   no_auth_routers.extend(static_routers);

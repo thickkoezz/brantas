@@ -6,14 +6,14 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
+pub struct SocmedUrlAddRequest {
   #[validate(url)]
   pub socmed_url: String,
   pub owner_id: Uuid,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
+pub struct SocmedUrlUpdateRequest {
   pub socmed_url: String,
   pub owner_id: Uuid,
   pub updated_at: Option<DateTimeWithTimeZone>,
