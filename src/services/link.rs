@@ -2,10 +2,10 @@ use sea_orm::EntityTrait;
 use uuid::Uuid;
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::entities::prelude::Organization;
+use crate::entities::prelude::Link;
 use super::DeletionMode;
 
-pub async fn delete_organization(
+pub async fn delete_link(
   deletion_mode: DeletionMode,
   id: Uuid,
 ) -> AppResult<()> {
@@ -14,9 +14,9 @@ pub async fn delete_organization(
   )?;
   match deletion_mode {
     DeletionMode::Hard => {
-      let result = Organization::delete_by_id(id).exec(db).await?;
+      let result = Link::delete_by_id(id).exec(db).await?;
       match result.rows_affected {
-        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("organization"))).into()),
+        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("link"))).into()),
         _ => Ok(()),
       }
     }

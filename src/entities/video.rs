@@ -10,7 +10,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub photo: String,
+  pub video: String,
   pub size: i32,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }

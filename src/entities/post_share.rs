@@ -8,7 +8,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub post_owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub post_created_at: DateTime,
+  pub post_created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
   pub target_id: Uuid,
   pub created_at: DateTimeWithTimeZone,

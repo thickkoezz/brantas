@@ -3,23 +3,25 @@ use sea_orm::prelude::DateTimeWithTimeZone;
 use uuid::Uuid;
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::entities::prelude::BalanceHistory;
+use crate::entities::prelude::Project;
 use super::DeletionMode;
 
-pub async fn delete_balance_history(
+pub async fn delete_project(
   deletion_mode: DeletionMode,
-  owner_id: Uuid,
+  person_id: Uuid,
   created_at: DateTimeWithTimeZone,
-  ref_id: Uuid,
 ) -> AppResult<()> {
-  let db = DB.get().ok_or(
-    anyhow::anyhow!(t!("database_connection_failed"))
-  )?;
   match deletion_mode {
     DeletionMode::Hard => {
-      let result = BalanceHistory::delete_by_id((owner_id,created_at, ref_id)).exec(db).await?;
+      let db = DB.get().ok_or(
+        anyhow::anyhow!(t!("database_connection_failed"))
+      )?;
+      let result = Project::delete_by_id((
+        person_id,
+        created_at,
+      )).exec(db).await?;
       match result.rows_affected {
-        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("balance_history"))).into()),
+        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("person"))).into()),
         _ => Ok(()),
       }
     }

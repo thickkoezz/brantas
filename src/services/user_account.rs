@@ -3,20 +3,36 @@ use crate::{
   app_writer::AppResult,
   db::DB,
   dtos::user_account::{
-    UserAccountAddRequest, UserAccountLoginRequest, UserAccountLoginResponse, UserAccountResponse,
+    UserAccountAddRequest,
+    UserAccountLoginRequest,
+    UserAccountLoginResponse,
+    UserAccountResponse,
     UserAccountUpdateRequest,
   },
   middleware::jwt::get_token,
-  entities::{prelude::UserAccount, user_account},
+  entities::{
+    prelude::UserAccount,
+    user_account,
+  },
   utils::rand_utils,
 };
-use sea_orm::{EntityTrait, Set, ActiveModelTrait, QueryFilter, ColumnTrait};
+use sea_orm::{
+  EntityTrait,
+  Set,
+  ActiveModelTrait,
+  QueryFilter,
+  ColumnTrait,
+};
 use uuid::Uuid;
 use rust_i18n::t;
 use super::DeletionMode;
 
-pub async fn add_user_account(req: UserAccountAddRequest) -> AppResult<UserAccountResponse> {
-  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+pub async fn add_user_account(
+  req: UserAccountAddRequest,
+) -> AppResult<UserAccountResponse> {
+  let db = DB.get().ok_or(
+    anyhow::anyhow!(t!("database_connection_failed"))
+  )?;
   let salt = SaltString::generate(rand::thread_rng());
   let model = user_account::ActiveModel {
     id: Set(Uuid::new_v4()),
@@ -24,7 +40,12 @@ pub async fn add_user_account(req: UserAccountAddRequest) -> AppResult<UserAccou
     email: Set(req.email.clone()),
     username: Set(Option::from(req.username.clone())),
     picture: Set(req.picture.clone()),
-    password: Set(Option::from(rand_utils::hash_password(req.password.unwrap(), salt.clone()).await?)),
+    password: Set(Option::from(
+      rand_utils::hash_password(
+        req.password.unwrap(),
+        salt.clone(),
+      ).await?
+    )),
     salt: Set(Option::from(salt.to_string())),
     created_at: Default::default(),
     updated_at: Default::default(),
@@ -43,7 +64,9 @@ pub async fn add_user_account(req: UserAccountAddRequest) -> AppResult<UserAccou
     expires_at: Set(req.expires_at),
     refresh_token_expires_in: Set(req.refresh_token_expires_in),
   };
-  let user = UserAccount::insert(model.clone()).exec(db).await?;
+  let user = UserAccount::insert(
+    model.clone()
+  ).exec(db).await?;
   Ok(UserAccountResponse {
     id: user.last_insert_id,
     owner_id: req.owner_id,
@@ -70,43 +93,57 @@ pub async fn add_user_account(req: UserAccountAddRequest) -> AppResult<UserAccou
   })
 }
 
-pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginResponse> {
-  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
-  let user = UserAccount::find().filter(user_account::Column::Username.eq(req.username)).one(db).await?;
+pub async fn login(
+  req: UserAccountLoginRequest
+) -> AppResult<UserAccountLoginResponse> {
+  let db = DB.get().ok_or(
+    anyhow::anyhow!(t!("database_connection_failed"))
+  )?;
+  let user = UserAccount::find().filter(
+    user_account::Column::Username.eq(req.username)
+  ).one(db).await?;
   if user.is_none() {
     return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user"))).into());
   }
   let user = user.unwrap();
-  if let None = user.password {
-    Err(anyhow::anyhow!(t!("x_not_set", x = t!("password"))).into())
-  } else {
-    if rand_utils::verify_password(req.password, user.password.unwrap_or_default())
-      .await
-      .is_err()
-    {
-      return Err(anyhow::anyhow!(t!("incorrect_x", x = t!("password"))).into());
-    }
-    let (token, exp) = get_token(user.username.clone().unwrap_or_default(), user.id.to_string().clone())?;
-    let res = UserAccountLoginResponse {
-      id: user.id,
-      username: user.username.unwrap_or_default(),
-      token,
-      exp,
-    };
-    Ok(res)
+  if user.password.is_none() {
+    return Err(anyhow::anyhow!(t!("x_not_set", x = t!("password"))).into());
   }
+  let password = user.password.unwrap();
+  if rand_utils::verify_password(req.password, password).await.is_err()
+  {
+    return Err(anyhow::anyhow!(t!("incorrect_x", x = t!("password"))).into());
+  }
+  let (token, exp) = get_token(
+    user.username.clone().unwrap_or_default(), user.id.to_string().clone(),
+  )?;
+  let res = UserAccountLoginResponse {
+    id: user.id,
+    username: user.username.unwrap_or_default(),
+    token,
+    exp,
+  };
+  Ok(res)
 }
 
-pub async fn update_user_account(req: UserAccountUpdateRequest) -> AppResult<UserAccountResponse> {
-  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+pub async fn update_user_account(
+  req: UserAccountUpdateRequest
+) -> AppResult<UserAccountResponse> {
+  let db = DB.get().ok_or(
+    anyhow::anyhow!(t!("database_connection_failed"))
+  )?;
   let user = UserAccount::find_by_id(req.id).one(db).await?;
   if user.is_none() {
     return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user"))).into());
   }
   let mut user: user_account::ActiveModel = user.unwrap().into();
 
-  let salt = SaltString::from_b64(user.salt.clone().unwrap().unwrap_or_default().as_str()).unwrap();
-  let password = rand_utils::hash_password(req.password.unwrap_or_default(), salt.clone()).await?;
+  let salt = SaltString::from_b64(
+    user.salt.clone().unwrap().unwrap_or_default().as_str()
+  ).unwrap();
+  let password = rand_utils::hash_password(
+    req.password.unwrap_or_default(), salt.clone(),
+  ).await?;
   user.owner_id = Set(req.owner_id);
   user.email = Set(req.email);
   user.username = Set(Option::from(req.username.to_owned()));
@@ -153,15 +190,29 @@ pub async fn update_user_account(req: UserAccountUpdateRequest) -> AppResult<Use
 
 pub async fn delete_user_account(
   deletion_mode: DeletionMode,
-  id: Uuid
+  id: Uuid,
 ) -> AppResult<()> {
-  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
-  UserAccount::delete_by_id(id).exec(db).await?;
-  Ok(())
+  let db = DB.get().ok_or(
+    anyhow::anyhow!(t!("database_connection_failed"))
+  )?;
+  match deletion_mode {
+    DeletionMode::Hard => {
+      let result = UserAccount::delete_by_id(id).exec(db).await?;
+      match result.rows_affected {
+        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("person"))).into()),
+        _ => Ok(()),
+      }
+    }
+    DeletionMode::Soft => {
+      todo!()
+    }
+  }
 }
 
 pub async fn get_user_accounts() -> AppResult<Vec<UserAccountResponse>> {
-  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let db = DB.get().ok_or(
+    anyhow::anyhow!(t!("database_connection_failed"))
+  )?;
   let users = UserAccount::find().all(db).await?;
   let res = users
     .into_iter()
