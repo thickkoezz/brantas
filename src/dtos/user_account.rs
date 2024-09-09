@@ -1,4 +1,4 @@
-use salvo::prelude::{ToSchema, Extractible};
+use salvo::prelude::{Extractible, ToSchema};
 use sea_orm::prelude::{DateTimeWithTimeZone, Decimal};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;

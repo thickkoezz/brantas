@@ -3,26 +3,28 @@ extern crate rust_i18n;
 i18n!("../locales");
 
 use crate::db::init_db_conn;
-use tokio::signal;
-use tracing::info;
-use crate::middleware::{handle_404::handle_404, cors::cors_middleware};
+use crate::middleware::{cors::cors_middleware, handle_404::handle_404};
 use crate::routers::router;
 use config::{CERT_KEY, CFG};
-use salvo::server::ServerHandle;
+use lazy_static::lazy_static;
 use salvo::catcher::Catcher;
 use salvo::conn::rustls::{Keycert, RustlsConfig};
 use salvo::prelude::*;
+use salvo::server::ServerHandle;
+use std::env;
+use tokio::signal;
+use tracing::info;
 
 mod app_error;
 mod app_writer;
 mod config;
 mod db;
 mod dtos;
-mod services;
-mod utils;
 mod entities;
 mod middleware;
 mod routers;
+mod services;
+mod utils;
 
 #[tokio::main]
 async fn main() {
@@ -50,7 +52,10 @@ async fn main() {
         "📖 Open API Page: https://{}/scalar",
         &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
       );
-      println!("🔑 Login Page: https://{}/login", &CFG.server.address.replace("0.0.0.0", "127.0.0.1"));
+      println!(
+        "🔑 Login Page: https://{}/login",
+        &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
+      );
       let config = RustlsConfig::new(
         Keycert::new()
           .cert(CERT_KEY.cert.clone())
@@ -64,19 +69,22 @@ async fn main() {
       let handle = server.handle();
       tokio::spawn(shutdown_signal(handle));
       server.serve(service).await;
-    }
+    },
     false => {
       println!(
         "📖 Open API Page: http://{}/scalar",
         &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
       );
-      println!("🔑 Login Page: http://{}/login", &CFG.server.address.replace("0.0.0.0", "127.0.0.1"));
+      println!(
+        "🔑 Login Page: http://{}/login",
+        &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
+      );
       let acceptor = TcpListener::new(&CFG.server.address).bind().await;
       let server = Server::new(acceptor);
       let handle = server.handle();
       tokio::spawn(shutdown_signal(handle));
       server.serve(service).await;
-    }
+    },
   }
 }
 
@@ -99,9 +107,9 @@ async fn shutdown_signal(handle: ServerHandle) {
   let terminate = std::future::pending::<()>();
 
   tokio::select! {
-        _ = ctrl_c => info!("ctrl_c signal received"),
-        _ = terminate => info!("terminate signal received"),
-    }
+      _ = ctrl_c => info!("ctrl_c signal received"),
+      _ = terminate => info!("terminate signal received"),
+  }
   handle.stop_graceful(std::time::Duration::from_secs(60));
 }
 
@@ -120,11 +128,11 @@ mod tests {
       "http://{}",
       &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
     ))
-      .send(&service)
-      .await
-      .take_string()
-      .await
-      .unwrap();
+    .send(&service)
+    .await
+    .take_string()
+    .await
+    .unwrap();
     assert_eq!(content, "Hello World from salvo");
   }
 }

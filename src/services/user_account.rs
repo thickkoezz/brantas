@@ -1,38 +1,36 @@
+use super::{DeletionMode, PaginatorOption};
+use crate::app_writer::AppResult;
+use crate::db::DB;
+use crate::entities::{prelude::UserAccount, user_account};
+use crate::middleware::jwt::get_token;
+use crate::utils::rand_utils;
+use crate::dtos::user_account::{
+  UserAccountAddRequest,
+  UserAccountLoginRequest,
+  UserAccountLoginResponse,
+  UserAccountResponse,
+  UserAccountUpdateRequest,
+};
 use argon2::password_hash::SaltString;
-use crate::{
-  app_writer::AppResult,
-  db::DB,
-  dtos::user_account::{
-    UserAccountAddRequest,
-    UserAccountLoginRequest,
-    UserAccountLoginResponse,
-    UserAccountResponse,
-    UserAccountUpdateRequest,
-  },
-  middleware::jwt::get_token,
-  entities::{
-    prelude::UserAccount,
-    user_account,
-  },
-  utils::rand_utils,
-};
-use sea_orm::{
-  EntityTrait,
-  Set,
-  ActiveModelTrait,
-  QueryFilter,
-  ColumnTrait,
-};
-use uuid::Uuid;
 use rust_i18n::t;
-use super::DeletionMode;
+use sea_orm::{
+  ActiveModelTrait,
+  ColumnTrait,
+  EntityTrait,
+  PaginatorTrait,
+  QueryFilter,
+  Set,
+};
+use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono;
+use uuid::Uuid;
 
 pub async fn add_user_account(
-  req: UserAccountAddRequest,
+  req: UserAccountAddRequest
 ) -> AppResult<UserAccountResponse> {
-  let db = DB.get().ok_or(
-    anyhow::anyhow!(t!("database_connection_failed"))
-  )?;
+  let db = DB
+    .get()
+    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   let salt = SaltString::generate(rand::thread_rng());
   let model = user_account::ActiveModel {
     id: Set(Uuid::new_v4()),
@@ -41,13 +39,10 @@ pub async fn add_user_account(
     username: Set(Option::from(req.username.clone())),
     picture: Set(req.picture.clone()),
     password: Set(Option::from(
-      rand_utils::hash_password(
-        req.password.unwrap(),
-        salt.clone(),
-      ).await?
+      rand_utils::hash_password(req.password.unwrap(), salt.clone()).await?,
     )),
     salt: Set(Option::from(salt.to_string())),
-    created_at: Default::default(),
+    created_at: Set(DateTimeWithTimeZone::from(chrono::Local::now())),
     updated_at: Default::default(),
     deleted_at: Default::default(),
     balance: Set(req.balance.clone()),
@@ -64,9 +59,7 @@ pub async fn add_user_account(
     expires_at: Set(req.expires_at),
     refresh_token_expires_in: Set(req.refresh_token_expires_in),
   };
-  let user = UserAccount::insert(
-    model.clone()
-  ).exec(db).await?;
+  let user = UserAccount::insert(model.clone()).exec(db).await?;
   Ok(UserAccountResponse {
     id: user.last_insert_id,
     owner_id: req.owner_id,
@@ -93,29 +86,31 @@ pub async fn add_user_account(
   })
 }
 
-pub async fn login(
-  req: UserAccountLoginRequest
-) -> AppResult<UserAccountLoginResponse> {
-  let db = DB.get().ok_or(
-    anyhow::anyhow!(t!("database_connection_failed"))
-  )?;
-  let user = UserAccount::find().filter(
-    user_account::Column::Username.eq(req.username)
-  ).one(db).await?;
+pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginResponse> {
+  let db = DB
+    .get()
+    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let user = UserAccount::find()
+    .filter(user_account::Column::Username.eq(req.username))
+    .one(db)
+    .await?;
   if user.is_none() {
-    return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user"))).into());
+    return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user_account"))).into());
   }
   let user = user.unwrap();
   if user.password.is_none() {
     return Err(anyhow::anyhow!(t!("x_not_set", x = t!("password"))).into());
   }
   let password = user.password.unwrap();
-  if rand_utils::verify_password(req.password, password).await.is_err()
+  if rand_utils::verify_password(req.password, password)
+    .await
+    .is_err()
   {
     return Err(anyhow::anyhow!(t!("incorrect_x", x = t!("password"))).into());
   }
   let (token, exp) = get_token(
-    user.username.clone().unwrap_or_default(), user.id.to_string().clone(),
+    user.username.clone().unwrap_or_default(),
+    user.id.to_string().clone(),
   )?;
   let res = UserAccountLoginResponse {
     id: user.id,
@@ -129,12 +124,12 @@ pub async fn login(
 pub async fn update_user_account(
   req: UserAccountUpdateRequest
 ) -> AppResult<UserAccountResponse> {
-  let db = DB.get().ok_or(
-    anyhow::anyhow!(t!("database_connection_failed"))
-  )?;
+  let db = DB
+    .get()
+    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   let user = UserAccount::find_by_id(req.id).one(db).await?;
   if user.is_none() {
-    return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user"))).into());
+    return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user_account"))).into());
   }
   let mut user: user_account::ActiveModel = user.unwrap().into();
 
@@ -142,13 +137,15 @@ pub async fn update_user_account(
     user.salt.clone().unwrap().unwrap_or_default().as_str()
   ).unwrap();
   let password = rand_utils::hash_password(
-    req.password.unwrap_or_default(), salt.clone(),
+    req.password.unwrap_or_default(), salt,
   ).await?;
+
   user.owner_id = Set(req.owner_id);
   user.email = Set(req.email);
   user.username = Set(Option::from(req.username.to_owned()));
   user.picture = Set(req.picture);
   user.password = Set(Option::from(password));
+  user.updated_at = Set(Option::from(DateTimeWithTimeZone::from(chrono::Local::now())));
   user.r#type = Set(req.r#type);
   user.provider = Set(req.provider);
   user.provider_account_id = Set(req.provider_account_id);
@@ -192,28 +189,46 @@ pub async fn delete_user_account(
   deletion_mode: DeletionMode,
   id: Uuid,
 ) -> AppResult<()> {
-  let db = DB.get().ok_or(
-    anyhow::anyhow!(t!("database_connection_failed"))
-  )?;
+  let db = DB
+    .get()
+    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match deletion_mode {
     DeletionMode::Hard => {
       let result = UserAccount::delete_by_id(id).exec(db).await?;
       match result.rows_affected {
-        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("person"))).into()),
+        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("user_account"))).into()),
         _ => Ok(()),
       }
     }
     DeletionMode::Soft => {
-      todo!()
+      let db = DB
+        .get()
+        .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+      let user = UserAccount::find_by_id(id).one(db).await?;
+      if user.is_none() {
+        return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user_account"))).into());
+      }
+
+      let mut user: user_account::ActiveModel = user.unwrap().into();
+      user.deleted_at = Set(Option::from(
+        DateTimeWithTimeZone::from(chrono::Local::now())
+      ));
+      user.update(db).await?;
+      Ok(())
     }
   }
 }
 
-pub async fn get_user_accounts() -> AppResult<Vec<UserAccountResponse>> {
-  let db = DB.get().ok_or(
-    anyhow::anyhow!(t!("database_connection_failed"))
-  )?;
-  let users = UserAccount::find().all(db).await?;
+pub async fn get_user_accounts(
+  paginator_option: PaginatorOption
+) -> AppResult<Vec<UserAccountResponse>> {
+  let db = DB
+    .get()
+    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let users = UserAccount::find()
+    .paginate(db, paginator_option.page_size)
+    .fetch_page(paginator_option.page)
+    .await?;
   let res = users
     .into_iter()
     .map(|user| UserAccountResponse {

@@ -34,7 +34,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  Editor,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::NoteOwnerId",
@@ -42,7 +42,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  NoteOwner,
 }
 
 impl Related<super::note::Entity> for Entity {
@@ -57,14 +57,11 @@ impl ActiveModelBehavior for ActiveModel {}
 pub enum RelatedEntity {
   #[sea_orm(entity = "super::note::Entity")]
   Note,
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Editor.def()")]
+  Editor,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::NoteOwner.def()"
   )]
-  UserAccount2,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
-  )]
-  UserAccount1,
+  NoteOwner,
 }

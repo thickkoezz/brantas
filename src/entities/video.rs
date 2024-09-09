@@ -13,6 +13,10 @@ pub struct Model {
   pub video: String,
   pub size: i32,
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  pub title: Option<String>,
+  pub caption: Option<String>,
+  pub code: Option<String>,
+  pub slug: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -24,12 +28,20 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Owner,
+  #[sea_orm(has_many = "super::video_comment::Entity")]
+  VideoComment,
 }
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Owner.def()
+  }
+}
+
+impl Related<super::video_comment::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::VideoComment.def()
   }
 }
 
@@ -38,5 +50,7 @@ impl ActiveModelBehavior for ActiveModel {}
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Owner,
+  #[sea_orm(entity = "super::video_comment::Entity")]
+  VideoComment,
 }

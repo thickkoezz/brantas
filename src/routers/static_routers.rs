@@ -1,5 +1,7 @@
 use rust_embed::RustEmbed;
-use salvo::{Router, serve_static::static_embed, oapi::endpoint, Response, http::ResBody, hyper::body::Bytes};
+use salvo::{
+  http::ResBody, hyper::body::Bytes, oapi::endpoint, serve_static::static_embed, Response, Router,
+};
 #[derive(RustEmbed)]
 #[folder = "assets"]
 struct Assets;

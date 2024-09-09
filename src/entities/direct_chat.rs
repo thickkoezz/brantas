@@ -12,6 +12,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
   pub content: String,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
@@ -44,9 +45,6 @@ pub enum RelatedEntity {
     def = "Relation::Receiver.def()"
   )]
   Receiver,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::Sender.def()"
-  )]
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Sender.def()")]
   Sender,
 }

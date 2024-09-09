@@ -23,6 +23,7 @@ pub struct Model {
   #[sea_orm(column_type = "Text", nullable)]
   pub email: Option<String>,
   pub is_email_verified: bool,
+  pub nickname: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

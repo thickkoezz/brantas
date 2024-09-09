@@ -65,7 +65,7 @@ impl Configs {
       Ok(s) => s,
       Err(e) => panic!("Failed to read configuration file, error message:{}", e),
     };
-    match serde_yaml::from_str(&cfg_contents) {
+    match serde_yaml_ok::from_str(&cfg_contents) {
       Ok(c) => c,
       Err(e) => panic!("Failed to parse configuration file, error message:{}", e),
     }

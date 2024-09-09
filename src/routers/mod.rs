@@ -1,18 +1,17 @@
 use crate::middleware::jwt::jwt_middleware;
 use salvo::{
-  prelude::{CatchPanic, Logger, OpenApi, Scalar}, Router,
+  prelude::{CatchPanic, Logger, OpenApi, Scalar},
+  Router,
 };
 
 use self::{
   demo::hello,
-  user_account::{
-    user_account_routes, login_page, post_login,
-  },
+  user_account::{login_page, post_login, user_account_routes},
 };
 
 pub mod demo;
-pub mod user_account;
 mod static_routers;
+pub mod user_account;
 
 pub fn router() -> Router {
   let mut no_auth_routers = vec![

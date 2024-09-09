@@ -1,9 +1,9 @@
+use crate::app_error::AppError;
 use salvo::{
   async_trait, hyper::StatusCode, prelude::EndpointOutRegister, writing::Json, Depot, Request,
   Response, Writer,
 };
 use serde::Serialize;
-use crate::app_error::AppError;
 
 pub struct AppWriter<T>(pub AppResult<T>);
 

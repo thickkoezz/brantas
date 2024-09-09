@@ -14,7 +14,7 @@ pub struct Model {
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub content: String,
-  pub react_count: i32,
+  pub reaction_count: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -34,7 +34,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  CommentedPostOwner,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::OwnerId",
@@ -42,7 +42,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  Owner,
 }
 
 impl Related<super::post::Entity> for Entity {
@@ -59,12 +59,9 @@ pub enum RelatedEntity {
   Post,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::CommentedPostOwner.def()"
   )]
-  UserAccount2,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
-  )]
-  UserAccount1,
+  CommentedPostOwner,
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Owner.def()")]
+  Owner,
 }

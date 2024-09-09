@@ -3,6 +3,24 @@ pub enum DeletionMode {
   Soft,
 }
 
+pub struct PaginatorOption {
+  pub page_size: u64,
+  pub page: u64,
+}
+
+impl PaginatorOption {
+  pub fn new(&mut self) -> &mut PaginatorOption {
+    self.page_size = 500;
+    self.page = 1;
+    self
+  }
+
+  pub fn init(&mut self, page_size: u64, page: u64) {
+    self.page_size = page_size;
+    self.page = page;
+  }
+}
+
 pub mod balance_history;
 pub mod block;
 pub mod chat_group;
@@ -24,6 +42,7 @@ pub mod note;
 pub mod note_edit_history;
 pub mod note_share;
 pub mod organization;
+pub mod organization_address;
 pub mod organization_administrator;
 pub mod organization_role;
 pub mod person;

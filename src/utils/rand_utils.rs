@@ -34,9 +34,11 @@ pub async fn hash_password(password: String, salt: SaltString) -> anyhow::Result
     if !salt.to_string().is_empty() {
       the_salt = salt;
     }
-    Ok(PasswordHash::generate(Argon2::default(), password, &the_salt)
-      .map_err(|e| anyhow::anyhow!("failed to generate password hash: {}", e))?
-      .to_string())
+    Ok(
+      PasswordHash::generate(Argon2::default(), password, &the_salt)
+        .map_err(|e| anyhow::anyhow!("failed to generate password hash: {}", e))?
+        .to_string(),
+    )
   })
     .await
     .context("panic in generating password hash")?

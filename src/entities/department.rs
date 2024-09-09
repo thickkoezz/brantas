@@ -44,6 +44,8 @@ pub enum Relation {
     on_delete = "Restrict"
   )]
   Organization,
+  #[sea_orm(has_many = "super::organization_address::Entity")]
+  OrganizationAddress,
   #[sea_orm(has_many = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
 }
@@ -57,6 +59,12 @@ impl Related<super::job::Entity> for Entity {
 impl Related<super::organization::Entity> for Entity {
   fn to() -> RelationDef {
     Relation::Organization.def()
+  }
+}
+
+impl Related<super::organization_address::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::OrganizationAddress.def()
   }
 }
 
@@ -76,6 +84,8 @@ pub enum RelatedEntity {
   Job,
   #[sea_orm(entity = "super::organization::Entity")]
   Organization,
+  #[sea_orm(entity = "super::organization_address::Entity")]
+  OrganizationAddress,
   #[sea_orm(entity = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
   #[sea_orm(entity = "Entity", def = "Relation::Parent.def().rev()")]

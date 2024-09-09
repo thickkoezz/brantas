@@ -27,7 +27,7 @@ pub enum Relation {
     on_update = "Restrict",
     on_delete = "Cascade"
   )]
-  UserAccount,
+  Owner,
 }
 
 impl Related<super::link_code::Entity> for Entity {
@@ -38,7 +38,7 @@ impl Related<super::link_code::Entity> for Entity {
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Owner.def()
   }
 }
 
@@ -49,5 +49,5 @@ pub enum RelatedEntity {
   #[sea_orm(entity = "super::link_code::Entity")]
   LinkCode,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Owner,
 }

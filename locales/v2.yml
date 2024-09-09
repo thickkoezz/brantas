@@ -12,24 +12,57 @@ accept:
 add:
   en: Add
   id: Tambah
+add_friend:
+  en: Add friend
+  id: Tambah teman
+administer:
+  en: Administer
+  id: Mengelola
+administered_by:
+  en: Administered by
+  id: Dikelola oleh
+administrator:
+  en: Administrator
+  id: Administrator
+amount:
+  en: Amount
+  id: Jumlah
 append:
   en: Append
   id: Tambah
 attach:
   en: Attach
   id: Lampirkan
+average:
+  en: Average
+  id: Rerata
 block:
   en: Block
   id: Blok
+blocked_by:
+  en: Blocked by
+  id: Diblok oleh
 balance:
   en: Balance
   id: Saldo
 balance_history:
   en: Balance history
   id: Riwayat saldo
+cancel:
+  en: Cancel
+  id: Batal
+canceled:
+  en: Canceled
+  id: Dibatalkan
+can_edit:
+  en: Can edit?
+  id: Bisa edit?
 capital:
   en: Capital
   id: Ibu kota
+changed:
+  en: Changed
+  id: Diganti
 change:
   en: Change
   id: Ganti
@@ -39,12 +72,36 @@ chat:
 chat_group:
   en: Chat group
   id: Grup chat
+chat_group_member:
+  en: Chat group member
+  id: Anggota grup chat
+child:
+  en: Child
+  id: Anak
+child_id:
+  en: Child ID
+  id: ID Anak
 city:
   en: City
   id: Kota
 code:
   en: Code
   id: Kode
+comment:
+  en: Comment
+  id: Komentar
+comment_count:
+  en: Comment count
+  id: Jumlah komentar
+content:
+  en: Content
+  id: Konten
+copy:
+  en: Copy
+  id: Salin
+copied:
+  en: Copied
+  id: Disalin
 country:
   en: Country
   id: Negara
@@ -78,9 +135,12 @@ database_connection_failed:
 database_connection_succeeded:
   en: Database connection succeeded
   id: Koneksi database sukses
-department:
-  en: Department
-  id: Departemen
+date:
+  en: Date
+  id: Tanggal
+date_of_birth:
+  en: Date of birth
+  id: Tanggal lahir
 dead:
   en: Dead
   id: Mati
@@ -96,6 +156,12 @@ deleted_at:
 deny:
   en: Deny
   id: Bantah
+department:
+  en: Department
+  id: Departemen
+dislike:
+  en: Dislike
+  id: Tidak suka
 domicile:
   en: Domicile
   id: Domisili
@@ -105,6 +171,9 @@ download:
 edit:
   en: Edit
   id: Edit
+edit_history:
+  en: Edit history
+  id: Riwayat edit
 end:
   en: End
   id: Selesai
@@ -120,24 +189,57 @@ emoji:
 english:
   en: English
   id: Bahasa Inggris
+experience:
+  en: Experience
+  id: Pengalaman
 extra_info:
   en: Extra info
   id: Info extra
+female:
+  en: Female
+  id: Wanita
+filter:
+  en: Filter
+  id: Saring
+filtered:
+  en: Filter
+  id: Tersaring
+find:
+  en: Find
+  id: Cari
 fips_code:
   en: FIPS code
   id: Kode FIPS
+first_name:
+  en: First name
+  id: Nama depan
 flag:
   en: Flag
   id: Bendera
 follow:
   en: Follow
   id: Ikuti
+followed_by:
+  en: Followed by
+  id: Diikuti oleh
+follower:
+  en: Follower
+  id: Pengikut
+found:
+  en: Found
+  id: Ditemukan
 friend:
   en: Friend
   id: Teman
 friend_group:
   en: Friend group
   id: Grup teman
+fullname:
+  en: Fullname
+  id: Nama lengkap
+gender:
+  en: Gender
+  id: Jenis kelamin
 group:
   en: Group
   id: Grup
@@ -147,6 +249,12 @@ group_creator:
 group_member:
   en: Group member
   id: Anggota grup
+hashtag:
+  en: Hashtag
+  id: Tagar
+hi_x:
+  en: Hi, %{x}!
+  id: Hai, %{x}!
 incorrect_x:
   en: Incorrect %{x}
   id: %{x} salah
@@ -159,6 +267,21 @@ insert:
 invalid_x:
   en: Invalid %{x}
   id: %{x} tidak valid
+invite:
+  en: Invite
+  id: Undang
+is_dead:
+  en: Is dead?
+  id: Sudah mati?
+is_deceased:
+  en: Is deceased?
+  id: Sudah almarhum?
+is_head_of_this_department:
+  en: Is head of this department?
+  id: Kepala departemen ini?
+is_published:
+  en: Is published?
+  id: Diterbitkan?
 is_public:
   en: Is public?
   id: Publik?
@@ -168,21 +291,57 @@ is_private:
 is_suspended:
   en: Is suspended?
   id: Ditangguhkan?
+is_verified:
+  en: Is verified?
+  id: Diverifikasi?
+like:
+  en: Like
+  id: Suka
 job:
   en: Job
   id: Pekerjaan
+job_experience:
+  en: Job experience
+  id: Pengalaman pekerjaan
+job_description:
+  en: Job description
+  id: Deskripsi pekerjaan
 job_project:
   en: Job project
   id: Proyek pekerjaan
 job_skill:
   en: Job skill
   id: Keahlian pekerjaan
+last_name:
+  en: Last name
+  id: Nama belakang
 latitude:
   en: Latitude
   id: Latitude
+link:
+  en: Link
+  id: Link
+link_code:
+  en: Link code
+  id: Kode link
+link_url:
+  en: Link URL
+  id: URL link
+logo:
+  en: Logo
+  id: Logo
 longitude:
   en: Longitude
   id: Longitude
+male:
+  en: Male
+  id: Pria
+manually_typed:
+  en: Manually typed
+  id: Diketik manual
+message:
+  en: Message
+  id: Pesan
 member:
   en: Member
   id: Anggota
@@ -192,6 +351,9 @@ member_id:
 member_name:
   en: Member name
   id: Nama anggota
+middle_name:
+  en: Middle name
+  id: Nama tengah
 name:
   en: Name
   id: Nama
@@ -201,6 +363,9 @@ nationality:
 native:
   en: Native
   id: Asal
+nickname:
+  en: Nickname
+  id: Nama panggilan
 not_added:
   en: Not added
   id: Belum ditambah
@@ -231,6 +396,9 @@ numeric:
 numeric_code:
   en: Numeric code
   id: Kode numerik
+option:
+  en: Option
+  id: Opsi
 own:
   en: Own
   id: Memiliki
@@ -240,15 +408,36 @@ owned_by:
 owner:
   en: Owner
   id: Pemilik
+parent:
+  en: Parent
+  id: Induk
+parent_id:
+  en: Parent ID
+  id: ID Induk
 password:
   en: Password
   id: Katasandi
+society:
+  en: Society
+  id: Masyarakat
+people:
+  en: Person
+  id: Orang-orang
 person:
   en: Person
   id: Orang
+phone:
+  en: Phone
+  id: Telpon
 phone_code:
   en: Phone code
   id: Kode telpon
+photo:
+  en: Photo
+  id: Foto
+post:
+  en: Post
+  id: Postingan
 prefecture:
   en: Prefecture
   id: Prefektur
@@ -261,6 +450,9 @@ prefecture_name:
 private:
   en: Private
   id: Privat
+project:
+  en: Project
+  id: Proyek
 province:
   en: Province
   id: Provinsi
@@ -273,6 +465,15 @@ province_name:
 public:
   en: Public
   id: Publik
+reaction_count:
+  en: Reaction count
+  id: Jumlah reaksi
+read:
+  en: Read
+  id: Dibaca
+read_by:
+  en: Read by
+  id: Baca
 receive:
   en: Receive
   id: Terima
@@ -294,15 +495,48 @@ region_id:
 region_name:
   en: Region name
   id: Nama region
+rejected:
+  en: Rejected
+  id: Ditolak
 reject:
   en: Reject
   id: Tolak
+retweeted:
+  en: Retweeted
+  id: Dikicau ulang
+retweet:
+  en: Retweet
+  id: Ulangi kicauan
+retweet_count:
+  en: Retweet count
+  id: Jumlah kicau ulang
+role:
+  en: Role
+  id: Jabatan
+saved:
+  en: Saved
+  id: Disimpan
+save:
+  en: Save
+  id: Simpan
+size:
+  en: Size
+  id: Ukuran
+social_media:
+  en: Social media
+  id: Media sosial
 send:
   en: Send
   id: Kirim
 sender:
   en: Sender
   id: Pengirim
+share:
+  en: Share
+  id: Bagikan
+shared:
+  en: Shared
+  id: Dibagikan
 sign_in:
   en: Sign in
   id: Masuk
@@ -342,24 +576,45 @@ subregion_name:
 suspend:
   en: Suspend
   id: Tangguhkan
+suspended:
+  en: Suspended
+  id: Ditangguhkan
 target:
   en: Target
   id: Target
 timezone:
   en: Timezone
   id: Zona waktu
+title:
+  en: Title
+  id: Judul
 top_level_domain:
   en: Top level domain
   id: Domain level atas
+total:
+  en: Total
+  id: Total
 translation:
   en: Translation
   id: Translasi
+tweet:
+  en: Tweet
+  id: Berkicau
 unauthorized:
   en: Unauthorized
   id: Tidak sah
 unauthorized_access:
   en: Unauthorized access
   id: Akses tidak sah
+unblock:
+  en: Unblock
+  id: Buka blokir
+unfollow:
+  en: Unfollow
+  id: Berhenti mengikuti
+unfriend:
+  en: Unfriend
+  id: Berhenti berteman
 upload:
   en: Upload
   id: Unggah
@@ -369,15 +624,39 @@ updated_at:
 updated_by:
   en: Updated by
   id: Diupdate oleh
+use_count:
+  en: Use count
+  id: Jumlah penggunaan
 user:
   en: User
   id: Pengguna
+user_account:
+  en: User account
+  id: Akun pengguna
 username:
   en: Username
   id: Username
+verification_token:
+  en: Verification token
+  id: Token verifikasi
+verified:
+  en: Verified
+  id: Terverifikasi
 verify:
   en: Verify
   id: Verifikasi
+view:
+  en: View
+  id: Melihat
+view_count:
+  en: View count
+  id: Junmlah tampilan
+video:
+  en: Video
+  id: Video
+welcome:
+  en: Welcome
+  id: Selamat datang
 wiki_data_id:
   en: Wiki Data ID
   id: ID Data Wiki
@@ -417,3 +696,6 @@ x_not_set:
 x_not_verified:
   en: %{x} not verified
   id: %{x} belum terverifikasi
+you_are_signed_out:
+  en: You are signed out
+  id: Anda sudah keluar

@@ -13,10 +13,16 @@ pub struct Model {
   pub photo: String,
   pub size: i32,
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  pub title: Option<String>,
+  pub caption: Option<String>,
+  pub code: Option<String>,
+  pub slug: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+  #[sea_orm(has_many = "super::photo_comment::Entity")]
+  PhotoComment,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::OwnerId",
@@ -24,12 +30,18 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Owner,
+}
+
+impl Related<super::photo_comment::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::PhotoComment.def()
+  }
 }
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Owner.def()
   }
 }
 
@@ -37,6 +49,8 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
+  #[sea_orm(entity = "super::photo_comment::Entity")]
+  PhotoComment,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Owner,
 }

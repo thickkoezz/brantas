@@ -1,10 +1,12 @@
-use sea_orm::EntityTrait;
-use sea_orm::prelude::DateTimeWithTimeZone;
-use uuid::Uuid;
+use super::DeletionMode;
 use crate::app_writer::AppResult;
 use crate::db::DB;
 use crate::entities::prelude::NoteEditHistory;
-use super::DeletionMode;
+use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use sea_orm::sqlx::types::chrono;
+use uuid::Uuid;
+use crate::entities::note_edit_history;
 
 pub async fn delete_note_edit_history(
   deletion_mode: DeletionMode,
@@ -13,24 +15,48 @@ pub async fn delete_note_edit_history(
   editor_id: Uuid,
   created_at: DateTimeWithTimeZone,
 ) -> AppResult<()> {
-  let db = DB.get().ok_or(
-    anyhow::anyhow!(t!("database_connection_failed"))
-  )?;
+  let db = DB
+    .get()
+    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match deletion_mode {
     DeletionMode::Hard => {
-      let result = NoteEditHistory::delete_by_id((
-        note_owner_id,
-        note_created_at,
-        editor_id,
-        created_at,
-      )).exec(db).await?;
+      let result =
+        NoteEditHistory::delete_by_id((
+          note_owner_id,
+          note_created_at,
+          editor_id,
+          created_at,
+        ))
+          .exec(db)
+          .await?;
       match result.rows_affected {
-        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("link_code"))).into()),
+        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("history"))).into()),
         _ => Ok(()),
       }
     }
     DeletionMode::Soft => {
-      todo!()
+      let db = DB
+        .get()
+        .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+      let note_edit_history = NoteEditHistory::find_by_id((
+        note_owner_id,
+        note_created_at,
+        editor_id,
+        created_at,
+      ))
+        .one(db)
+        .await?;
+      if note_edit_history.is_none() {
+        return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("history"))).into());
+      }
+
+      let mut note_edit_history: note_edit_history::ActiveModel =
+        note_edit_history.unwrap().into();
+      note_edit_history.deleted_at = Set(Option::from(
+        DateTimeWithTimeZone::from(chrono::Local::now())
+      ));
+      note_edit_history.update(db).await?;
+      Ok(())
     }
   }
 }

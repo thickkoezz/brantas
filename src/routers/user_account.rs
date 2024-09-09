@@ -1,10 +1,5 @@
-use std::process::id;
 use crate::{
-  app_writer::{
-    AppWriter,
-    AppResult,
-    ErrorResponseBuilder
-  },
+  app_writer::{AppResult, AppWriter, ErrorResponseBuilder},
   dtos::user_account::{
     UserAccountAddRequest,
     UserAccountLoginRequest,
@@ -17,29 +12,25 @@ use crate::{
   services::user_account,
 };
 use askama::Template;
+use salvo::Writer;
 use salvo::{
   handler,
   http::cookie::Cookie,
   oapi::{
     endpoint,
-    extract::{
-      JsonBody,
-      PathParam,
-    },
+    extract::{JsonBody, PathParam},
   },
-  Router,
-  Request,
-  Response,
   writing::{Redirect, Text},
+  Request, Response, Router,
 };
-use salvo::Writer;
 use uuid::Uuid;
+use crate::services::PaginatorOption;
 
 #[derive(Template)]
 #[template(path = "login.html")]
 struct LoginTemplate {}
 
-#[endpoint(tags("comm"))]
+#[endpoint(tags("login"))]
 pub async fn login_page(res: &mut Response) -> AppResult<()> {
   let cookies = res.cookies();
   let cookie = cookies.get("jwt_token");
@@ -86,17 +77,15 @@ pub struct UserListPageTemplate {}
 pub struct UserListTemplate {}
 
 pub fn user_account_routes() -> Vec<Router> {
-  vec![
-    Router::with_path("/api/user_accounts")
-      .get(user_account_list_page)
-      .get(get_user_accounts)
-      .post(post_add_user_account)
-      .push(
-        Router::with_path("<id>")
-          .put(put_update_user_account)
-          .delete(delete_user_account),
-      ),
-  ]
+  vec![Router::with_path("/api/user_accounts")
+    .get(user_account_list_page)
+    .get(get_user_accounts)
+    .post(post_add_user_account)
+    .push(
+      Router::with_path("<id>")
+        .put(put_update_user_account)
+        .delete(delete_user_account),
+    )]
 }
 
 #[endpoint(tags("user_accounts"))]
@@ -116,7 +105,9 @@ pub async fn user_account_list_page(req: &mut Request, res: &mut Response) -> Ap
 }
 
 #[endpoint(tags("user_accounts"))]
-pub async fn post_add_user_account(new_user: JsonBody<UserAccountAddRequest>) -> AppWriter<UserAccountResponse> {
+pub async fn post_add_user_account(
+  new_user: JsonBody<UserAccountAddRequest>,
+) -> AppWriter<UserAccountResponse> {
   let result = user_account::add_user_account(new_user.0).await;
   AppWriter(result)
 }
@@ -125,7 +116,9 @@ pub async fn post_add_user_account(new_user: JsonBody<UserAccountAddRequest>) ->
   parameters(
     ("id", description = "user id"),
   ))]
-pub async fn put_update_user_account(req: &mut Request) -> AppResult<AppWriter<UserAccountResponse>> {
+pub async fn put_update_user_account(
+  req: &mut Request,
+) -> AppResult<AppWriter<UserAccountResponse>> {
   let req: UserAccountUpdateRequest = req.extract().await?;
   let result = user_account::update_user_account(req).await;
   Ok(AppWriter(result))
@@ -139,7 +132,7 @@ pub async fn delete_user_account(id: PathParam<Uuid>) -> AppWriter<()> {
 
 #[endpoint(tags("user_accounts"))]
 pub async fn get_user_accounts() -> AppWriter<Vec<UserAccountResponse>> {
-  let result = user_account::get_user_accounts().await;
+  let option: PaginatorOption = PaginatorOption { page_size: 500, page: 1 };
+  let result = user_account::get_user_accounts(option).await;
   AppWriter(result)
 }
-

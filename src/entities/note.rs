@@ -29,7 +29,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Owner,
 }
 
 impl Related<super::note_edit_history::Entity> for Entity {
@@ -46,7 +46,7 @@ impl Related<super::note_share::Entity> for Entity {
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Owner.def()
   }
 }
 
@@ -59,5 +59,5 @@ pub enum RelatedEntity {
   #[sea_orm(entity = "super::note_share::Entity")]
   NoteShare,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Owner,
 }

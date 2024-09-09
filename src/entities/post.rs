@@ -17,8 +17,8 @@ pub struct Model {
   pub is_published: bool,
   pub hashtag: Option<String>,
   pub view_count: i32,
-  pub reply_count: i32,
-  pub react_count: i32,
+  pub comment_count: i32,
+  pub reaction_count: i32,
   pub is_public: bool,
   pub group_name: Option<String>,
   pub can_comment: bool,
@@ -36,6 +36,8 @@ pub enum Relation {
   FriendGroup,
   #[sea_orm(has_many = "super::post_comment::Entity")]
   PostComment,
+  #[sea_orm(has_many = "super::post_reaction::Entity")]
+  PostReaction,
   #[sea_orm(has_many = "super::post_share::Entity")]
   PostShare,
   #[sea_orm(
@@ -45,7 +47,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Owner,
 }
 
 impl Related<super::friend_group::Entity> for Entity {
@@ -60,6 +62,12 @@ impl Related<super::post_comment::Entity> for Entity {
   }
 }
 
+impl Related<super::post_reaction::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::PostReaction.def()
+  }
+}
+
 impl Related<super::post_share::Entity> for Entity {
   fn to() -> RelationDef {
     Relation::PostShare.def()
@@ -68,7 +76,7 @@ impl Related<super::post_share::Entity> for Entity {
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Owner.def()
   }
 }
 
@@ -80,8 +88,10 @@ pub enum RelatedEntity {
   FriendGroup,
   #[sea_orm(entity = "super::post_comment::Entity")]
   PostComment,
+  #[sea_orm(entity = "super::post_reaction::Entity")]
+  PostReaction,
   #[sea_orm(entity = "super::post_share::Entity")]
   PostShare,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Owner,
 }

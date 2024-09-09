@@ -1,6 +1,6 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
-use sea_orm::prelude::{DateTimeWithTimeZone};
+use sea_orm::prelude::DateTimeWithTimeZone;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 

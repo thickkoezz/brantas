@@ -1,10 +1,12 @@
-use sea_orm::EntityTrait;
-use sea_orm::prelude::DateTimeWithTimeZone;
-use uuid::Uuid;
+use super::DeletionMode;
 use crate::app_writer::AppResult;
 use crate::db::DB;
 use crate::entities::prelude::Post;
-use super::DeletionMode;
+use crate::entities::post;
+use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use sea_orm::sqlx::types::chrono;
+use uuid::Uuid;
 
 pub async fn delete_post(
   deletion_mode: DeletionMode,
@@ -13,20 +15,30 @@ pub async fn delete_post(
 ) -> AppResult<()> {
   match deletion_mode {
     DeletionMode::Hard => {
-      let db = DB.get().ok_or(
-        anyhow::anyhow!(t!("database_connection_failed"))
-      )?;
-      let result = Post::delete_by_id((
-        owner_id,
-        created_at,
-      )).exec(db).await?;
+      let db = DB
+        .get()
+        .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+      let result = Post::delete_by_id((owner_id, created_at)).exec(db).await?;
       match result.rows_affected {
-        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("person"))).into()),
+        0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("post"))).into()),
         _ => Ok(()),
       }
-    }
+    },
     DeletionMode::Soft => {
-      todo!()
-    }
+      let db = DB
+        .get()
+        .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+      let post = Post::find_by_id((owner_id, created_at)).one(db).await?;
+      if post.is_none() {
+        return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("post"))).into());
+      }
+
+      let mut post: post::ActiveModel = post.unwrap().into();
+      post.deleted_at = Set(Option::from(
+        DateTimeWithTimeZone::from(chrono::Local::now())
+      ));
+      post.update(db).await?;
+      Ok(())
+    },
   }
 }

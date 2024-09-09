@@ -16,7 +16,7 @@ pub struct Model {
   pub replied_created_at: Option<DateTimeWithTimeZone>,
   pub retweet_owner_id: Option<Uuid>,
   pub retweet_created_at: Option<DateTimeWithTimeZone>,
-  pub react_count: i32,
+  pub reaction_count: i32,
   pub reply_count: i32,
   pub retweet_count: i32,
   pub updated_at: Option<DateTimeWithTimeZone>,
