@@ -14,8 +14,8 @@ pub struct Model {
   pub hashtag: Option<String>,
   pub replied_owner_id: Option<Uuid>,
   pub replied_created_at: Option<DateTimeWithTimeZone>,
-  pub retweet_owner_id: Option<Uuid>,
-  pub retweet_created_at: Option<DateTimeWithTimeZone>,
+  pub retweeted_owner_id: Option<Uuid>,
+  pub retweeted_created_at: Option<DateTimeWithTimeZone>,
   pub reaction_count: i32,
   pub reply_count: i32,
   pub retweet_count: i32,
@@ -32,15 +32,17 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Cascade"
   )]
-  SelfRef2,
+  Replied,
   #[sea_orm(
     belongs_to = "Entity",
-    from = "(Column::RetweetOwnerId, Column::RetweetCreatedAt)",
+    from = "(Column::RetweetedOwnerId, Column::RetweetedCreatedAt)",
     to = "(Column::OwnerId, Column::CreatedAt)",
     on_update = "Cascade",
     on_delete = "Cascade"
   )]
-  SelfRef1,
+  Retweeted,
+  #[sea_orm(has_many = "super::tweet_reaction::Entity")]
+  TweetReaction,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::OwnerId",
@@ -48,12 +50,18 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Owner,
+}
+
+impl Related<super::tweet_reaction::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::TweetReaction.def()
+  }
 }
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Owner.def()
   }
 }
 
@@ -61,14 +69,28 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef2.def()")]
-  SelfRef2,
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef1.def()")]
-  SelfRef1,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Replied.def()"
+  )]
+  Replied,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Retweeted.def()"
+  )]
+  Retweeted,
+  #[sea_orm(entity = "super::tweet_reaction::Entity")]
+  TweetReaction,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef2.def().rev()")]
-  SelfRef2Reverse,
-  #[sea_orm(entity = "Entity", def = "Relation::SelfRef1.def().rev()")]
-  SelfRef1Reverse,
+  Owner,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Replied.def().rev()"
+  )]
+  Reply,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Retweeted.def().rev()"
+  )]
+  Retweet,
 }

@@ -30,3 +30,16 @@ pub struct NoteResponse {
   pub title: String,
   pub content: String,
 }
+
+impl From<crate::entities::note> for NoteResponse {
+  fn from(m: crate::entities::note) -> NoteResponse {
+    NoteResponse {
+      owner_id: m.owner_id,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      title: m.title,
+      content: m.content,
+    }
+  }
+}

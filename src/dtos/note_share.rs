@@ -31,3 +31,16 @@ pub struct NoteShareResponse {
   pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::note_share> for NoteShareResponse {
+  fn from(m: crate::entities::note_share) -> NoteShareResponse {
+    NoteShareResponse {
+      note_owner_id: m.note_owner_id,
+      note_created_at: m.note_created_at,
+      editor_id: m.editor_id,
+      can_edit: m.can_edit,
+      created_at: m.created_at,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

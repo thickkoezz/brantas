@@ -11,7 +11,7 @@ pub struct PostCommentAddRequest {
   pub commented_post_owner_id: Uuid,
   pub commented_post_created_at: DateTimeWithTimeZone,
   pub content: String,
-  pub react_count: i32,
+  pub reaction_count: i32,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
@@ -34,5 +34,20 @@ pub struct PostCommentResponse {
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub content: String,
-  pub react_count: i32,
+  pub reaction_count: i32,
+}
+
+impl From<crate::entities::post_comment> for PostCommentResponse {
+  fn from(m: crate::entities::post_comment) -> PostCommentResponse {
+    PostCommentResponse {
+      owner_id: m.owner_id,
+      created_at: m.created_at,
+      commented_post_owner_id: m.commented_post_owner_id,
+      commented_post_created_at: m.commented_post_created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      content: m.content,
+      reaction_count: m.reaction_count,
+    }
+  }
 }

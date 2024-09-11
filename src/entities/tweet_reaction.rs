@@ -3,51 +3,49 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "note_share")]
+#[sea_orm(table_name = "tweet_reaction")]
 pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
-  pub note_owner_id: Uuid,
+  pub owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub note_created_at: DateTimeWithTimeZone,
+  pub reacted_tweet_owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub editor_id: Uuid,
-  pub can_edit: bool,
-  #[sea_orm(primary_key, auto_increment = false)]
+  pub reacted_tweet_created_at: DateTimeWithTimeZone,
   pub created_at: DateTimeWithTimeZone,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
+  pub reaction_emoji: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
   #[sea_orm(
-    belongs_to = "super::note::Entity",
-    from = "(Column::NoteOwnerId, Column::NoteCreatedAt)",
-    to = "(super::note::Column::OwnerId, super::note::Column::CreatedAt)",
+    belongs_to = "super::tweet::Entity",
+    from = "(Column::ReactedTweetOwnerId, Column::ReactedTweetCreatedAt)",
+    to = "(super::tweet::Column::OwnerId, super::tweet::Column::CreatedAt)",
     on_update = "Cascade",
-    on_delete = "Restrict"
+    on_delete = "Cascade"
   )]
-  Note,
+  Tweet,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
-    from = "Column::EditorId",
+    from = "Column::OwnerId",
     to = "super::user_account::Column::Id",
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  Editor,
+  UserAccount2,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
-    from = "Column::NoteOwnerId",
+    from = "Column::ReactedTweetOwnerId",
     to = "super::user_account::Column::Id",
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  NoteOwner,
+  UserAccount1,
 }
 
-impl Related<super::note::Entity> for Entity {
+impl Related<super::tweet::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::Note.def()
+    Relation::Tweet.def()
   }
 }
 
@@ -55,16 +53,16 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "super::note::Entity")]
-  Note,
+  #[sea_orm(entity = "super::tweet::Entity")]
+  Tweet,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::Editor.def()"
+    def = "Relation::UserAccount2.def()"
   )]
-  Editor,
+  UserAccount2,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::NoteOwner.def()"
+    def = "Relation::UserAccount1.def()"
   )]
-  NoteOwner,
+  UserAccount1,
 }

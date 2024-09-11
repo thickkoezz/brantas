@@ -14,7 +14,17 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
   pub content: String,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  pub replied_sender_id: Option<Uuid>,
+  pub replied_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_sender_id: Option<Uuid>,
+  pub forwarded_group_creator_id: Option<Uuid>,
+  pub forwarded_group_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_receiver_id: Option<Uuid>,
+  pub is_pinned: bool,
+  pub pin_expired_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -28,6 +38,58 @@ pub enum Relation {
   )]
   ChatGroup,
   #[sea_orm(
+    belongs_to = "super::direct_chat::Entity",
+    from = "(Column::ForwardedSenderId, Column::ForwardedReceiverId, Column::ForwardedCreatedAt)",
+    to = "(super::direct_chat::Column::SenderId, super::direct_chat::Column::ReceiverId, super::direct_chat::Column::CreatedAt)",
+    on_update = "Cascade",
+    on_delete = "SetNull"
+  )]
+  DirectChat,
+  #[sea_orm(
+    belongs_to = "Entity",
+    from = "(Column::ForwardedSenderId, Column::ForwardedGroupCreatorId, Column::ForwardedGroupCreatedAt, Column::ForwardedCreatedAt)",
+    to = "(Column::SenderId, Column::GroupCreatorId, Column::GroupCreatedAt, Column::CreatedAt)",
+    on_update = "Cascade",
+    on_delete = "SetNull"
+  )]
+  Forwarded,
+  #[sea_orm(
+    belongs_to = "Entity",
+    from = "(Column::RepliedSenderId, Column::GroupCreatorId, Column::GroupCreatedAt, Column::RepliedCreatedAt)",
+    to = "(Column::SenderId, Column::GroupCreatorId, Column::GroupCreatedAt, Column::CreatedAt)",
+    on_update = "Cascade",
+    on_delete = "SetNull"
+  )]
+  Replied,
+  #[sea_orm(has_many = "super::group_chat_reaction::Entity")]
+  GroupChatReaction,
+  #[sea_orm(has_many = "super::starred_chat::Entity")]
+  StarredChat,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::ForwardedGroupCreatorId",
+    to = "super::user_account::Column::Id",
+    on_update = "Restrict",
+    on_delete = "Cascade"
+  )]
+  ForwardedGroupCreator,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::ForwardedReceiverId",
+    to = "super::user_account::Column::Id",
+    on_update = "Restrict",
+    on_delete = "Cascade"
+  )]
+  ForwardedReceiver,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::ForwardedSenderId",
+    to = "super::user_account::Column::Id",
+    on_update = "Restrict",
+    on_delete = "Cascade"
+  )]
+  ForwardedSender,
+  #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::GroupCreatorId",
     to = "super::user_account::Column::Id",
@@ -35,6 +97,14 @@ pub enum Relation {
     on_delete = "Restrict"
   )]
   GroupCreator,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::RepliedSenderId",
+    to = "super::user_account::Column::Id",
+    on_update = "Restrict",
+    on_delete = "Cascade"
+  )]
+  RepliedSender,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::SenderId",
@@ -51,17 +121,84 @@ impl Related<super::chat_group::Entity> for Entity {
   }
 }
 
+impl Related<super::direct_chat::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::DirectChat.def()
+  }
+}
+
+impl Related<super::group_chat_reaction::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::GroupChatReaction.def()
+  }
+}
+
+impl Related<super::starred_chat::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::StarredChat.def()
+  }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
   #[sea_orm(entity = "super::chat_group::Entity")]
   ChatGroup,
+  #[sea_orm(entity = "super::direct_chat::Entity")]
+  DirectChat,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Forwarded.def()"
+  )]
+  Forwarded,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Replied.def()"
+  )]
+  Replied,
+  #[sea_orm(entity = "super::group_chat_reaction::Entity")]
+  GroupChatReaction,
+  #[sea_orm(entity = "super::starred_chat::Entity")]
+  StarredChat,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::ForwardedGroupCreator.def()"
+  )]
+  ForwardedGroupCreator,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::ForwardedReceiver.def()"
+  )]
+  ForwardedReceiver,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::ForwardedSender.def()"
+  )]
+  ForwardedSender,
   #[sea_orm(
     entity = "super::user_account::Entity",
     def = "Relation::GroupCreator.def()"
   )]
   GroupCreator,
-  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Sender.def()")]
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::RepliedSender.def()"
+  )]
+  RepliedSender,
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::Sender.def()"
+  )]
   Sender,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Forwarded.def().rev()"
+  )]
+  Forward,
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Replied.def().rev()"
+  )]
+  Reply,
 }

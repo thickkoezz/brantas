@@ -20,3 +20,14 @@ pub struct SessionResponse {
   pub user_account_id: Uuid,
   pub expires: DateTimeWithTimeZone,
 }
+
+impl From<crate::entities::session> for SessionResponse {
+  fn from(m: crate::entities::session) -> SessionResponse {
+    SessionResponse {
+      id: m.id,
+      session_token: m.session_token,
+      user_account_id: m.user_account_id,
+      expires: m.expires,
+    }
+  }
+}

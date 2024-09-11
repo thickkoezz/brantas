@@ -33,3 +33,17 @@ pub struct OrganizationRoleResponse {
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::organization_role> for OrganizationRoleResponse {
+  fn from(m: crate::entities::organization_role) -> OrganizationRoleResponse {
+    OrganizationRoleResponse {
+      organization_id: m.organization_id,
+      name: m.name,
+      description: m.description,
+      extra_info: m.extra_info,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

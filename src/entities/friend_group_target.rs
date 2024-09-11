@@ -60,6 +60,9 @@ pub enum RelatedEntity {
     def = "Relation::GroupOwner.def()"
   )]
   GroupOwner,
-  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Target.def()")]
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::Target.def()"
+  )]
   Target,
 }

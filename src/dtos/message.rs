@@ -32,3 +32,16 @@ pub struct MessageResponse {
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::message> for MessageResponse {
+  fn from(m: crate::entities::message) -> MessageResponse {
+    MessageResponse {
+      owner_id: m.owner_id,
+      receiver_id: m.receiver_id,
+      created_at: m.created_at,
+      message: m.message,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

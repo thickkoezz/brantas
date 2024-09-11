@@ -78,7 +78,10 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "Entity", def = "Relation::Parent.def()")]
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Parent.def()"
+  )]
   Parent,
   #[sea_orm(entity = "super::job::Entity")]
   Job,
@@ -88,6 +91,9 @@ pub enum RelatedEntity {
   OrganizationAddress,
   #[sea_orm(entity = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
-  #[sea_orm(entity = "Entity", def = "Relation::Parent.def().rev()")]
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Parent.def().rev()"
+  )]
   Child,
 }

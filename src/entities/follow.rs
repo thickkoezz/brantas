@@ -42,6 +42,9 @@ pub enum RelatedEntity {
     def = "Relation::Follower.def()"
   )]
   Follower,
-  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Target.def()")]
+  #[sea_orm(
+    entity = "super::user_account::Entity",
+    def = "Relation::Target.def()"
+  )]
   Target,
 }

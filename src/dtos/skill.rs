@@ -22,11 +22,24 @@ pub struct SkillUpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct SkillResponse {
   pub person_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub name: String,
   pub description: Option<String>,
+}
+
+impl From<crate::entities::skill> for SkillResponse {
+  fn from(m: crate::entities::skill) -> SkillResponse {
+    SkillResponse {
+      person_id: m.person_id,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      name: m.name,
+      description: m.description,
+    }
+  }
 }

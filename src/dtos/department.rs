@@ -54,3 +54,24 @@ pub struct DepartmentResponse {
   pub parent_id: Option<Uuid>,
   pub logo: Option<String>,
 }
+
+impl From<crate::entities::department> for DepartmentResponse {
+  fn from(m: crate::entities::department) -> DepartmentResponse {
+    DepartmentResponse {
+      id: m.id,
+      organization_id: m.organization_id,
+      name: m.name,
+      abbreviation: m.abbreviation,
+      description: m.description,
+      dob: m.dob,
+      is_dead: m.is_dead,
+      dead_at: m.dead_at,
+      extra_info: m.extra_info,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      parent_id: m.parent_id,
+      logo: m.logo,
+    }
+  }
+}

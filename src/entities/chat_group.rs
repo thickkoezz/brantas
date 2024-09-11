@@ -14,6 +14,7 @@ pub struct Model {
   pub name: Option<String>,
   pub is_public: bool,
   pub is_suspended: bool,
+  pub is_channel: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

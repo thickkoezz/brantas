@@ -95,12 +95,18 @@ pub enum RelatedEntity {
   JobProject,
   #[sea_orm(entity = "super::job_skill::Entity")]
   JobSkill,
-  #[sea_orm(entity = "Entity", def = "Relation::Parent.def()")]
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Parent.def()"
+  )]
   Parent,
   #[sea_orm(entity = "super::organization_address::Entity")]
   OrganizationAddress,
   #[sea_orm(entity = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
-  #[sea_orm(entity = "Entity", def = "Relation::Parent.def().rev()")]
+  #[sea_orm(
+    entity = "Entity",
+    def = "Relation::Parent.def().rev()"
+  )]
   Child,
 }

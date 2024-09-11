@@ -36,3 +36,18 @@ pub struct ProjectResponse {
   pub start_date: Option<Date>,
   pub end_date: Option<Date>,
 }
+
+impl From<crate::entities::project> for ProjectResponse {
+  fn from(m: crate::entities::project) -> ProjectResponse {
+    ProjectResponse {
+      person_id: m.person_id,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      name: m.name,
+      description: m.description,
+      start_date: m.start_date,
+      end_date: m.end_date,
+    }
+  }
+}

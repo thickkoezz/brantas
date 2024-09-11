@@ -159,30 +159,7 @@ pub async fn update_user_account(
   user.refresh_token_expires_in = Set(req.refresh_token_expires_in);
 
   let user: user_account::Model = user.update(db).await?;
-  Ok(UserAccountResponse {
-    id: user.id,
-    owner_id: user.owner_id,
-    email: user.email,
-    username: user.username,
-    picture: user.picture,
-    salt: user.salt,
-    created_at: user.created_at,
-    updated_at: user.updated_at,
-    deleted_at: user.deleted_at,
-    balance: user.balance,
-    is_super_admin: user.is_super_admin,
-    r#type: user.r#type,
-    provider: user.provider,
-    provider_account_id: user.provider_account_id,
-    refresh_token: user.refresh_token,
-    access_token: user.access_token,
-    token_type: user.token_type,
-    scope: user.scope,
-    id_token: user.id_token,
-    session_state: user.session_state,
-    expires_at: user.expires_at,
-    refresh_token_expires_in: user.refresh_token_expires_in,
-  })
+  Ok(UserAccountResponse::from(user))
 }
 
 pub async fn delete_user_account(
@@ -231,30 +208,7 @@ pub async fn get_user_accounts(
     .await?;
   let res = users
     .into_iter()
-    .map(|user| UserAccountResponse {
-      id: user.id,
-      owner_id: user.owner_id,
-      email: user.email,
-      username: user.username,
-      picture: user.picture,
-      salt: user.salt,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-      deleted_at: user.deleted_at,
-      balance: user.balance,
-      is_super_admin: user.is_super_admin,
-      r#type: user.r#type,
-      provider: user.provider,
-      provider_account_id: user.provider_account_id,
-      refresh_token: user.refresh_token,
-      access_token: user.access_token,
-      token_type: user.token_type,
-      scope: user.scope,
-      id_token: user.id_token,
-      session_state: user.session_state,
-      expires_at: user.expires_at,
-      refresh_token_expires_in: user.refresh_token_expires_in,
-    })
+    .map(|user: user_account::Model| UserAccountResponse::from(user))
     .collect::<Vec<_>>();
   Ok(res)
 }

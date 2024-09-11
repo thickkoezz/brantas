@@ -20,6 +20,7 @@ pub struct PersonAddRequest {
   #[validate(email)]
   pub email: Option<String>,
   pub is_email_verified: bool,
+  pub nickname: Option<String>,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
@@ -39,6 +40,7 @@ pub struct PersonUpdateRequest {
   #[validate(email)]
   pub email: Option<String>,
   pub is_email_verified: bool,
+  pub nickname: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
@@ -58,4 +60,28 @@ pub struct PersonResponse {
   pub photo: Option<String>,
   pub email: Option<String>,
   pub is_email_verified: bool,
+  pub nickname: Option<String>,
+}
+
+impl From<crate::entities::person> for PersonResponse {
+  fn from(m: crate::entities::person) -> PersonResponse {
+    PersonResponse {
+      id: m.id,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      first_name: m.first_name,
+      middle_name: m.middle_name,
+      last_name: m.last_name,
+      dob: m.dob,
+      sex: m.sex,
+      deceased_at: m.deceased_at,
+      extra_info: m.extra_info,
+      is_deceased: m.is_deceased,
+      photo: m.photo,
+      email: m.email,
+      is_email_verified: m.is_email_verified,
+      nickname: m.nickname,
+    }
+  }
 }

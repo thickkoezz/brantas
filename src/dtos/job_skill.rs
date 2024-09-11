@@ -23,3 +23,16 @@ pub struct JobSkillResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub description: Option<String>,
 }
+
+impl From<crate::entities::job_skill> for JobSkillResponse {
+  fn from(m: crate::entities::job_skill) -> JobSkillResponse {
+    JobSkillResponse {
+      organization_id: m.organization_id,
+      person_id: m.person_id,
+      job_created_at: m.job_created_at,
+      skill_created_at: m.skill_created_at,
+      deleted_at: m.deleted_at,
+      description: m.description,
+    }
+  }
+}

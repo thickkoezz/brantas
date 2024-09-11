@@ -21,10 +21,22 @@ pub struct BalanceHistoryUpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+pub struct BalanceHistoryResponse {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub ref_id: Uuid,
   pub amount: Decimal,
   pub deleted_at: Option<DateTimeWithTimeZone>,
+}
+
+impl From<crate::entities::balance_history> for BalanceHistoryResponse {
+  fn from(m: crate::entities::balance_history) -> BalanceHistoryResponse {
+    BalanceHistoryResponse {
+      owner_id: m.owner_id,
+      created_at: m.created_at,
+      ref_id: m.ref_id,
+      amount: m.amount,
+      deleted_at: m.deleted_at,
+    }
+  }
 }

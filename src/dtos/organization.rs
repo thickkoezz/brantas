@@ -51,3 +51,23 @@ pub struct OrganizationResponse {
   pub parent_id: Option<Uuid>,
   pub logo: Option<String>,
 }
+
+impl From<crate::entities::organization> for OrganizationResponse {
+  fn from(m: crate::entities::organization) -> OrganizationResponse {
+    OrganizationResponse {
+      id: m.id,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      name: m.name,
+      abbreviation: m.abbreviation,
+      description: m.description,
+      dob: m.dob,
+      dead_at: m.dead_at,
+      extra_info: m.extra_info,
+      is_dead: m.is_dead,
+      parent_id: m.parent_id,
+      logo: m.logo,
+    }
+  }
+}

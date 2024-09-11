@@ -25,3 +25,14 @@ pub struct BlockResponse {
   pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::block> for BlockResponse {
+  fn from(m: crate::entities::block) -> BlockResponse {
+    BlockResponse {
+      blocker_id: m.blocker_id,
+      target_id: m.target_id,
+      created_at: m.created_at,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

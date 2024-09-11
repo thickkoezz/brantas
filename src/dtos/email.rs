@@ -33,3 +33,17 @@ pub struct EmailResponse {
   pub is_verified: bool,
   pub is_suspended: bool,
 }
+
+impl From<crate::entities::email> for EmailResponse {
+  fn from(m: crate::entities::email) -> EmailResponse {
+    EmailResponse {
+      email: m.email,
+      owner_id: m.owner_id,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      is_verified: m.is_verified,
+      is_suspended: m.is_suspended,
+    }
+  }
+}

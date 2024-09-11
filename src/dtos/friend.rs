@@ -18,3 +18,14 @@ pub struct FriendResponse {
   pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::friend> for FriendResponse {
+  fn from(m: crate::entities::friend) -> FriendResponse {
+    FriendResponse {
+      invitor_id: m.invitor_id,
+      invitee_id: m.invitee_id,
+      created_at: m.created_at,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

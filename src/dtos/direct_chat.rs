@@ -10,6 +10,16 @@ pub struct DirectChatAddRequest {
   pub sender_id: Uuid,
   pub receiver_id: Uuid,
   pub content: String,
+  pub replied_sender_id: Option<Uuid>,
+  pub replied_receiver_id: Option<Uuid>,
+  pub replied_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_sender_id: Option<Uuid>,
+  pub forwarded_receiver_id: Option<Uuid>,
+  pub forwarded_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_group_creator_id: Option<Uuid>,
+  pub forwarded_group_created_at: Option<DateTimeWithTimeZone>,
+  pub is_pinned: bool,
+  pub pin_expired_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
@@ -19,6 +29,16 @@ pub struct DirectChatUpdateRequest {
   pub content: String,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  pub replied_sender_id: Option<Uuid>,
+  pub replied_receiver_id: Option<Uuid>,
+  pub replied_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_sender_id: Option<Uuid>,
+  pub forwarded_receiver_id: Option<Uuid>,
+  pub forwarded_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_group_creator_id: Option<Uuid>,
+  pub forwarded_group_created_at: Option<DateTimeWithTimeZone>,
+  pub is_pinned: bool,
+  pub pin_expired_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
@@ -29,4 +49,37 @@ pub struct DirectChatResponse {
   pub content: String,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  pub replied_sender_id: Option<Uuid>,
+  pub replied_receiver_id: Option<Uuid>,
+  pub replied_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_sender_id: Option<Uuid>,
+  pub forwarded_receiver_id: Option<Uuid>,
+  pub forwarded_created_at: Option<DateTimeWithTimeZone>,
+  pub forwarded_group_creator_id: Option<Uuid>,
+  pub forwarded_group_created_at: Option<DateTimeWithTimeZone>,
+  pub is_pinned: bool,
+  pub pin_expired_at: Option<DateTimeWithTimeZone>,
+}
+
+impl From<crate::entities::direct_chat> for DirectChatResponse {
+  fn from(m: crate::entities::direct_chat) -> DirectChatResponse {
+    DirectChatResponse {
+      sender_id: m.receiver_id,
+      receiver_id: m.receiver_id,
+      created_at: m.created_at,
+      content: m.content,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      replied_sender_id: m.replied_sender_id,
+      replied_receiver_id: m.replied_receiver_id,
+      replied_created_at: m.replied_created_at,
+      forwarded_sender_id: m.forwarded_sender_id,
+      forwarded_receiver_id: m.forwarded_receiver_id,
+      forwarded_created_at: m.forwarded_created_at,
+      forwarded_group_creator_id: m.forwarded_group_creator_id,
+      forwarded_group_created_at: m.forwarded_group_created_at,
+      is_pinned: m.is_pinned,
+      pin_expired_at: m.pin_expired_at,
+    }
+  }
 }

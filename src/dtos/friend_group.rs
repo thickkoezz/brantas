@@ -27,3 +27,15 @@ pub struct FriendGroupResponse {
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::friend_group> for FriendGroupResponse {
+  fn from(m: crate::entities::friend_group) -> FriendGroupResponse {
+    FriendGroupResponse {
+      owner_id: m.owner_id,
+      name: m.name,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

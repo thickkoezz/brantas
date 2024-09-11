@@ -23,3 +23,16 @@ pub struct JobProjectResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub description: Option<String>,
 }
+
+impl From<crate::entities::job_project> for JobProjectResponse {
+  fn from(m: crate::entities::job_project) -> JobProjectResponse {
+    JobProjectResponse {
+      organization_id: m.organization_id,
+      person_id: m.person_id,
+      job_created_at: m.job_created_at,
+      project_created_at: m.project_created_at,
+      deleted_at: m.deleted_at,
+      description: m.description,
+    }
+  }
+}

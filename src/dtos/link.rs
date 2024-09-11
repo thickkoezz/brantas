@@ -36,3 +36,18 @@ pub struct LinkResponse {
   pub hashtag: Option<String>,
   pub use_count: i32,
 }
+
+impl From<crate::entities::link> for LinkResponse {
+  fn from(m: crate::entities::link) -> LinkResponse {
+    LinkResponse {
+      id: m.id,
+      owner_id: m.owner_id,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      link_url: m.link_url,
+      hashtag: m.hashtag,
+      use_count: m.use_count,
+    }
+  }
+}

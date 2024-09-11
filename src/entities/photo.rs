@@ -30,7 +30,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  Owner,
+  UserAccount,
 }
 
 impl Related<super::photo_comment::Entity> for Entity {
@@ -41,7 +41,7 @@ impl Related<super::photo_comment::Entity> for Entity {
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::Owner.def()
+    Relation::UserAccount.def()
   }
 }
 
@@ -52,5 +52,5 @@ pub enum RelatedEntity {
   #[sea_orm(entity = "super::photo_comment::Entity")]
   PhotoComment,
   #[sea_orm(entity = "super::user_account::Entity")]
-  Owner,
+  UserAccount,
 }

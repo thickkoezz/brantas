@@ -40,7 +40,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  Administrator,
+  Person,
 }
 
 impl Related<super::department::Entity> for Entity {
@@ -57,7 +57,7 @@ impl Related<super::organization::Entity> for Entity {
 
 impl Related<super::person::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::Administrator.def()
+    Relation::Person.def()
   }
 }
 
@@ -70,5 +70,5 @@ pub enum RelatedEntity {
   #[sea_orm(entity = "super::organization::Entity")]
   Organization,
   #[sea_orm(entity = "super::person::Entity")]
-  Administrator,
+  Person,
 }

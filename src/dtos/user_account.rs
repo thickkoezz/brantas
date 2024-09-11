@@ -89,6 +89,35 @@ pub struct UserAccountResponse {
   pub refresh_token_expires_in: Option<i32>,
 }
 
+impl From<crate::entities::user_account> for UserAccountResponse {
+  fn from(m: crate::entities::user_account) -> UserAccountResponse {
+    UserAccountResponse {
+      id: m.id,
+      owner_id: m.owner_id,
+      email: m.email,
+      username: m.username,
+      picture: m.picture,
+      salt: m.salt,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      deleted_at: m.deleted_at,
+      balance: m.balance,
+      is_super_admin: m.is_super_admin,
+      r#type: m.r#type,
+      provider: m.provider,
+      provider_account_id: m.provider_account_id,
+      refresh_token: m.refresh_token,
+      access_token: m.access_token,
+      token_type: m.token_type,
+      scope: m.scope,
+      id_token: m.id_token,
+      session_state: m.session_state,
+      expires_at: m.expires_at,
+      refresh_token_expires_in: m.refresh_token_expires_in,
+    }
+  }
+}
+
 #[derive(Debug, Serialize, ToSchema, Default)]
 pub struct UserAccountLoginResponse {
   pub id: Uuid,

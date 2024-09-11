@@ -24,3 +24,17 @@ pub struct LinkCodeResponse {
   pub is_code_manually_typed: bool,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::link_code> for LinkCodeResponse {
+  fn from(m: crate::entities::link_code) -> LinkCodeResponse {
+    LinkCodeResponse {
+      link_id: m.link_id,
+      code: m.code,
+      created_at: m.created_at,
+      expired_at: m.expired_at,
+      is_public: m.is_public,
+      is_code_manually_typed: m.is_code_manually_typed,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

@@ -28,3 +28,15 @@ pub struct ChatGroupMemberResponse {
   pub created_at: DateTime,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::chat_group_member> for ChatGroupMemberResponse {
+  fn from(m: crate::entities::chat_group_member) -> ChatGroupMemberResponse {
+    ChatGroupMemberResponse {
+      group_creator_id: m.group_creator_id,
+      group_created_at: m.group_created_at,
+      member_id: m.member_id,
+      created_at: m.created_at,
+      deleted_at: m.deleted_at,
+    }
+  }
+}

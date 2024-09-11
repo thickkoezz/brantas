@@ -31,3 +31,16 @@ pub struct PostShareResponse {
   pub can_comment: bool,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+
+impl From<crate::entities::post_share> for PostShareResponse {
+  fn from(m: crate::entities::post_share) -> PostShareResponse {
+    PostShareResponse {
+      post_owner_id: m.post_owner_id,
+      post_created_at: m.post_created_at,
+      target_id: m.target_id,
+      created_at: m.created_at,
+      can_comment: m.can_comment,
+      deleted_at: m.deleted_at,
+    }
+  }
+}
