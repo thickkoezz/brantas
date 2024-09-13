@@ -29,9 +29,9 @@ pub struct BalanceHistoryResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::balance_history> for BalanceHistoryResponse {
-  fn from(m: crate::entities::balance_history) -> BalanceHistoryResponse {
-    BalanceHistoryResponse {
+impl From<crate::entities::balance_history::Model> for BalanceHistoryResponse {
+  fn from(m: crate::entities::balance_history::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
       ref_id: m.ref_id,

@@ -8,7 +8,7 @@ use validator::Validate;
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
 pub struct VideoAddRequest {
   pub owner_id: Uuid,
-  pub photo: String,
+  pub video: String,
   pub size: i32,
   pub title: Option<String>,
   pub caption: Option<String>,
@@ -19,8 +19,9 @@ pub struct VideoAddRequest {
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
 pub struct VideoUpdateRequest {
   pub owner_id: Uuid,
-  pub photo: String,
+  pub video: String,
   pub size: i32,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub title: Option<String>,
   pub caption: Option<String>,
@@ -32,9 +33,9 @@ pub struct VideoUpdateRequest {
 pub struct VideoResponse {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
-  pub updated_at: DateTimeWithTimeZone,
-  pub photo: String,
+  pub video: String,
   pub size: i32,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub title: Option<String>,
   pub caption: Option<String>,
@@ -42,13 +43,13 @@ pub struct VideoResponse {
   pub slug: Option<String>,
 }
 
-impl From<crate::entities::video> for VideoResponse {
-  fn from(m: crate::entities::video) -> VideoResponse {
-    VideoResponse {
+impl From<crate::entities::video::Model> for VideoResponse {
+  fn from(m: crate::entities::video::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
       updated_at: m.updated_at,
-      photo: m.photo,
+      video: m.video,
       size: m.size,
       deleted_at: m.deleted_at,
       title: m.title,

@@ -32,7 +32,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  Owner,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::ReactedTweetOwnerId",
@@ -40,7 +40,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  ReactedTweetOwner,
 }
 
 impl Related<super::tweet::Entity> for Entity {
@@ -57,12 +57,12 @@ pub enum RelatedEntity {
   Tweet,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::Owner.def()"
   )]
-  UserAccount2,
+  Owner,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
+    def = "Relation::ReactedTweetOwner.def()"
   )]
-  UserAccount1,
+  ReactedTweetOwner,
 }

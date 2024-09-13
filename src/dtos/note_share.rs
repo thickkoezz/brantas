@@ -32,9 +32,9 @@ pub struct NoteShareResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::note_share> for NoteShareResponse {
-  fn from(m: crate::entities::note_share) -> NoteShareResponse {
-    NoteShareResponse {
+impl From<crate::entities::note_share::Model> for NoteShareResponse {
+  fn from(m: crate::entities::note_share::Model) -> Self {
+    Self {
       note_owner_id: m.note_owner_id,
       note_created_at: m.note_created_at,
       editor_id: m.editor_id,

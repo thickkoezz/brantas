@@ -12,6 +12,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub video: String,
   pub size: i32,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub title: Option<String>,
   pub caption: Option<String>,

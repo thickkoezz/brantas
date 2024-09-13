@@ -21,9 +21,9 @@ pub struct SessionResponse {
   pub expires: DateTimeWithTimeZone,
 }
 
-impl From<crate::entities::session> for SessionResponse {
-  fn from(m: crate::entities::session) -> SessionResponse {
-    SessionResponse {
+impl From<crate::entities::session::Model> for SessionResponse {
+  fn from(m: crate::entities::session::Model) -> Self {
+    Self {
       id: m.id,
       session_token: m.session_token,
       user_account_id: m.user_account_id,

@@ -21,6 +21,7 @@ pub struct PhotoUpdateRequest {
   pub owner_id: Uuid,
   pub photo: String,
   pub size: i32,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub title: Option<String>,
   pub caption: Option<String>,
@@ -34,6 +35,7 @@ pub struct PhotoResponse {
   pub created_at: DateTimeWithTimeZone,
   pub photo: String,
   pub size: i32,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub title: Option<String>,
   pub caption: Option<String>,
@@ -41,9 +43,9 @@ pub struct PhotoResponse {
   pub slug: Option<String>,
 }
 
-impl From<crate::entities::photo> for PhotoResponse {
-  fn from(m: crate::entities::photo) -> PhotoResponse {
-    PhotoResponse {
+impl From<crate::entities::photo::Model> for PhotoResponse {
+  fn from(m: crate::entities::photo::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
       photo: m.photo,

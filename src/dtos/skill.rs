@@ -31,9 +31,9 @@ pub struct SkillResponse {
   pub description: Option<String>,
 }
 
-impl From<crate::entities::skill> for SkillResponse {
-  fn from(m: crate::entities::skill) -> SkillResponse {
-    SkillResponse {
+impl From<crate::entities::skill::Model> for SkillResponse {
+  fn from(m: crate::entities::skill::Model) -> Self {
+    Self {
       person_id: m.person_id,
       created_at: m.created_at,
       updated_at: m.updated_at,

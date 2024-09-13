@@ -19,9 +19,9 @@ pub struct FriendResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::friend> for FriendResponse {
-  fn from(m: crate::entities::friend) -> FriendResponse {
-    FriendResponse {
+impl From<crate::entities::friend::Model> for FriendResponse {
+  fn from(m: crate::entities::friend::Model) -> Self {
+    Self {
       invitor_id: m.invitor_id,
       invitee_id: m.invitee_id,
       created_at: m.created_at,

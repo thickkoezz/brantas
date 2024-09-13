@@ -37,9 +37,9 @@ pub struct PostCommentResponse {
   pub reaction_count: i32,
 }
 
-impl From<crate::entities::post_comment> for PostCommentResponse {
-  fn from(m: crate::entities::post_comment) -> PostCommentResponse {
-    PostCommentResponse {
+impl From<crate::entities::post_comment::Model> for PostCommentResponse {
+  fn from(m: crate::entities::post_comment::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
       commented_post_owner_id: m.commented_post_owner_id,

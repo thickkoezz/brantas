@@ -164,7 +164,7 @@ pub enum RelatedEntity {
   ForwardedReceiver,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount5.def()"
+    def = "Relation::ForwardedSender.def()"
   )]
   ForwardedSender,
   #[sea_orm(

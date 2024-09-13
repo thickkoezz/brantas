@@ -26,9 +26,9 @@ pub struct BlockResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::block> for BlockResponse {
-  fn from(m: crate::entities::block) -> BlockResponse {
-    BlockResponse {
+impl From<crate::entities::block::Model> for BlockResponse {
+  fn from(m: crate::entities::block::Model) -> Self {
+    Self {
       blocker_id: m.blocker_id,
       target_id: m.target_id,
       created_at: m.created_at,

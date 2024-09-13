@@ -37,9 +37,9 @@ pub struct LinkResponse {
   pub use_count: i32,
 }
 
-impl From<crate::entities::link> for LinkResponse {
-  fn from(m: crate::entities::link) -> LinkResponse {
-    LinkResponse {
+impl From<crate::entities::link::Model> for LinkResponse {
+  fn from(m: crate::entities::link::Model) -> Self {
+    Self {
       id: m.id,
       owner_id: m.owner_id,
       created_at: m.created_at,

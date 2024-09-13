@@ -24,9 +24,9 @@ pub struct JobProjectResponse {
   pub description: Option<String>,
 }
 
-impl From<crate::entities::job_project> for JobProjectResponse {
-  fn from(m: crate::entities::job_project) -> JobProjectResponse {
-    JobProjectResponse {
+impl From<crate::entities::job_project::Model> for Self {
+  fn from(m: crate::entities::job_project::Model) -> JobProjectResponse {
+    Self {
       organization_id: m.organization_id,
       person_id: m.person_id,
       job_created_at: m.job_created_at,

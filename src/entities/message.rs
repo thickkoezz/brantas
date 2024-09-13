@@ -25,7 +25,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  Person2,
+  Owner,
   #[sea_orm(
     belongs_to = "super::person::Entity",
     from = "Column::ReceiverId",
@@ -33,15 +33,21 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  Person1,
+  Receiver,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "super::person::Entity", def = "Relation::Person2.def()")]
-  Person2,
-  #[sea_orm(entity = "super::person::Entity", def = "Relation::Person1.def()")]
-  Person1,
+  #[sea_orm(
+    entity = "super::person::Entity",
+    def = "Relation::Owner.def()"
+  )]
+  Owner,
+  #[sea_orm(
+    entity = "super::person::Entity",
+    def = "Relation::Receiver.def()"
+  )]
+  Receiver,
 }

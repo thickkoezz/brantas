@@ -36,7 +36,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount3,
+  Owner,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::ReactedGroupChatGroupCreatorId",
@@ -44,7 +44,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  ReactedGroupChatGroupCreator,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::ReactedGroupChatSenderId",
@@ -52,7 +52,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  ReactedGroupChatSender,
 }
 
 impl Related<super::group_chat::Entity> for Entity {
@@ -69,17 +69,17 @@ pub enum RelatedEntity {
   GroupChat,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount3.def()"
+    def = "Relation::Owner.def()"
   )]
-  UserAccount3,
+  Owner,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::ReactedGroupChatGroupCreator.def()"
   )]
-  UserAccount2,
+  ReactedGroupChatGroupCreator,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
+    def = "Relation::ReactedGroupChatSender.def()"
   )]
-  UserAccount1,
+  ReactedGroupChatSender,
 }

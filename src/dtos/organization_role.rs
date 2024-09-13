@@ -34,9 +34,9 @@ pub struct OrganizationRoleResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::organization_role> for OrganizationRoleResponse {
-  fn from(m: crate::entities::organization_role) -> OrganizationRoleResponse {
-    OrganizationRoleResponse {
+impl From<crate::entities::organization_role::Model> for OrganizationRoleResponse {
+  fn from(m: crate::entities::organization_role::Model) -> Self {
+    Self {
       organization_id: m.organization_id,
       name: m.name,
       description: m.description,

@@ -34,9 +34,9 @@ pub struct EmailResponse {
   pub is_suspended: bool,
 }
 
-impl From<crate::entities::email> for EmailResponse {
-  fn from(m: crate::entities::email) -> EmailResponse {
-    EmailResponse {
+impl From<crate::entities::email::Model> for EmailResponse {
+  fn from(m: crate::entities::email::Model) -> Self {
+    Self {
       email: m.email,
       owner_id: m.owner_id,
       created_at: m.created_at,

@@ -55,9 +55,9 @@ pub struct TweetResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::tweet> for TweetResponse {
-  fn from(m: crate::entities::tweet) -> TweetResponse {
-    TweetResponse {
+impl From<crate::entities::tweet::Model> for TweetResponse {
+  fn from(m: crate::entities::tweet::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
       tweet: m.tweet,

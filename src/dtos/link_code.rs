@@ -25,9 +25,9 @@ pub struct LinkCodeResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::link_code> for LinkCodeResponse {
-  fn from(m: crate::entities::link_code) -> LinkCodeResponse {
-    LinkCodeResponse {
+impl From<crate::entities::link_code::Model> for LinkCodeResponse {
+  fn from(m: crate::entities::link_code::Model) -> Self {
+    Self {
       link_id: m.link_id,
       code: m.code,
       created_at: m.created_at,

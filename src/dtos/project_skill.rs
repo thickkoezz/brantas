@@ -22,9 +22,9 @@ pub struct ProjectSkillResponse {
   pub description: Option<String>,
 }
 
-impl From<crate::entities::project_skill> for ProjectSkillResponse {
-  fn from(m: crate::entities::project_skill) -> ProjectSkillResponse {
-    ProjectSkillResponse {
+impl From<crate::entities::project_skill::Model> for ProjectSkillResponse {
+  fn from(m: crate::entities::project_skill::Model) -> Self {
+    Self {
       person_id: m.person_id,
       project_created_at: m.project_created_at,
       skill_created_at: m.skill_created_at,

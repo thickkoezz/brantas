@@ -22,9 +22,9 @@ pub struct PostReactionResponse {
   pub reaction_emoji: String,
 }
 
-impl From<crate::entities::post_reaction> for PostReactionResponse {
-  fn from(m: crate::entities::post_reaction) -> PostReactionResponse {
-    PostReactionResponse {
+impl From<crate::entities::post_reaction::Model> for PostReactionResponse {
+  fn from(m: crate::entities::post_reaction::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       reacted_post_owner_id: m.reacted_post_owner_id,
       reacted_post_created_at: m.reacted_post_created_at,

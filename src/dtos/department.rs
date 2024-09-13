@@ -55,9 +55,9 @@ pub struct DepartmentResponse {
   pub logo: Option<String>,
 }
 
-impl From<crate::entities::department> for DepartmentResponse {
-  fn from(m: crate::entities::department) -> DepartmentResponse {
-    DepartmentResponse {
+impl From<crate::entities::department::Model> for DepartmentResponse {
+  fn from(m: crate::entities::department::Model) -> Self {
+    Self {
       id: m.id,
       organization_id: m.organization_id,
       name: m.name,

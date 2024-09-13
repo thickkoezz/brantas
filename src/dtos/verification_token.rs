@@ -18,9 +18,9 @@ pub struct VerificationTokenResponse {
   pub expires: DateTimeWithTimeZone,
 }
 
-impl From<crate::entities::verification_token> for VerificationTokenResponse {
-  fn from(m: crate::entities::verification_token) -> VerificationTokenResponse {
-    VerificationTokenResponse {
+impl From<crate::entities::verification_token::Model> for VerificationTokenResponse {
+  fn from(m: crate::entities::verification_token::Model) -> Self {
+    Self {
       identifier: m.identifier,
       token: m.token,
       expires: m.expires,

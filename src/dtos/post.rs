@@ -55,9 +55,9 @@ pub struct PostResponse {
   pub can_comment: bool,
 }
 
-impl From<crate::entities::post> for PostResponse {
-  fn from(m: crate::entities::post) -> PostResponse {
-    PostResponse {
+impl From<crate::entities::post::Model> for PostResponse {
+  fn from(m: crate::entities::post::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
       updated_at: m.updated_at,

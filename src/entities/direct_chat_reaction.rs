@@ -34,7 +34,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount3,
+  Owner,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::ReactedDirectChatReceiverId",
@@ -42,7 +42,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  ReactedDirectChatReceiver,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::ReactedDirectChatSenderId",
@@ -50,7 +50,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  ReactedDirectChatSender,
 }
 
 impl Related<super::direct_chat::Entity> for Entity {
@@ -67,17 +67,17 @@ pub enum RelatedEntity {
   DirectChat,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount3.def()"
+    def = "Relation::Owner.def()"
   )]
-  UserAccount3,
+  Owner,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::ReactedDirectChatReceiver.def()"
   )]
-  UserAccount2,
+  ReactedDirectChatReceiver,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
+    def = "Relation::ReactedDirectChatSender.def()"
   )]
-  UserAccount1,
+  ReactedDirectChatSender,
 }

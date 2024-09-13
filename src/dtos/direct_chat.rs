@@ -61,9 +61,9 @@ pub struct DirectChatResponse {
   pub pin_expired_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::direct_chat> for DirectChatResponse {
-  fn from(m: crate::entities::direct_chat) -> DirectChatResponse {
-    DirectChatResponse {
+impl From<crate::entities::direct_chat::Model> for DirectChatResponse {
+  fn from(m: crate::entities::direct_chat::Model) -> Self {
+    Self {
       sender_id: m.receiver_id,
       receiver_id: m.receiver_id,
       created_at: m.created_at,

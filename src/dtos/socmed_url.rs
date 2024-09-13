@@ -29,9 +29,9 @@ pub struct SocmedUrlResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::socmed_url> for SocmedUrlResponse {
-  fn from(m: crate::entities::socmed_url) -> SocmedUrlResponse {
-    SocmedUrlResponse {
+impl From<crate::entities::socmed_url::Model> for SocmedUrlResponse {
+  fn from(m: crate::entities::socmed_url::Model) -> Self {
+    Self {
       socmed_url: m.socmed_url,
       owner_id: m.owner_id,
       created_at: m.created_at,

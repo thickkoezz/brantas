@@ -52,8 +52,10 @@ async fn hello() -> &'static str {
 }
 
 #[endpoint(tags("user_accounts"))]
-// pub async fn post_login(req: &mut Request, res: &mut Response) {
-pub async fn post_login(req: JsonBody<UserAccountLoginRequest>, res: &mut Response) {
+pub async fn post_login(
+  req: JsonBody<UserAccountLoginRequest>,
+  res: &mut Response,
+) {
   let result: AppResult<UserAccountLoginResponse> = user_account::login(req.0).await;
   match result {
     Ok(data) => {
@@ -76,9 +78,12 @@ pub struct UserListPageTemplate {}
 #[template(path = "user_list.html")]
 pub struct UserListTemplate {}
 
-pub fn user_account_routes() -> Vec<Router> {
-  vec![Router::with_path("/api/user_accounts")
-    .get(user_account_list_page)
+#[allow(dead_code)]
+pub fn create_routers() -> Vec<Router> {
+  vec![
+    Router::with_path("/user_accounts")
+    .get(user_account_list_page),
+    Router::with_path("/api/user_account")
     .get(get_user_accounts)
     .post(post_add_user_account)
     .push(
@@ -89,7 +94,10 @@ pub fn user_account_routes() -> Vec<Router> {
 }
 
 #[endpoint(tags("user_accounts"))]
-pub async fn user_account_list_page(req: &mut Request, res: &mut Response) -> AppResult<()> {
+pub async fn user_account_list_page(
+  req: &mut Request,
+  res: &mut Response,
+) -> AppResult<()> {
   let is_fragment = req.headers().get("X-Fragment-Header");
   match is_fragment {
     Some(_) => {
@@ -125,14 +133,18 @@ pub async fn put_update_user_account(
 }
 
 #[endpoint(tags("user_accounts"))]
-pub async fn delete_user_account(id: PathParam<Uuid>) -> AppWriter<()> {
-  let result = user_account::delete_user_account(services::DeletionMode::Soft, id.0).await;
+pub async fn delete_user_account(
+  id: PathParam<Uuid>
+) -> AppWriter<()> {
+  let result = user_account::delete_user_account(
+    services::DeletionMode::Soft, id.0
+  ).await;
   AppWriter(result)
 }
 
 #[endpoint(tags("user_accounts"))]
 pub async fn get_user_accounts() -> AppWriter<Vec<UserAccountResponse>> {
-  let option: PaginatorOption = PaginatorOption { page_size: 500, page: 1 };
+  let option = Option::from(PaginatorOption { page_size: 500, page: 1 });
   let result = user_account::get_user_accounts(option).await;
   AppWriter(result)
 }

@@ -46,9 +46,9 @@ pub struct JobResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::job> for JobResponse {
-  fn from(m: crate::entities::job) -> JobResponse {
-    JobResponse {
+impl From<crate::entities::job::Model> for JobResponse {
+  fn from(m: crate::entities::job::Model) -> Self {
+    Self {
       organization_id: m.organization_id,
       person_id: m.person_id,
       department_id: m.department_id,

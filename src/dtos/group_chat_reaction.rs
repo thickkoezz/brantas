@@ -25,9 +25,9 @@ pub struct GroupChatReactionResponse {
   pub reaction_emoji: String,
 }
 
-impl From<crate::entities::direct_chat_reaction> for GroupChatReactionResponse {
-  fn from(m: crate::entities::direct_chat_reaction) -> GroupChatReactionResponse {
-    GroupChatReactionResponse {
+impl From<crate::entities::group_chat_reaction::Model> for GroupChatReactionResponse {
+  fn from(m: crate::entities::group_chat_reaction::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       reacted_group_chat_sender_id: m.reacted_group_chat_sender_id,
       reacted_group_chat_group_creator_id: m.reacted_group_chat_group_creator_id,

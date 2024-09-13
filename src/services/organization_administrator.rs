@@ -14,9 +14,7 @@ pub async fn delete_organization_administrator(
   administrator_id: Uuid,
   department_id: Uuid,
 ) -> AppResult<()> {
-  let db = DB
-    .get()
-    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match deletion_mode {
     DeletionMode::Hard => {
       let result =

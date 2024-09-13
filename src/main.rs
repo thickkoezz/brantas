@@ -25,6 +25,7 @@ mod middleware;
 mod routers;
 mod services;
 mod utils;
+mod repository;
 
 #[tokio::main]
 async fn main() {
@@ -37,7 +38,7 @@ async fn main() {
     .file_name(&CFG.log.file_name)
     .rolling(&CFG.log.rolling)
     .init();
-  tracing::info!("log level: {}", &CFG.log.filter_level);
+  info!("log level: {}", &CFG.log.filter_level);
 
   init_db_conn().await;
   let router = router();

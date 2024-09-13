@@ -27,7 +27,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  CommentedVideoOwner,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::OwnerId",
@@ -35,7 +35,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  Owner,
   #[sea_orm(
     belongs_to = "super::video::Entity",
     from = "(Column::CommentedVideoOwnerId, Column::CommentedVideoCreatedAt, Column::CommentedVideo)",
@@ -58,14 +58,14 @@ impl ActiveModelBehavior for ActiveModel {}
 pub enum RelatedEntity {
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::CommentedVideoOwner.def()"
   )]
-  UserAccount2,
+  CommentedVideoOwner,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
+    def = "Relation::Owner.def()"
   )]
-  UserAccount1,
+  Owner,
   #[sea_orm(entity = "super::video::Entity")]
   Video,
 }

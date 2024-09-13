@@ -32,7 +32,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount2,
+  Owner,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::ReactedPostOwnerId",
@@ -40,7 +40,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount1,
+  ReactedPostOwner,
 }
 
 impl Related<super::post::Entity> for Entity {
@@ -57,12 +57,12 @@ pub enum RelatedEntity {
   Post,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount2.def()"
+    def = "Relation::Owner.def()"
   )]
-  UserAccount2,
+  Owner,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::UserAccount1.def()"
+    def = "Relation::ReactedPostOwner.def()"
   )]
-  UserAccount1,
+  ReactedPostOwner,
 }

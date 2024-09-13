@@ -22,9 +22,9 @@ pub struct TweetReactionResponse {
   pub reaction_emoji: String,
 }
 
-impl From<crate::entities::tweet_reaction> for TweetReactionResponse {
-  fn from(m: crate::entities::tweet_reaction) -> TweetReactionResponse {
-    TweetReactionResponse {
+impl From<crate::entities::tweet_reaction::Model> for TweetReactionResponse {
+  fn from(m: crate::entities::tweet_reaction::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       reacted_tweet_owner_id: m.reacted_tweet_owner_id,
       reacted_tweet_created_at: m.reacted_tweet_created_at,

@@ -5,13 +5,16 @@ use sea_orm::entity::prelude::*;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "starred_chat")]
 pub struct Model {
+  #[sea_orm(primary_key, auto_increment = false)]
   pub creator_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
   pub chat_sender_id: Option<Uuid>,
   pub direct_chat_receiver_id: Option<Uuid>,
   pub group_chat_group_creator_id: Option<Uuid>,
   pub group_chat_group_created_at: Option<DateTimeWithTimeZone>,
   pub chat_created_at: Option<DateTimeWithTimeZone>,
+  pub expire_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

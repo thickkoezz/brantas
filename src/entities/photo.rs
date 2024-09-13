@@ -12,6 +12,7 @@ pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub photo: String,
   pub size: i32,
+  pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub title: Option<String>,
   pub caption: Option<String>,
@@ -30,7 +31,7 @@ pub enum Relation {
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  UserAccount,
+  Owner,
 }
 
 impl Related<super::photo_comment::Entity> for Entity {
@@ -41,7 +42,7 @@ impl Related<super::photo_comment::Entity> for Entity {
 
 impl Related<super::user_account::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::UserAccount.def()
+    Relation::Owner.def()
   }
 }
 
@@ -52,5 +53,5 @@ pub enum RelatedEntity {
   #[sea_orm(entity = "super::photo_comment::Entity")]
   PhotoComment,
   #[sea_orm(entity = "super::user_account::Entity")]
-  UserAccount,
+  Owner,
 }

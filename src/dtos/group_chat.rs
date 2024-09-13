@@ -61,9 +61,9 @@ pub struct GroupChatResponse {
   pub pin_expired_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::group_chat> for GroupChatResponse {
-  fn from(m: crate::entities::group_chat) -> GroupChatResponse {
-    GroupChatResponse {
+impl From<crate::entities::group_chat::Model> for GroupChatResponse {
+  fn from(m: crate::entities::group_chat::Model) -> Self {
+    Self {
       sender_id: m.sender_id,
       group_creator_id: m.group_creator_id,
       group_created_at: m.group_created_at,

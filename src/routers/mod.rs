@@ -6,24 +6,22 @@ use salvo::{
 
 use self::{
   demo::hello,
-  user_account::{login_page, post_login, user_account_routes},
+  user_account::{login_page, post_login},
 };
 
 pub mod demo;
 mod static_routers;
-pub mod user_account;
+mod user_account;
 
 pub fn router() -> Router {
   let mut no_auth_routers = vec![
     Router::with_path("login").get(login_page),
     Router::with_path("/api/login").post(post_login),
   ];
+  no_auth_routers.extend(static_routers::create_static_routers());
 
   let mut need_auth_routers: Vec<Router> = Vec::new();
-  need_auth_routers.append(&mut crate::routers::user_account::user_account_routes());
-
-  let static_routers = static_routers::create_static_routers();
-  no_auth_routers.extend(static_routers);
+  need_auth_routers.extend(user_account::create_routers());
 
   let router = Router::new()
     .hoop(Logger::new())

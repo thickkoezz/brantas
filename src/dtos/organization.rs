@@ -52,9 +52,9 @@ pub struct OrganizationResponse {
   pub logo: Option<String>,
 }
 
-impl From<crate::entities::organization> for OrganizationResponse {
-  fn from(m: crate::entities::organization) -> OrganizationResponse {
-    OrganizationResponse {
+impl From<crate::entities::organization::Model> for OrganizationResponse {
+  fn from(m: crate::entities::organization::Model) -> Self {
+    Self {
       id: m.id,
       created_at: m.created_at,
       updated_at: m.updated_at,

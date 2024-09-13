@@ -28,9 +28,9 @@ pub struct FriendGroupResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::friend_group> for FriendGroupResponse {
-  fn from(m: crate::entities::friend_group) -> FriendGroupResponse {
-    FriendGroupResponse {
+impl From<crate::entities::friend_group::Model> for FriendGroupResponse {
+  fn from(m: crate::entities::friend_group::Model) -> Self {
+    Self {
       owner_id: m.owner_id,
       name: m.name,
       created_at: m.created_at,

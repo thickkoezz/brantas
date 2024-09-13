@@ -21,9 +21,9 @@ pub struct OrganizationAdministratorResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::organization_administrator> for OrganizationAdministratorResponse {
-  fn from(m: crate::entities::organization_administrator) -> OrganizationAdministratorResponse {
-    OrganizationAdministratorResponse {
+impl From<crate::entities::organization_administrator::Model> for OrganizationAdministratorResponse {
+  fn from(m: crate::entities::organization_administrator::Model) -> Self {
+    Self {
       organization_id: m.organization_id,
       administrator_id: m.administrator_id,
       department_id: m.department_id,

@@ -19,9 +19,9 @@ pub struct FollowResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::follow> for FollowResponse {
-  fn from(m: crate::entities::follow) -> FollowResponse {
-    FollowResponse {
+impl From<crate::entities::follow::Model> for FollowResponse {
+  fn from(m: crate::entities::follow::Model) -> Self {
+    Self {
       follower_id: m.follower_id,
       target_id: m.target_id,
       created_at: m.created_at,

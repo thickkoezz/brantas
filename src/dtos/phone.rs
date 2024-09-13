@@ -34,9 +34,9 @@ pub struct PhoneResponse {
   pub is_suspended: bool,
 }
 
-impl From<crate::entities::phone> for PhoneResponse {
-  fn from(m: crate::entities::phone) -> PhoneResponse {
-    PhoneResponse {
+impl From<crate::entities::phone::Model> for PhoneResponse {
+  fn from(m: crate::entities::phone::Model) -> Self {
+    Self {
       phone: m.phone,
       owner_id: m.owner_id,
       created_at: m.created_at,

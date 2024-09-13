@@ -89,9 +89,9 @@ pub struct UserAccountResponse {
   pub refresh_token_expires_in: Option<i32>,
 }
 
-impl From<crate::entities::user_account> for UserAccountResponse {
-  fn from(m: crate::entities::user_account) -> UserAccountResponse {
-    UserAccountResponse {
+impl From<crate::entities::user_account::Model> for UserAccountResponse {
+  fn from(m: crate::entities::user_account::Model) -> Self {
+    Self {
       id: m.id,
       owner_id: m.owner_id,
       email: m.email,

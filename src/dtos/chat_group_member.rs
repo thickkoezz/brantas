@@ -23,15 +23,15 @@ pub struct ChatGroupMemberUpdateRequest {
 #[derive(Debug, Serialize, ToSchema, Default)]
 pub struct ChatGroupMemberResponse {
   pub group_creator_id: Uuid,
-  pub group_created_at: DateTime,
+  pub group_created_at: DateTimeWithTimeZone,
   pub member_id: Uuid,
-  pub created_at: DateTime,
+  pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::chat_group_member> for ChatGroupMemberResponse {
-  fn from(m: crate::entities::chat_group_member) -> ChatGroupMemberResponse {
-    ChatGroupMemberResponse {
+impl From<crate::entities::chat_group_member::Model> for ChatGroupMemberResponse {
+  fn from(m: crate::entities::chat_group_member::Model) -> Self {
+    Self {
       group_creator_id: m.group_creator_id,
       group_created_at: m.group_created_at,
       member_id: m.member_id,

@@ -2,25 +2,15 @@ use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
 use crate::entities::{prelude::UserAccount, user_account};
-use crate::middleware::jwt::get_token;
-use crate::utils::rand_utils;
 use crate::dtos::user_account::{
-  UserAccountAddRequest,
-  UserAccountLoginRequest,
-  UserAccountLoginResponse,
-  UserAccountResponse,
+  UserAccountAddRequest, UserAccountLoginRequest, UserAccountLoginResponse, UserAccountResponse,
   UserAccountUpdateRequest,
 };
+use crate::middleware::jwt::get_token;
+use crate::utils::rand_utils;
 use argon2::password_hash::SaltString;
 use rust_i18n::t;
-use sea_orm::{
-  ActiveModelTrait,
-  ColumnTrait,
-  EntityTrait,
-  PaginatorTrait,
-  QueryFilter,
-  Set,
-};
+use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter, Set};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use uuid::Uuid;
@@ -28,9 +18,7 @@ use uuid::Uuid;
 pub async fn add_user_account(
   req: UserAccountAddRequest
 ) -> AppResult<UserAccountResponse> {
-  let db = DB
-    .get()
-    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   let salt = SaltString::generate(rand::thread_rng());
   let model = user_account::ActiveModel {
     id: Set(Uuid::new_v4()),
@@ -62,38 +50,16 @@ pub async fn add_user_account(
   let user = UserAccount::insert(model.clone()).exec(db).await?;
   Ok(UserAccountResponse {
     id: user.last_insert_id,
-    owner_id: req.owner_id,
-    email: req.email,
-    username: req.username,
-    picture: req.picture,
-    salt: req.salt,
-    created_at: model.created_at.unwrap(),
-    updated_at: None,
-    deleted_at: None,
-    balance: req.balance,
-    is_super_admin: req.is_super_admin,
-    r#type: req.r#type,
-    provider: req.provider,
-    provider_account_id: req.provider_account_id,
-    refresh_token: req.refresh_token,
-    access_token: req.access_token,
-    token_type: req.token_type,
-    scope: req.scope,
-    id_token: req.id_token,
-    session_state: req.session_state,
-    expires_at: req.expires_at,
-    refresh_token_expires_in: req.refresh_token_expires_in,
+    ..UserAccountResponse::from(req)
   })
 }
 
-pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginResponse> {
-  let db = DB
-    .get()
-    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
-  let user = UserAccount::find()
-    .filter(user_account::Column::Username.eq(req.username))
-    .one(db)
-    .await?;
+pub async fn login(
+  req: UserAccountLoginRequest
+) -> AppResult<UserAccountLoginResponse> {
+  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let user = UserAccount::find().filter(user_account::Column::Username.eq(req.username))
+    .one(db).await?;
   if user.is_none() {
     return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user_account"))).into());
   }
@@ -102,21 +68,15 @@ pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginRe
     return Err(anyhow::anyhow!(t!("x_not_set", x = t!("password"))).into());
   }
   let password = user.password.unwrap();
-  if rand_utils::verify_password(req.password, password)
-    .await
-    .is_err()
+  if rand_utils::verify_password(req.password, password).await.is_err()
   {
     return Err(anyhow::anyhow!(t!("incorrect_x", x = t!("password"))).into());
   }
   let (token, exp) = get_token(
-    user.username.clone().unwrap_or_default(),
-    user.id.to_string().clone(),
+    user.username.clone().unwrap_or_default(), user.id.to_string().clone(),
   )?;
   let res = UserAccountLoginResponse {
-    id: user.id,
-    username: user.username.unwrap_or_default(),
-    token,
-    exp,
+    id: user.id, username: user.username.unwrap_or_default(), token, exp,
   };
   Ok(res)
 }
@@ -124,21 +84,17 @@ pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginRe
 pub async fn update_user_account(
   req: UserAccountUpdateRequest
 ) -> AppResult<UserAccountResponse> {
-  let db = DB
-    .get()
-    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   let user = UserAccount::find_by_id(req.id).one(db).await?;
   if user.is_none() {
     return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user_account"))).into());
   }
   let mut user: user_account::ActiveModel = user.unwrap().into();
 
-  let salt = SaltString::from_b64(
-    user.salt.clone().unwrap().unwrap_or_default().as_str()
-  ).unwrap();
-  let password = rand_utils::hash_password(
-    req.password.unwrap_or_default(), salt,
-  ).await?;
+  let salt = SaltString::from_b64(user.salt.clone().unwrap().unwrap_or_default().as_str())
+    .unwrap();
+  let password = rand_utils::hash_password(req.password.unwrap_or_default(), salt, )
+    .await?;
 
   user.owner_id = Set(req.owner_id);
   user.email = Set(req.email);
@@ -166,9 +122,7 @@ pub async fn delete_user_account(
   deletion_mode: DeletionMode,
   id: Uuid,
 ) -> AppResult<()> {
-  let db = DB
-    .get()
-    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match deletion_mode {
     DeletionMode::Hard => {
       let result = UserAccount::delete_by_id(id).exec(db).await?;
@@ -178,18 +132,14 @@ pub async fn delete_user_account(
       }
     }
     DeletionMode::Soft => {
-      let db = DB
-        .get()
-        .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+      let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
       let user = UserAccount::find_by_id(id).one(db).await?;
       if user.is_none() {
         return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("user_account"))).into());
       }
 
       let mut user: user_account::ActiveModel = user.unwrap().into();
-      user.deleted_at = Set(Option::from(
-        DateTimeWithTimeZone::from(chrono::Local::now())
-      ));
+      user.deleted_at = Set(Option::from(DateTimeWithTimeZone::from(chrono::Local::now())));
       user.update(db).await?;
       Ok(())
     }
@@ -197,18 +147,24 @@ pub async fn delete_user_account(
 }
 
 pub async fn get_user_accounts(
-  paginator_option: PaginatorOption
+  paginator_option: Option<PaginatorOption>
 ) -> AppResult<Vec<UserAccountResponse>> {
-  let db = DB
-    .get()
-    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
-  let users = UserAccount::find()
-    .paginate(db, paginator_option.page_size)
-    .fetch_page(paginator_option.page)
-    .await?;
-  let res = users
-    .into_iter()
-    .map(|user: user_account::Model| UserAccountResponse::from(user))
-    .collect::<Vec<_>>();
-  Ok(res)
+  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  match paginator_option {
+    Some(paginator_option) => {
+      let user_accounts = UserAccount::find().paginate(db, paginator_option.page_size)
+        .fetch_page(paginator_option.page).await?;
+      let res = user_accounts.into_iter()
+        .map(|user: user_account::Model| UserAccountResponse::from(user))
+        .collect::<Vec<_>>();
+      Ok(res)
+    }
+    None => {
+      let user_accounts = UserAccount::find().all(db).await?;
+      let res = user_accounts.into_iter()
+        .map(|user_account: user_account::Model| UserAccountResponse::from(user_account))
+        .collect::<Vec<_>>();
+      Ok(res)
+    }
+  }
 }

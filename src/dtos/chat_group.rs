@@ -37,9 +37,9 @@ pub struct ChatGroupResponse {
   pub is_channel: bool,
 }
 
-impl From<crate::entities::chat_group> for ChatGroupResponse {
-  fn from(m: crate::entities::chat_group) -> ChatGroupResponse {
-    ChatGroupResponse {
+impl From<crate::entities::chat_group::Model> for ChatGroupResponse {
+  fn from(m: crate::entities::chat_group::Model) -> Self {
+    Self {
       creator_id: m.creator_id,
       created_at: m.created_at,
       updated_at: m.updated_at,

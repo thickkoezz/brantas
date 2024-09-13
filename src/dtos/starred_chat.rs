@@ -26,9 +26,9 @@ pub struct StarredChatResponse {
   pub chat_created_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::starred_chat> for StarredChatResponse {
-  fn from(m: crate::entities::starred_chat) -> StarredChatResponse {
-    StarredChatResponse {
+impl From<crate::entities::starred_chat::Model> for StarredChatResponse {
+  fn from(m: crate::entities::starred_chat::Model) -> Self {
+    Self {
       creator_id: m.creator_id,
       created_at: m.created_at,
       chat_sender_id: m.chat_sender_id,

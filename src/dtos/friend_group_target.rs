@@ -21,9 +21,9 @@ pub struct FriendGroupTargetResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::friend_group_target> for FriendGroupTargetResponse {
-  fn from(m: crate::entities::friend_group_target) -> FriendGroupTargetResponse {
-    FriendGroupTargetResponse {
+impl From<crate::entities::friend_group_target::Model> for FriendGroupTargetResponse {
+  fn from(m: crate::entities::friend_group_target::Model) -> Self {
+    Self {
       group_owner_id: m.group_owner_id,
       group_name: m.group_name,
       target_id: m.target_id,

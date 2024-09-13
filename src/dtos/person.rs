@@ -63,9 +63,9 @@ pub struct PersonResponse {
   pub nickname: Option<String>,
 }
 
-impl From<crate::entities::person> for PersonResponse {
-  fn from(m: crate::entities::person) -> PersonResponse {
-    PersonResponse {
+impl From<crate::entities::person::Model> for PersonResponse {
+  fn from(m: crate::entities::person::Model) -> Self {
+    Self {
       id: m.id,
       created_at: m.created_at,
       updated_at: m.updated_at,

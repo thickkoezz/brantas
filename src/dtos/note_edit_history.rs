@@ -25,9 +25,9 @@ pub struct NoteEditHistoryResponse {
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::note_edit_history> for NoteEditHistoryResponse {
-  fn from(m: crate::entities::note_edit_history) -> NoteEditHistoryResponse {
-    NoteEditHistoryResponse {
+impl From<crate::entities::note_edit_history::Model> for NoteEditHistoryResponse {
+  fn from(m: crate::entities::note_edit_history::Model) -> Self {
+    Self {
       note_owner_id: m.note_owner_id,
       note_created_at: m.note_created_at,
       editor_id: m.editor_id,
