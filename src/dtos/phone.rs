@@ -47,3 +47,17 @@ impl From<crate::entities::phone::Model> for PhoneResponse {
     }
   }
 }
+
+impl From<crate::entities::phone::ActiveModel> for PhoneResponse {
+  fn from(m: crate::entities::phone::ActiveModel) -> Self {
+    Self {
+      phone: m.phone.unwrap(),
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      is_verified: m.is_verified.unwrap(),
+      is_suspended: m.is_suspended.unwrap(),
+    }
+  }
+}

@@ -33,3 +33,15 @@ impl From<crate::entities::tweet_reaction::Model> for TweetReactionResponse {
     }
   }
 }
+
+impl From<crate::entities::tweet_reaction::ActiveModel> for TweetReactionResponse {
+  fn from(m: crate::entities::tweet_reaction::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      reacted_tweet_owner_id: m.reacted_tweet_owner_id.unwrap(),
+      reacted_tweet_created_at: m.reacted_tweet_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
+      reaction_emoji: m.reaction_emoji.unwrap(),
+    }
+  }
+}

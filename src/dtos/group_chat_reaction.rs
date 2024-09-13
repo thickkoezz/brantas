@@ -38,3 +38,17 @@ impl From<crate::entities::group_chat_reaction::Model> for GroupChatReactionResp
     }
   }
 }
+
+impl From<crate::entities::group_chat_reaction::ActiveModel> for GroupChatReactionResponse {
+  fn from(m: crate::entities::group_chat_reaction::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      reacted_group_chat_sender_id: m.reacted_group_chat_sender_id.unwrap(),
+      reacted_group_chat_group_creator_id: m.reacted_group_chat_group_creator_id.unwrap(),
+      reacted_group_chat_group_created_at: m.reacted_group_chat_group_created_at.unwrap(),
+      reacted_group_chat_created_at: m.reacted_group_chat_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
+      reaction_emoji: m.reaction_emoji.unwrap(),
+    }
+  }
+}

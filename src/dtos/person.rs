@@ -85,3 +85,26 @@ impl From<crate::entities::person::Model> for PersonResponse {
     }
   }
 }
+
+impl From<crate::entities::person::ActiveModel> for PersonResponse {
+  fn from(m: crate::entities::person::ActiveModel) -> Self {
+    Self {
+      id: m.id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      first_name: m.first_name.unwrap(),
+      middle_name: m.middle_name.unwrap(),
+      last_name: m.last_name.unwrap(),
+      dob: m.dob.unwrap(),
+      sex: m.sex.unwrap(),
+      deceased_at: m.deceased_at.unwrap(),
+      extra_info: m.extra_info.unwrap(),
+      is_deceased: m.is_deceased.unwrap(),
+      photo: m.photo.unwrap(),
+      email: m.email.unwrap(),
+      is_email_verified: m.is_email_verified.unwrap(),
+      nickname: m.nickname.unwrap(),
+    }
+  }
+}

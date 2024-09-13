@@ -31,8 +31,8 @@ pub async fn add_user_account(
     )),
     salt: Set(Option::from(salt.to_string())),
     created_at: Set(DateTimeWithTimeZone::from(chrono::Local::now())),
-    updated_at: Default::default(),
-    deleted_at: Default::default(),
+    updated_at: Set(None),
+    deleted_at: Set(None),
     balance: Set(req.balance.clone()),
     is_super_admin: Set(req.is_super_admin),
     r#type: Set(req.r#type.clone()),
@@ -50,7 +50,7 @@ pub async fn add_user_account(
   let user = UserAccount::insert(model.clone()).exec(db).await?;
   Ok(UserAccountResponse {
     id: user.last_insert_id,
-    ..UserAccountResponse::from(req)
+    ..UserAccountResponse::from(model)
   })
 }
 

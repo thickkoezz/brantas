@@ -29,3 +29,14 @@ impl From<crate::entities::friend::Model> for FriendResponse {
     }
   }
 }
+
+impl From<crate::entities::friend::ActiveModel> for FriendResponse {
+  fn from(m: crate::entities::friend::ActiveModel) -> Self {
+    Self {
+      invitor_id: m.invitor_id.unwrap(),
+      invitee_id: m.invitee_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

@@ -33,3 +33,15 @@ impl From<crate::entities::post_reaction::Model> for PostReactionResponse {
     }
   }
 }
+
+impl From<crate::entities::post_reaction::ActiveModel> for PostReactionResponse {
+  fn from(m: crate::entities::post_reaction::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      reacted_post_owner_id: m.reacted_post_owner_id.unwrap(),
+      reacted_post_created_at: m.reacted_post_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
+      reaction_emoji: m.reaction_emoji.unwrap(),
+    }
+  }
+}

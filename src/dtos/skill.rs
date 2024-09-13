@@ -43,3 +43,16 @@ impl From<crate::entities::skill::Model> for SkillResponse {
     }
   }
 }
+
+impl From<crate::entities::skill::ActiveModel> for SkillResponse {
+  fn from(m: crate::entities::skill::ActiveModel) -> Self {
+    Self {
+      person_id: m.person_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      name: m.name.unwrap(),
+      description: m.description.unwrap(),
+    }
+  }
+}

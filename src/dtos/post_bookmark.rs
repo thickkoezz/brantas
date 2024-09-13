@@ -30,3 +30,14 @@ impl From<crate::entities::post_bookmark::Model> for PostBookmarkResponse {
     }
   }
 }
+
+impl From<crate::entities::post_bookmark::ActiveModel> for PostBookmarkResponse {
+  fn from(m: crate::entities::post_bookmark::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      bookmarked_post_owner_id: m.bookmarked_post_owner_id.unwrap(),
+      bookmarked_post_created_at: m.bookmarked_post_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
+    }
+  }
+}

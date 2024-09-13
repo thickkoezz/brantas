@@ -36,3 +36,16 @@ impl From<crate::entities::direct_chat_reaction::Model> for DirectChatReactionRe
     }
   }
 }
+
+impl From<crate::entities::direct_chat_reaction::ActiveModel> for DirectChatReactionResponse {
+  fn from(m: crate::entities::direct_chat_reaction::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      reacted_direct_chat_sender_id: m.reacted_direct_chat_sender_id.unwrap(),
+      reacted_direct_chat_receiver_id: m.reacted_direct_chat_receiver_id.unwrap(),
+      reacted_direct_chat_created_at: m.reacted_direct_chat_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
+      reaction_emoji: m.reaction_emoji.unwrap(),
+    }
+  }
+}

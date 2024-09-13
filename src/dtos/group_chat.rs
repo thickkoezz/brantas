@@ -83,3 +83,26 @@ impl From<crate::entities::group_chat::Model> for GroupChatResponse {
     }
   }
 }
+
+impl From<crate::entities::group_chat::ActiveModel> for GroupChatResponse {
+  fn from(m: crate::entities::group_chat::ActiveModel) -> Self {
+    Self {
+      sender_id: m.sender_id.unwrap(),
+      group_creator_id: m.group_creator_id.unwrap(),
+      group_created_at: m.group_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
+      content: m.content.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      replied_sender_id: m.replied_sender_id.unwrap(),
+      replied_created_at: m.replied_created_at.unwrap(),
+      forwarded_sender_id: m.forwarded_sender_id.unwrap(),
+      forwarded_group_creator_id: m.forwarded_group_creator_id.unwrap(),
+      forwarded_group_created_at: m.forwarded_group_created_at.unwrap(),
+      forwarded_created_at: m.forwarded_created_at.unwrap(),
+      forwarded_receiver_id: m.forwarded_receiver_id.unwrap(),
+      is_pinned: m.is_pinned.unwrap(),
+      pin_expired_at: m.pin_expired_at.unwrap(),
+    }
+  }
+}

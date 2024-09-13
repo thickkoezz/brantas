@@ -32,3 +32,15 @@ impl From<crate::entities::organization_administrator::Model> for OrganizationAd
     }
   }
 }
+
+impl From<crate::entities::organization_administrator::ActiveModel> for OrganizationAdministratorResponse {
+  fn from(m: crate::entities::organization_administrator::ActiveModel) -> Self {
+    Self {
+      organization_id: m.organization_id.unwrap(),
+      administrator_id: m.administrator_id.unwrap(),
+      department_id: m.department_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

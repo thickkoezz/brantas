@@ -27,3 +27,13 @@ impl From<crate::entities::verification_token::Model> for VerificationTokenRespo
     }
   }
 }
+
+impl From<crate::entities::verification_token::ActiveModel> for VerificationTokenResponse {
+  fn from(m: crate::entities::verification_token::ActiveModel) -> Self {
+    Self {
+      identifier: m.identifier.unwrap(),
+      token: m.token.unwrap(),
+      expires: m.expires.unwrap(),
+    }
+  }
+}

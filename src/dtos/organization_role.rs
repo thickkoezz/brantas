@@ -47,3 +47,17 @@ impl From<crate::entities::organization_role::Model> for OrganizationRoleRespons
     }
   }
 }
+
+impl From<crate::entities::organization_role::ActiveModel> for OrganizationRoleResponse {
+  fn from(m: crate::entities::organization_role::ActiveModel) -> Self {
+    Self {
+      organization_id: m.organization_id.unwrap(),
+      name: m.name.unwrap(),
+      description: m.description.unwrap(),
+      extra_info: m.extra_info.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

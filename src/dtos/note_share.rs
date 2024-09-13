@@ -44,3 +44,16 @@ impl From<crate::entities::note_share::Model> for NoteShareResponse {
     }
   }
 }
+
+impl From<crate::entities::note_share::ActiveModel> for NoteShareResponse {
+  fn from(m: crate::entities::note_share::ActiveModel) -> Self {
+    Self {
+      note_owner_id: m.note_owner_id.unwrap(),
+      note_created_at: m.note_created_at.unwrap(),
+      editor_id: m.editor_id.unwrap(),
+      can_edit: m.can_edit.unwrap(),
+      created_at: m.created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

@@ -33,3 +33,15 @@ impl From<crate::entities::project_skill::Model> for ProjectSkillResponse {
     }
   }
 }
+
+impl From<crate::entities::project_skill::ActiveModel> for ProjectSkillResponse {
+  fn from(m: crate::entities::project_skill::ActiveModel) -> Self {
+    Self {
+      person_id: m.person_id.unwrap(),
+      project_created_at: m.project_created_at.unwrap(),
+      skill_created_at: m.skill_created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      description: m.description.unwrap(),
+    }
+  }
+}

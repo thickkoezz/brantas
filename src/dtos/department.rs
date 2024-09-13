@@ -75,3 +75,24 @@ impl From<crate::entities::department::Model> for DepartmentResponse {
     }
   }
 }
+
+impl From<crate::entities::department::ActiveModel> for DepartmentResponse {
+  fn from(m: crate::entities::department::ActiveModel) -> Self {
+    Self {
+      id: m.id.unwrap(),
+      organization_id: m.organization_id.unwrap(),
+      name: m.name.unwrap(),
+      abbreviation: m.abbreviation.unwrap(),
+      description: m.description.unwrap(),
+      dob: m.dob.unwrap(),
+      is_dead: m.is_dead.unwrap(),
+      dead_at: m.dead_at.unwrap(),
+      extra_info: m.extra_info.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      parent_id: m.parent_id.unwrap(),
+      logo: m.logo.unwrap(),
+    }
+  }
+}

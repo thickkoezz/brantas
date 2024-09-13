@@ -75,3 +75,24 @@ impl From<crate::entities::tweet::Model> for TweetResponse {
     }
   }
 }
+
+impl From<crate::entities::tweet::ActiveModel> for TweetResponse {
+  fn from(m: crate::entities::tweet::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      tweet: m.tweet.unwrap(),
+      is_published: m.is_published.unwrap(),
+      hashtag: m.hashtag.unwrap(),
+      replied_owner_id: m.replied_owner_id.unwrap(),
+      replied_created_at: m.replied_created_at.unwrap(),
+      retweeted_owner_id: m.retweeted_owner_id.unwrap(),
+      retweeted_created_at: m.retweeted_created_at.unwrap(),
+      reaction_count: m.reaction_count.unwrap(),
+      reply_count: m.reply_count.unwrap(),
+      retweet_count: m.retweet_count.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

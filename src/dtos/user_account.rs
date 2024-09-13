@@ -118,6 +118,35 @@ impl From<crate::entities::user_account::Model> for UserAccountResponse {
   }
 }
 
+impl From<crate::entities::user_account::ActiveModel> for UserAccountResponse {
+  fn from(m: crate::entities::user_account::ActiveModel) -> Self {
+    Self {
+      id: m.id.unwrap(),
+      owner_id: m.owner_id.unwrap(),
+      email: m.email.unwrap(),
+      username: m.username.unwrap(),
+      picture: m.picture.unwrap(),
+      salt: m.salt.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      balance: m.balance.unwrap(),
+      is_super_admin: m.is_super_admin.unwrap(),
+      r#type: m.r#type.unwrap(),
+      provider: m.provider.unwrap(),
+      provider_account_id: m.provider_account_id.unwrap(),
+      refresh_token: m.refresh_token.unwrap(),
+      access_token: m.access_token.unwrap(),
+      token_type: m.token_type.unwrap(),
+      scope: m.scope.unwrap(),
+      id_token: m.id_token.unwrap(),
+      session_state: m.session_state.unwrap(),
+      expires_at: m.expires_at.unwrap(),
+      refresh_token_expires_in: m.refresh_token_expires_in.unwrap(),
+    }
+  }
+}
+
 #[derive(Debug, Serialize, ToSchema, Default)]
 pub struct UserAccountLoginResponse {
   pub id: Uuid,

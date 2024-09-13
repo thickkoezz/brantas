@@ -31,3 +31,14 @@ impl From<crate::entities::session::Model> for SessionResponse {
     }
   }
 }
+
+impl From<crate::entities::session::ActiveModel> for SessionResponse {
+  fn from(m: crate::entities::session::ActiveModel) -> Self {
+    Self {
+      id: m.id.unwrap(),
+      session_token: m.session_token.unwrap(),
+      user_account_id: m.user_account_id.unwrap(),
+      expires: m.expires.unwrap(),
+    }
+  }
+}

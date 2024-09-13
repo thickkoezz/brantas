@@ -40,3 +40,15 @@ impl From<crate::entities::balance_history::Model> for BalanceHistoryResponse {
     }
   }
 }
+
+impl From<crate::entities::balance_history::ActiveModel> for BalanceHistoryResponse {
+  fn from(m: crate::entities::balance_history::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      ref_id: m.ref_id.unwrap(),
+      amount: m.amount.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

@@ -39,3 +39,17 @@ impl From<crate::entities::starred_chat::Model> for StarredChatResponse {
     }
   }
 }
+
+impl From<crate::entities::starred_chat::ActiveModel> for StarredChatResponse {
+  fn from(m: crate::entities::starred_chat::ActiveModel) -> Self {
+    Self {
+      creator_id: m.creator_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      chat_sender_id: m.chat_sender_id.unwrap(),
+      direct_chat_receiver_id: m.direct_chat_receiver_id.unwrap(),
+      group_chat_group_creator_id: m.group_chat_group_creator_id.unwrap(),
+      group_chat_group_created_at: m.group_chat_group_created_at.unwrap(),
+      chat_created_at: m.chat_created_at.unwrap(),
+    }
+  }
+}

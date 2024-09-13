@@ -38,3 +38,17 @@ impl From<crate::entities::note_edit_history::Model> for NoteEditHistoryResponse
     }
   }
 }
+
+impl From<crate::entities::note_edit_history::ActiveModel> for NoteEditHistoryResponse {
+  fn from(m: crate::entities::note_edit_history::ActiveModel) -> Self {
+    Self {
+      note_owner_id: m.note_owner_id.unwrap(),
+      note_created_at: m.note_created_at.unwrap(),
+      editor_id: m.editor_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      title: m.title.unwrap(),
+      content: m.content.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

@@ -39,3 +39,15 @@ impl From<crate::entities::friend_group::Model> for FriendGroupResponse {
     }
   }
 }
+
+impl From<crate::entities::friend_group::ActiveModel> for FriendGroupResponse {
+  fn from(m: crate::entities::friend_group::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      name: m.name.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

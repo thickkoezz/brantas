@@ -17,16 +17,16 @@ pub async fn add_balance_history(
   let model = balance_history::ActiveModel {
     owner_id: Set(req.owner_id.into()),
     created_at: Set(DateTimeWithTimeZone::from(chrono::Local::now())),
-    ref_id: Set(req.ref_id),
-    amount: Set(req.amount),
-    deleted_at: Default::default(),
+    ref_id: Set(req.ref_id.into()),
+    amount: Set(req.amount.into()),
+    deleted_at: Set(None),
   };
   let user = BalanceHistory::insert(model.clone()).exec(db).await?;
   Ok(BalanceHistoryResponse {
     owner_id: user.last_insert_id.0,
     created_at: user.last_insert_id.1,
     ref_id: user.last_insert_id.2,
-    ..BalanceHistoryResponse::from(req)
+    ..BalanceHistoryResponse::from(model)
   })
 }
 

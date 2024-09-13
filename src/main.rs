@@ -25,7 +25,6 @@ mod middleware;
 mod routers;
 mod services;
 mod utils;
-mod repository;
 
 #[tokio::main]
 async fn main() {

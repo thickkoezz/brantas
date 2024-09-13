@@ -1,12 +1,36 @@
+use argon2::password_hash::SaltString;
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
 use crate::entities::{prelude::ChatGroup, chat_group};
-use crate::dtos::chat_group::ChatGroupResponse;
+use crate::dtos::chat_group::{ChatGroupAddRequest, ChatGroupResponse};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use sea_orm::sqlx::types::chrono;
 use uuid::Uuid;
+
+pub async fn add_chat_group(
+  req: ChatGroupAddRequest
+) -> AppResult<ChatGroupResponse> {
+  let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
+  let salt = SaltString::generate(rand::thread_rng());
+  let model = chat_group::ActiveModel {
+    creator_id: Default::default(),
+    created_at: Set(DateTimeWithTimeZone::from(chrono::Local::now())),
+    updated_at: Default::default(),
+    deleted_at: Set(None),
+    name: Default::default(),
+    is_public: Default::default(),
+    is_suspended: Default::default(),
+    is_channel: Default::default(),
+  };
+  let user = ChatGroup::insert(model.clone()).exec(db).await?;
+  Ok(ChatGroupResponse {
+    creator_id: user.last_insert_id.0,
+    created_at: user.last_insert_id.1,
+    ..ChatGroupResponse::from(model)
+  })
+}
 
 pub async fn delete_chat_group(
   deletion_mode: DeletionMode,

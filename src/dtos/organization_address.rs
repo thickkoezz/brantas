@@ -43,3 +43,16 @@ impl From<crate::entities::organization_address::Model> for OrganizationAddressR
     }
   }
 }
+
+impl From<crate::entities::organization_address::ActiveModel> for OrganizationAddressResponse {
+  fn from(m: crate::entities::organization_address::ActiveModel) -> Self {
+    Self {
+      organization_id: m.organization_id.unwrap(),
+      city_id: m.city_id.unwrap(),
+      department_id: m.department_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

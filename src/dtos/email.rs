@@ -47,3 +47,17 @@ impl From<crate::entities::email::Model> for EmailResponse {
     }
   }
 }
+
+impl From<crate::entities::email::ActiveModel> for EmailResponse {
+  fn from(m: crate::entities::email::ActiveModel) -> Self {
+    Self {
+      email: m.email.unwrap(),
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      is_verified: m.is_verified.unwrap(),
+      is_suspended: m.is_suspended.unwrap(),
+    }
+  }
+}

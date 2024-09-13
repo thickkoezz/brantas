@@ -64,7 +64,7 @@ pub struct DirectChatResponse {
 impl From<crate::entities::direct_chat::Model> for DirectChatResponse {
   fn from(m: crate::entities::direct_chat::Model) -> Self {
     Self {
-      sender_id: m.receiver_id,
+      sender_id: m.sender_id,
       receiver_id: m.receiver_id,
       created_at: m.created_at,
       content: m.content,
@@ -80,6 +80,29 @@ impl From<crate::entities::direct_chat::Model> for DirectChatResponse {
       forwarded_group_created_at: m.forwarded_group_created_at,
       is_pinned: m.is_pinned,
       pin_expired_at: m.pin_expired_at,
+    }
+  }
+}
+
+impl From<crate::entities::direct_chat::ActiveModel> for DirectChatResponse {
+  fn from(m: crate::entities::direct_chat::ActiveModel) -> Self {
+    Self {
+      sender_id: m.sender_id.unwrap(),
+      receiver_id: m.receiver_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      content: m.content.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      replied_sender_id: m.replied_sender_id.unwrap(),
+      replied_receiver_id: m.replied_receiver_id.unwrap(),
+      replied_created_at: m.replied_created_at.unwrap(),
+      forwarded_sender_id: m.forwarded_sender_id.unwrap(),
+      forwarded_receiver_id: m.forwarded_receiver_id.unwrap(),
+      forwarded_created_at: m.forwarded_created_at.unwrap(),
+      forwarded_group_creator_id: m.forwarded_group_creator_id.unwrap(),
+      forwarded_group_created_at: m.forwarded_group_created_at.unwrap(),
+      is_pinned: m.is_pinned.unwrap(),
+      pin_expired_at: m.pin_expired_at.unwrap(),
     }
   }
 }

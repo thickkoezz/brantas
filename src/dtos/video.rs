@@ -59,3 +59,20 @@ impl From<crate::entities::video::Model> for VideoResponse {
     }
   }
 }
+
+impl From<crate::entities::video::ActiveModel> for VideoResponse {
+  fn from(m: crate::entities::video::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      video: m.video.unwrap(),
+      size: m.size.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      title: m.title.unwrap(),
+      caption: m.caption.unwrap(),
+      code: m.code.unwrap(),
+      slug: m.slug.unwrap(),
+    }
+  }
+}

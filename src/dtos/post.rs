@@ -75,3 +75,24 @@ impl From<crate::entities::post::Model> for PostResponse {
     }
   }
 }
+
+impl From<crate::entities::post::ActiveModel> for PostResponse {
+  fn from(m: crate::entities::post::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      title: m.title.unwrap(),
+      content: m.content.unwrap(),
+      is_published: m.is_published.unwrap(),
+      hashtag: m.hashtag.unwrap(),
+      view_count: m.view_count.unwrap(),
+      comment_count: m.comment_count.unwrap(),
+      reaction_count: m.reaction_count.unwrap(),
+      is_public: m.is_public.unwrap(),
+      group_name: m.group_name.unwrap(),
+      can_comment: m.can_comment.unwrap(),
+    }
+  }
+}

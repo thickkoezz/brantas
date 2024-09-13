@@ -71,3 +71,23 @@ impl From<crate::entities::organization::Model> for OrganizationResponse {
     }
   }
 }
+
+impl From<crate::entities::organization::ActiveModel> for OrganizationResponse {
+  fn from(m: crate::entities::organization::ActiveModel) -> Self {
+    Self {
+      id: m.id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      name: m.name.unwrap(),
+      abbreviation: m.abbreviation.unwrap(),
+      description: m.description.unwrap(),
+      dob: m.dob.unwrap(),
+      dead_at: m.dead_at.unwrap(),
+      extra_info: m.extra_info.unwrap(),
+      is_dead: m.is_dead.unwrap(),
+      parent_id: m.parent_id.unwrap(),
+      logo: m.logo.unwrap(),
+    }
+  }
+}

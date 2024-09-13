@@ -29,3 +29,14 @@ impl From<crate::entities::follow::Model> for FollowResponse {
     }
   }
 }
+
+impl From<crate::entities::follow::ActiveModel> for FollowResponse {
+  fn from(m: crate::entities::follow::ActiveModel) -> Self {
+    Self {
+      follower_id: m.follower_id.unwrap(),
+      target_id: m.target_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

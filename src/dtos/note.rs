@@ -43,3 +43,16 @@ impl From<crate::entities::note::Model> for NoteResponse {
     }
   }
 }
+
+impl From<crate::entities::note::ActiveModel> for NoteResponse {
+  fn from(m: crate::entities::note::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      title: m.title.unwrap(),
+      content: m.content.unwrap(),
+    }
+  }
+}

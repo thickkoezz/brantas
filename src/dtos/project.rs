@@ -51,3 +51,18 @@ impl From<crate::entities::project::Model> for ProjectResponse {
     }
   }
 }
+
+impl From<crate::entities::project::ActiveModel> for ProjectResponse {
+  fn from(m: crate::entities::project::ActiveModel) -> Self {
+    Self {
+      person_id: m.person_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      name: m.name.unwrap(),
+      description: m.description.unwrap(),
+      start_date: m.start_date.unwrap(),
+      end_date: m.end_date.unwrap(),
+    }
+  }
+}

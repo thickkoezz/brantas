@@ -51,3 +51,18 @@ impl From<crate::entities::chat_group::Model> for ChatGroupResponse {
     }
   }
 }
+
+impl From<crate::entities::chat_group::ActiveModel> for ChatGroupResponse {
+  fn from(m: crate::entities::chat_group::ActiveModel) -> Self {
+    Self {
+      creator_id: m.creator_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      name: m.name.unwrap(),
+      is_public: m.is_public.unwrap(),
+      is_suspended: m.is_suspended.unwrap(),
+      is_channel: m.is_channel.unwrap(),
+    }
+  }
+}

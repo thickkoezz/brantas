@@ -30,3 +30,14 @@ impl From<crate::entities::tweet_bookmark::Model> for TweetBookmarkResponse {
     }
   }
 }
+
+impl From<crate::entities::tweet_bookmark::ActiveModel> for TweetBookmarkResponse {
+  fn from(m: crate::entities::tweet_bookmark::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      bookmarked_tweet_owner_id: m.bookmarked_tweet_owner_id.unwrap(),
+      bookmarked_tweet_created_at: m.bookmarked_tweet_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
+    }
+  }
+}

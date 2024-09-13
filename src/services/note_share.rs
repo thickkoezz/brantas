@@ -59,7 +59,7 @@ pub async fn get_note_share(
     None => {
       let note_shares = NoteShare::find().all(db).await?;
       let res = note_shares.into_iter()
-        .map(|note_share: NoteShare::Model| NoteShareResponse::from(note_share))
+        .map(|note_share: note_share::Model| NoteShareResponse::from(note_share))
         .collect::<Vec<_>>();
       Ok(res)
     }

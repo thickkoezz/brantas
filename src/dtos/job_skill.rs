@@ -36,3 +36,16 @@ impl From<crate::entities::job_skill::Model> for JobSkillResponse {
     }
   }
 }
+
+impl From<crate::entities::job_skill::ActiveModel> for JobSkillResponse {
+  fn from(m: crate::entities::job_skill::ActiveModel) -> Self {
+    Self {
+      organization_id: m.organization_id.unwrap(),
+      person_id: m.person_id.unwrap(),
+      job_created_at: m.job_created_at.unwrap(),
+      skill_created_at: m.skill_created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      description: m.description.unwrap(),
+    }
+  }
+}

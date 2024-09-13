@@ -51,3 +51,18 @@ impl From<crate::entities::post_comment::Model> for PostCommentResponse {
     }
   }
 }
+
+impl From<crate::entities::post_comment::ActiveModel> for PostCommentResponse {
+  fn from(m: crate::entities::post_comment::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      commented_post_owner_id: m.commented_post_owner_id.unwrap(),
+      commented_post_created_at: m.commented_post_created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      content: m.content.unwrap(),
+      reaction_count: m.reaction_count.unwrap(),
+    }
+  }
+}

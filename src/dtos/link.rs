@@ -51,3 +51,18 @@ impl From<crate::entities::link::Model> for LinkResponse {
     }
   }
 }
+
+impl From<crate::entities::link::ActiveModel> for LinkResponse {
+  fn from(m: crate::entities::link::ActiveModel) -> Self {
+    Self {
+      id: m.id.unwrap(),
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      link_url: m.link_url.unwrap(),
+      hashtag: m.hashtag.unwrap(),
+      use_count: m.use_count.unwrap(),
+    }
+  }
+}

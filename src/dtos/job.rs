@@ -63,3 +63,21 @@ impl From<crate::entities::job::Model> for JobResponse {
     }
   }
 }
+
+impl From<crate::entities::job::ActiveModel> for JobResponse {
+  fn from(m: crate::entities::job::ActiveModel) -> Self {
+    Self {
+      organization_id: m.organization_id.unwrap(),
+      person_id: m.person_id.unwrap(),
+      department_id: m.department_id.unwrap(),
+      role: m.role.unwrap(),
+      job_description: m.job_description.unwrap(),
+      start_at: m.start_at.unwrap(),
+      end_at: m.end_at.unwrap(),
+      is_head_of_department: m.is_head_of_department.unwrap(),
+      created_at: m.created_at.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

@@ -38,3 +38,17 @@ impl From<crate::entities::link_code::Model> for LinkCodeResponse {
     }
   }
 }
+
+impl From<crate::entities::link_code::ActiveModel> for LinkCodeResponse {
+  fn from(m: crate::entities::link_code::ActiveModel) -> Self {
+    Self {
+      link_id: m.link_id.unwrap(),
+      code: m.code.unwrap(),
+      created_at: m.created_at.unwrap(),
+      expired_at: m.expired_at.unwrap(),
+      is_public: m.is_public.unwrap(),
+      is_code_manually_typed: m.is_code_manually_typed.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

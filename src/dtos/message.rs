@@ -45,3 +45,16 @@ impl From<crate::entities::message::Model> for MessageResponse {
     }
   }
 }
+
+impl From<crate::entities::message::ActiveModel> for MessageResponse {
+  fn from(m: crate::entities::message::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      receiver_id: m.receiver_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      message: m.message.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

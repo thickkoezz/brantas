@@ -40,3 +40,15 @@ impl From<crate::entities::chat_group_member::Model> for ChatGroupMemberResponse
     }
   }
 }
+
+impl From<crate::entities::chat_group_member::ActiveModel> for ChatGroupMemberResponse {
+  fn from(m: crate::entities::chat_group_member::ActiveModel) -> Self {
+    Self {
+      group_creator_id: m.group_creator_id.unwrap(),
+      group_created_at: m.group_created_at.unwrap(),
+      member_id: m.member_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

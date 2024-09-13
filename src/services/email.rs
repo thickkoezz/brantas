@@ -1,12 +1,11 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::entities::prelude::{Block, Email};
-use crate::entities::{block, email};
-use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use crate::entities::{prelude::Email, email};
+use crate::dtos::email::EmailResponse;
+use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
-use crate::dtos::block::BlockResponse;
 
 pub async fn delete_email(deletion_mode: DeletionMode, email: String) -> AppResult<()> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -33,22 +32,22 @@ pub async fn delete_email(deletion_mode: DeletionMode, email: String) -> AppResu
   }
 }
 
-pub async fn get_block(
+pub async fn get_email(
   paginator_option: Option<PaginatorOption>
-) -> AppResult<Vec<BlockResponse>> {
+) -> AppResult<Vec<EmailResponse>> {
   let db = DB.get().ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match paginator_option {
     Some(paginator_option) => {
-      let blocks = Block::find().paginate(db, paginator_option.page_size)
+      let emails = Email::find().paginate(db, paginator_option.page_size)
         .fetch_page(paginator_option.page).await?;
-      let res = blocks.into_iter()
-        .map(|block: block::Model| BlockResponse::from(block)).collect::<Vec<_>>();
+      let res = emails.into_iter()
+        .map(|email: email::Model| EmailResponse::from(email)).collect::<Vec<_>>();
       Ok(res)
     }
     None => {
-      let blocks = Block::find().all(db).await?;
-      let res = blocks.into_iter()
-        .map(|block: block::Model| BlockResponse::from(block)).collect::<Vec<_>>();
+      let emails = Email::find().all(db).await?;
+      let res = emails.into_iter()
+        .map(|email: email::Model| EmailResponse::from(email)).collect::<Vec<_>>();
       Ok(res)
     }
   }

@@ -50,11 +50,29 @@ impl From<crate::entities::photo::Model> for PhotoResponse {
       created_at: m.created_at,
       photo: m.photo,
       size: m.size,
+      updated_at: m.updated_at,
       deleted_at: m.deleted_at,
       title: m.title,
       caption: m.caption,
       code: m.code,
       slug: m.slug,
+    }
+  }
+}
+
+impl From<crate::entities::photo::ActiveModel> for PhotoResponse {
+  fn from(m: crate::entities::photo::ActiveModel) -> Self {
+    Self {
+      owner_id: m.owner_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      photo: m.photo.unwrap(),
+      size: m.size.unwrap(),
+      updated_at: m.updated_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      title: m.title.unwrap(),
+      caption: m.caption.unwrap(),
+      code: m.code.unwrap(),
+      slug: m.slug.unwrap(),
     }
   }
 }

@@ -24,8 +24,8 @@ pub struct JobProjectResponse {
   pub description: Option<String>,
 }
 
-impl From<crate::entities::job_project::Model> for Self {
-  fn from(m: crate::entities::job_project::Model) -> JobProjectResponse {
+impl From<crate::entities::job_project::Model> for JobProjectResponse {
+  fn from(m: crate::entities::job_project::Model) -> Self {
     Self {
       organization_id: m.organization_id,
       person_id: m.person_id,
@@ -33,6 +33,19 @@ impl From<crate::entities::job_project::Model> for Self {
       project_created_at: m.project_created_at,
       deleted_at: m.deleted_at,
       description: m.description,
+    }
+  }
+}
+
+impl From<crate::entities::job_project::ActiveModel> for JobProjectResponse {
+  fn from(m: crate::entities::job_project::ActiveModel) -> Self {
+    Self {
+      organization_id: m.organization_id.unwrap(),
+      person_id: m.person_id.unwrap(),
+      job_created_at: m.job_created_at.unwrap(),
+      project_created_at: m.project_created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+      description: m.description.unwrap(),
     }
   }
 }

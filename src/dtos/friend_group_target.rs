@@ -32,3 +32,15 @@ impl From<crate::entities::friend_group_target::Model> for FriendGroupTargetResp
     }
   }
 }
+
+impl From<crate::entities::friend_group_target::ActiveModel> for FriendGroupTargetResponse {
+  fn from(m: crate::entities::friend_group_target::ActiveModel) -> Self {
+    Self {
+      group_owner_id: m.group_owner_id.unwrap(),
+      group_name: m.group_name.unwrap(),
+      target_id: m.target_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

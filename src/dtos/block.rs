@@ -36,3 +36,14 @@ impl From<crate::entities::block::Model> for BlockResponse {
     }
   }
 }
+
+impl From<crate::entities::block::ActiveModel> for BlockResponse {
+  fn from(m: crate::entities::block::ActiveModel) -> Self {
+    Self {
+      blocker_id: m.blocker_id.unwrap(),
+      target_id: m.target_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}

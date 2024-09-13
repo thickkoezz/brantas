@@ -44,3 +44,16 @@ impl From<crate::entities::post_share::Model> for PostShareResponse {
     }
   }
 }
+
+impl From<crate::entities::post_share::ActiveModel> for PostShareResponse {
+  fn from(m: crate::entities::post_share::ActiveModel) -> Self {
+    Self {
+      post_owner_id: m.post_owner_id.unwrap(),
+      post_created_at: m.post_created_at.unwrap(),
+      target_id: m.target_id.unwrap(),
+      created_at: m.created_at.unwrap(),
+      can_comment: m.can_comment.unwrap(),
+      deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}
