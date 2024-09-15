@@ -1,36 +1,36 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::post_comment::{PostCommentAddRequest, PostCommentResponse};
-use crate::entities::{post_comment, prelude::PostComment};
+use crate::dtos::photo_comment::{PhotoCommentAddRequest, PhotoCommentResponse};
+use crate::entities::{photo_comment, prelude::PhotoComment};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_post_comment(req: PostCommentAddRequest) -> AppResult<PostCommentResponse> {
+pub async fn add_photo_comment(req: PhotoCommentAddRequest) -> AppResult<PhotoCommentResponse> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
-  let model = post_comment::ActiveModel {
+  let model = photo_comment::ActiveModel {
     owner_id: Set(req.owner_id),
     created_at: Set(DateTimeWithTimeZone::from(chrono::Local::now())),
-    commented_post_owner_id: Set(req.commented_post_owner_id),
-    commented_post_created_at: Set(req.commented_post_created_at),
+    commented_photo_owner_id: Set(req.commented_photo_owner_id),
+    commented_photo_created_at: Set(req.commented_photo_created_at),
     updated_at: Set(None),
     deleted_at: Set(None),
     content: Set(req.content),
     reaction_count: Set(0),
   };
-  let post_comment = PostComment::insert(model.clone()).exec(db).await?;
-  Ok(PostCommentResponse {
-    owner_id: post_comment.last_insert_id.0,
-    created_at: post_comment.last_insert_id.1,
-    ..PostCommentResponse::from(model)
+  let photo_comment = PhotoComment::insert(model.clone()).exec(db).await?;
+  Ok(PhotoCommentResponse {
+    owner_id: photo_comment.last_insert_id.0,
+    created_at: photo_comment.last_insert_id.1,
+    ..PhotoCommentResponse::from(model)
   })
 }
 
-pub async fn delete_post_comment(
+pub async fn delete_photo_comment(
   deletion_mode: DeletionMode,
   owner_id: Uuid,
   created_at: DateTimeWithTimeZone,
@@ -40,7 +40,7 @@ pub async fn delete_post_comment(
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match deletion_mode {
     DeletionMode::Hard => {
-      let result = PostComment::delete_by_id((owner_id, created_at))
+      let result = PhotoComment::delete_by_id((owner_id, created_at))
         .exec(db)
         .await?;
       match result.rows_affected {
@@ -49,46 +49,46 @@ pub async fn delete_post_comment(
       }
     },
     DeletionMode::Soft => {
-      let post_comment = PostComment::find_by_id((owner_id, created_at))
+      let photo_comment = PhotoComment::find_by_id((owner_id, created_at))
         .one(db)
         .await?;
-      if post_comment.is_none() {
+      if photo_comment.is_none() {
         return Err(anyhow::anyhow!(t!("x_not_exist", x = t!("comment"))).into());
       }
 
-      let mut post_comment: post_comment::ActiveModel = post_comment.unwrap().into();
-      post_comment.deleted_at = Set(Option::from(DateTimeWithTimeZone::from(
+      let mut photo_comment: photo_comment::ActiveModel = photo_comment.unwrap().into();
+      photo_comment.deleted_at = Set(Option::from(DateTimeWithTimeZone::from(
         chrono::Local::now(),
       )));
-      post_comment.update(db).await?;
+      photo_comment.update(db).await?;
       Ok(())
     },
   }
 }
 
-pub async fn get_post_comment(
+pub async fn get_photo_comment(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<PostCommentResponse>> {
+) -> AppResult<Vec<PhotoCommentResponse>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match paginator_option {
     Some(paginator_option) => {
-      let post_comments = PostComment::find()
+      let photo_comments = PhotoComment::find()
         .paginate(db, paginator_option.page_size)
         .fetch_page(paginator_option.page)
         .await?;
-      let res = post_comments
+      let res = photo_comments
         .into_iter()
-        .map(|post_comment: post_comment::Model| PostCommentResponse::from(post_comment))
+        .map(|photo_comment: photo_comment::Model| PhotoCommentResponse::from(photo_comment))
         .collect::<Vec<_>>();
       Ok(res)
     },
     None => {
-      let post_comments = PostComment::find().all(db).await?;
-      let res = post_comments
+      let photo_comments = PhotoComment::find().all(db).await?;
+      let res = photo_comments
         .into_iter()
-        .map(|post_comment: post_comment::Model| PostCommentResponse::from(post_comment))
+        .map(|photo_comment: photo_comment::Model| PhotoCommentResponse::from(photo_comment))
         .collect::<Vec<_>>();
       Ok(res)
     },
