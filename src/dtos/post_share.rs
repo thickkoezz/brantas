@@ -1,6 +1,6 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
-use sea_orm::prelude::{DateTime, DateTimeWithTimeZone};
+use sea_orm::prelude::DateTimeWithTimeZone;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -8,7 +8,7 @@ use validator::Validate;
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
 pub struct PostShareAddRequest {
   pub post_owner_id: Uuid,
-  pub post_created_at: DateTime,
+  pub post_created_at: DateTimeWithTimeZone,
   pub target_id: Uuid,
   pub can_comment: bool,
 }
@@ -16,7 +16,7 @@ pub struct PostShareAddRequest {
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
 pub struct PostShareUpdateRequest {
   pub post_owner_id: Uuid,
-  pub post_created_at: DateTime,
+  pub post_created_at: DateTimeWithTimeZone,
   pub target_id: Uuid,
   pub can_comment: bool,
   pub deleted_at: Option<DateTimeWithTimeZone>,

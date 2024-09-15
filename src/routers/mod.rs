@@ -1,12 +1,9 @@
+use self::{demo::hello, user_account::post_login};
+use crate::middleware::cors::cors_middleware;
 use crate::middleware::jwt::jwt_middleware;
 use salvo::{
   prelude::{CatchPanic, Logger, OpenApi, Scalar},
   Router,
-};
-
-use self::{
-  demo::hello,
-  user_account::{login_page, post_login},
 };
 
 pub mod demo;
@@ -14,16 +11,16 @@ mod static_routers;
 mod user_account;
 
 pub fn router() -> Router {
-  let mut no_auth_routers = vec![
-    Router::with_path("login").get(login_page),
-    Router::with_path("/api/login").post(post_login),
-  ];
+  let mut no_auth_routers = vec![Router::with_path("/api/login").post(post_login)];
   no_auth_routers.extend(static_routers::create_static_routers());
 
   let mut need_auth_routers: Vec<Router> = Vec::new();
   need_auth_routers.extend(user_account::create_routers());
 
+  let _cors_handler = cors_middleware();
+
   let router = Router::new()
+    .hoop(_cors_handler)
     .hoop(Logger::new())
     .hoop(CatchPanic::new())
     .get(hello)

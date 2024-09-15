@@ -19,7 +19,6 @@ pub struct PersonAddRequest {
   pub photo: Option<String>,
   #[validate(email)]
   pub email: Option<String>,
-  pub is_email_verified: bool,
   pub nickname: Option<String>,
 }
 

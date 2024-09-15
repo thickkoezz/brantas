@@ -15,9 +15,6 @@ pub struct TweetAddRequest {
   pub replied_created_at: Option<DateTimeWithTimeZone>,
   pub retweeted_owner_id: Option<Uuid>,
   pub retweeted_created_at: Option<DateTimeWithTimeZone>,
-  pub reaction_count: i32,
-  pub reply_count: i32,
-  pub retweet_count: i32,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]

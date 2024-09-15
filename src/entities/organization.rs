@@ -83,6 +83,19 @@ impl Related<super::organization_administrator::Entity> for Entity {
   }
 }
 
+impl Related<super::m_cities::Entity> for Entity {
+  fn to() -> RelationDef {
+    super::organization_address::Relation::MCities.def()
+  }
+  fn via() -> Option<RelationDef> {
+    Some(
+      super::organization_address::Relation::Organization
+        .def()
+        .rev(),
+    )
+  }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
@@ -95,18 +108,14 @@ pub enum RelatedEntity {
   JobProject,
   #[sea_orm(entity = "super::job_skill::Entity")]
   JobSkill,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Parent.def()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Parent.def()")]
   Parent,
   #[sea_orm(entity = "super::organization_address::Entity")]
   OrganizationAddress,
   #[sea_orm(entity = "super::organization_administrator::Entity")]
   OrganizationAdministrator,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Parent.def().rev()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Parent.def().rev()")]
   Child,
+  #[sea_orm(entity = "super::m_cities::Entity")]
+  MCities,
 }

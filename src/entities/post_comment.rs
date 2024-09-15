@@ -62,9 +62,6 @@ pub enum RelatedEntity {
     def = "Relation::CommentedPostOwner.def()"
   )]
   CommentedPostOwner,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::Owner.def()"
-  )]
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Owner.def()")]
   Owner,
 }

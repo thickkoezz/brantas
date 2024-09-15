@@ -34,6 +34,8 @@ pub enum Relation {
     on_delete = "Restrict"
   )]
   FriendGroup,
+  #[sea_orm(has_many = "super::post_bookmark::Entity")]
+  PostBookmark,
   #[sea_orm(has_many = "super::post_comment::Entity")]
   PostComment,
   #[sea_orm(has_many = "super::post_reaction::Entity")]
@@ -53,6 +55,12 @@ pub enum Relation {
 impl Related<super::friend_group::Entity> for Entity {
   fn to() -> RelationDef {
     Relation::FriendGroup.def()
+  }
+}
+
+impl Related<super::post_bookmark::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::PostBookmark.def()
   }
 }
 
@@ -86,6 +94,8 @@ impl ActiveModelBehavior for ActiveModel {}
 pub enum RelatedEntity {
   #[sea_orm(entity = "super::friend_group::Entity")]
   FriendGroup,
+  #[sea_orm(entity = "super::post_bookmark::Entity")]
+  PostBookmark,
   #[sea_orm(entity = "super::post_comment::Entity")]
   PostComment,
   #[sea_orm(entity = "super::post_reaction::Entity")]

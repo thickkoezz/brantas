@@ -6,27 +6,27 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct BlockAddRequest {
+pub struct AddRequest {
   pub blocker_id: Uuid,
   pub target_id: Uuid,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct BlockUpdateRequest {
+pub struct UpdateRequest {
   pub blocker_id: Uuid,
   pub target_id: Uuid,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct BlockResponse {
+pub struct Response {
   pub blocker_id: Uuid,
   pub target_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::block::Model> for BlockResponse {
+impl From<crate::entities::block::Model> for Response {
   fn from(m: crate::entities::block::Model) -> Self {
     Self {
       blocker_id: m.blocker_id,
@@ -37,7 +37,7 @@ impl From<crate::entities::block::Model> for BlockResponse {
   }
 }
 
-impl From<crate::entities::block::ActiveModel> for BlockResponse {
+impl From<crate::entities::block::ActiveModel> for Response {
   fn from(m: crate::entities::block::ActiveModel) -> Self {
     Self {
       blocker_id: m.blocker_id.unwrap(),

@@ -65,10 +65,7 @@ impl ActiveModelBehavior for ActiveModel {}
 pub enum RelatedEntity {
   #[sea_orm(entity = "super::direct_chat::Entity")]
   DirectChat,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::Owner.def()"
-  )]
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Owner.def()")]
   Owner,
   #[sea_orm(
     entity = "super::user_account::Entity",

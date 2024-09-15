@@ -21,7 +21,6 @@ tokio = { version = "1.40.0", features = ["full"] }
 tracing = "0.1"
 uuid = { version = "1.4.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 validator = { version = "0.18", features = ["derive"] }
-askama = "0.12.0"
 rust-i18n = "3.1.2"
 rust-i18n-macro = "3.1.2"
 rust-i18n-support = "3.1.2"

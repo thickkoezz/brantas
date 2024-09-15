@@ -2,6 +2,18 @@
 
 use sea_orm::entity::prelude::*;
 
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
+#[sea_orm(table_name = "post_bookmark")]
+pub struct Model {
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub owner_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub bookmarked_post_owner_id: Uuid,
+  #[sea_orm(primary_key, auto_increment = false)]
+  pub bookmarked_post_created_at: DateTimeWithTimeZone,
+  pub created_at: DateTimeWithTimeZone,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
   #[sea_orm(
@@ -14,32 +26,20 @@ pub enum Relation {
   Post,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
-    from = "Column::OwnerId",
-    to = "super::user_account::Column::Id",
-    on_update = "Cascade",
-    on_delete = "Restrict"
-  )]
-  Owner,
-  #[sea_orm(
-    belongs_to = "super::user_account::Entity",
     from = "Column::BookmarkedPostOwnerId",
     to = "super::user_account::Column::Id",
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
   BookmarkedPostOwner,
-}
-
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "post_bookmark")]
-pub struct Model {
-  #[sea_orm(primary_key, auto_increment = false)]
-  pub owner_id: Uuid,
-  #[sea_orm(primary_key, auto_increment = false)]
-  pub bookmarked_post_owner_id: Uuid,
-  #[sea_orm(primary_key, auto_increment = false)]
-  pub bookmarked_post_created_at: DateTimeWithTimeZone,
-  pub created_at: DateTimeWithTimeZone,
+  #[sea_orm(
+    belongs_to = "super::user_account::Entity",
+    from = "Column::OwnerId",
+    to = "super::user_account::Column::Id",
+    on_update = "Cascade",
+    on_delete = "Restrict"
+  )]
+  Owner,
 }
 
 impl Related<super::post::Entity> for Entity {
@@ -56,12 +56,9 @@ pub enum RelatedEntity {
   Post,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::Owner.def()"
-  )]
-  Owner,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
     def = "Relation::BookmarkedPostOwner.def()"
   )]
   BookmarkedPostOwner,
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Owner.def()")]
+  Owner,
 }

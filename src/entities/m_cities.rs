@@ -62,6 +62,15 @@ impl Related<super::organization_address::Entity> for Entity {
   }
 }
 
+impl Related<super::organization::Entity> for Entity {
+  fn to() -> RelationDef {
+    super::organization_address::Relation::Organization.def()
+  }
+  fn via() -> Option<RelationDef> {
+    Some(super::organization_address::Relation::MCities.def().rev())
+  }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
@@ -72,4 +81,6 @@ pub enum RelatedEntity {
   MStates,
   #[sea_orm(entity = "super::organization_address::Entity")]
   OrganizationAddress,
+  #[sea_orm(entity = "super::organization::Entity")]
+  Organization,
 }

@@ -11,6 +11,7 @@ pub struct Model {
   pub project_created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
   pub skill_created_at: DateTimeWithTimeZone,
+  pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   #[sea_orm(column_type = "Text", nullable)]
   pub description: Option<String>,

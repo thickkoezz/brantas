@@ -14,6 +14,7 @@ pub struct VideoAddRequest {
   pub caption: Option<String>,
   pub code: Option<String>,
   pub slug: Option<String>,
+  pub is_private: bool,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
@@ -27,6 +28,7 @@ pub struct VideoUpdateRequest {
   pub caption: Option<String>,
   pub code: Option<String>,
   pub slug: Option<String>,
+  pub is_private: bool,
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
@@ -41,6 +43,7 @@ pub struct VideoResponse {
   pub caption: Option<String>,
   pub code: Option<String>,
   pub slug: Option<String>,
+  pub is_private: bool,
 }
 
 impl From<crate::entities::video::Model> for VideoResponse {
@@ -56,6 +59,7 @@ impl From<crate::entities::video::Model> for VideoResponse {
       caption: m.caption,
       code: m.code,
       slug: m.slug,
+      is_private: m.is_private,
     }
   }
 }
@@ -73,6 +77,7 @@ impl From<crate::entities::video::ActiveModel> for VideoResponse {
       caption: m.caption.unwrap(),
       code: m.code.unwrap(),
       slug: m.slug.unwrap(),
+      is_private: m.is_private.unwrap(),
     }
   }
 }

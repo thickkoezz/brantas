@@ -9,23 +9,15 @@ pub struct Model {
   pub organization_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
   pub city_id: i32,
-  #[sea_orm(primary_key, auto_increment = false)]
-  pub department_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  #[sea_orm(column_type = "Text", nullable)]
+  pub description: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-  #[sea_orm(
-    belongs_to = "super::department::Entity",
-    from = "Column::DepartmentId",
-    to = "super::department::Column::Id",
-    on_update = "Cascade",
-    on_delete = "Restrict"
-  )]
-  Department,
   #[sea_orm(
     belongs_to = "super::m_cities::Entity",
     from = "Column::CityId",
@@ -44,12 +36,6 @@ pub enum Relation {
   Organization,
 }
 
-impl Related<super::department::Entity> for Entity {
-  fn to() -> RelationDef {
-    Relation::Department.def()
-  }
-}
-
 impl Related<super::m_cities::Entity> for Entity {
   fn to() -> RelationDef {
     Relation::MCities.def()
@@ -66,8 +52,6 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "super::department::Entity")]
-  Department,
   #[sea_orm(entity = "super::m_cities::Entity")]
   MCities,
   #[sea_orm(entity = "super::organization::Entity")]

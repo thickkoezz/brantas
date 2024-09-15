@@ -3,13 +3,13 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "photo")]
+#[sea_orm(table_name = "document")]
 pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
-  pub photo: String,
+  pub document: String,
   pub size: i32,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
@@ -22,8 +22,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-  #[sea_orm(has_many = "super::photo_comment::Entity")]
-  PhotoComment,
+  #[sea_orm(has_many = "super::document_comment::Entity")]
+  DocumentComment,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::OwnerId",
@@ -34,9 +34,9 @@ pub enum Relation {
   Owner,
 }
 
-impl Related<super::photo_comment::Entity> for Entity {
+impl Related<super::document_comment::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::PhotoComment.def()
+    Relation::DocumentComment.def()
   }
 }
 
@@ -50,8 +50,8 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "super::photo_comment::Entity")]
-  PhotoComment,
+  #[sea_orm(entity = "super::document_comment::Entity")]
+  DocumentComment,
   #[sea_orm(entity = "super::user_account::Entity")]
   Owner,
 }

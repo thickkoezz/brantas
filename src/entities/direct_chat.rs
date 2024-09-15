@@ -136,15 +136,9 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Forwarded.def()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Forwarded.def()")]
   Forwarded,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Replied.def()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Replied.def()")]
   Replied,
   #[sea_orm(entity = "super::direct_chat_reaction::Entity")]
   DirectChatReaction,
@@ -182,19 +176,10 @@ pub enum RelatedEntity {
     def = "Relation::RepliedSender.def()"
   )]
   RepliedSender,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::Sender.def()"
-  )]
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Sender.def()")]
   Sender,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Forwarded.def().rev()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Forwarded.def().rev()")]
   Forward,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Replied.def().rev()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Replied.def().rev()")]
   Reply,
 }

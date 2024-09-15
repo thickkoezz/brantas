@@ -9,8 +9,6 @@ use validator::Validate;
 pub struct PhoneAddRequest {
   pub phone: String,
   pub owner_id: Uuid,
-  pub is_verified: bool,
-  pub is_suspended: bool,
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]

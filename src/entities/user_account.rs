@@ -51,6 +51,8 @@ pub enum Relation {
   ChatGroup,
   #[sea_orm(has_many = "super::chat_group_member::Entity")]
   ChatGroupMember,
+  #[sea_orm(has_many = "super::document::Entity")]
+  Document,
   #[sea_orm(has_many = "super::email::Entity")]
   Email,
   #[sea_orm(has_many = "super::friend_group::Entity")]
@@ -98,6 +100,12 @@ impl Related<super::chat_group::Entity> for Entity {
 impl Related<super::chat_group_member::Entity> for Entity {
   fn to() -> RelationDef {
     Relation::ChatGroupMember.def()
+  }
+}
+
+impl Related<super::document::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::Document.def()
   }
 }
 
@@ -173,6 +181,33 @@ impl Related<super::video::Entity> for Entity {
   }
 }
 
+impl Related<super::document_comment::Entity> for Entity {
+  fn to() -> RelationDef {
+    super::document::Relation::DocumentComment.def()
+  }
+  fn via() -> Option<RelationDef> {
+    Some(super::document::Relation::Owner.def().rev())
+  }
+}
+
+impl Related<super::photo_comment::Entity> for Entity {
+  fn to() -> RelationDef {
+    super::photo::Relation::PhotoComment.def()
+  }
+  fn via() -> Option<RelationDef> {
+    Some(super::photo::Relation::Owner.def().rev())
+  }
+}
+
+impl Related<super::video_comment::Entity> for Entity {
+  fn to() -> RelationDef {
+    super::video::Relation::VideoComment.def()
+  }
+  fn via() -> Option<RelationDef> {
+    Some(super::video::Relation::Owner.def().rev())
+  }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
@@ -183,6 +218,8 @@ pub enum RelatedEntity {
   ChatGroup,
   #[sea_orm(entity = "super::chat_group_member::Entity")]
   ChatGroupMember,
+  #[sea_orm(entity = "super::document::Entity")]
+  Document,
   #[sea_orm(entity = "super::email::Entity")]
   Email,
   #[sea_orm(entity = "super::friend_group::Entity")]
@@ -207,4 +244,10 @@ pub enum RelatedEntity {
   Tweet,
   #[sea_orm(entity = "super::video::Entity")]
   Video,
+  #[sea_orm(entity = "super::document_comment::Entity")]
+  DocumentComment,
+  #[sea_orm(entity = "super::photo_comment::Entity")]
+  PhotoComment,
+  #[sea_orm(entity = "super::video_comment::Entity")]
+  VideoComment,
 }

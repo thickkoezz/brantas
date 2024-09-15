@@ -40,14 +40,8 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(
-    entity = "super::person::Entity",
-    def = "Relation::Owner.def()"
-  )]
+  #[sea_orm(entity = "super::person::Entity", def = "Relation::Owner.def()")]
   Owner,
-  #[sea_orm(
-    entity = "super::person::Entity",
-    def = "Relation::Receiver.def()"
-  )]
+  #[sea_orm(entity = "super::person::Entity", def = "Relation::Receiver.def()")]
   Receiver,
 }

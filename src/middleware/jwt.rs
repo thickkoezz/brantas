@@ -18,12 +18,12 @@ pub fn jwt_middleware() -> JwtAuth<JwtClaims, ConstDecoder> {
   let auth_handler: JwtAuth<JwtClaims, _> = JwtAuth::new(ConstDecoder::from_secret(
     CFG.jwt.jwt_secret.to_owned().as_bytes(),
   ))
-    .finders(vec![
-      Box::new(HeaderFinder::new()),
-      Box::new(QueryFinder::new("token")),
-      Box::new(CookieFinder::new("jwt_token")),
-    ])
-    .force_passed(false);
+  .finders(vec![
+    Box::new(HeaderFinder::new()),
+    Box::new(QueryFinder::new("token")),
+    Box::new(CookieFinder::new("jwt_token")),
+  ])
+  .force_passed(false);
   auth_handler
 }
 
@@ -51,5 +51,5 @@ pub fn decode_token(token: &str) -> bool {
     &DecodingKey::from_secret(CFG.jwt.jwt_secret.as_bytes()),
     &validation,
   )
-    .is_ok()
+  .is_ok()
 }

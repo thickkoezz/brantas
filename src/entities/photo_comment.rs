@@ -11,7 +11,6 @@ pub struct Model {
   pub created_at: DateTimeWithTimeZone,
   pub commented_photo_owner_id: Uuid,
   pub commented_photo_created_at: DateTimeWithTimeZone,
-  pub commented_photo: String,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub content: String,
@@ -22,8 +21,8 @@ pub struct Model {
 pub enum Relation {
   #[sea_orm(
     belongs_to = "super::photo::Entity",
-    from = "(Column::CommentedPhotoOwnerId, Column::CommentedPhotoCreatedAt, Column::CommentedPhoto)",
-    to = "(super::photo::Column::OwnerId, super::photo::Column::CreatedAt, super::photo::Column::Photo)",
+    from = "(Column::CommentedPhotoOwnerId, Column::CommentedPhotoCreatedAt)",
+    to = "(super::photo::Column::OwnerId, super::photo::Column::CreatedAt)",
     on_update = "Cascade",
     on_delete = "Cascade"
   )]
@@ -52,6 +51,15 @@ impl Related<super::photo::Entity> for Entity {
   }
 }
 
+impl Related<super::user_account::Entity> for Entity {
+  fn to() -> RelationDef {
+    super::photo::Relation::Owner.def()
+  }
+  fn via() -> Option<RelationDef> {
+    Some(super::photo::Relation::PhotoComment.def().rev())
+  }
+}
+
 impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
@@ -63,9 +71,8 @@ pub enum RelatedEntity {
     def = "Relation::CommentedPhotoOwner.def()"
   )]
   CommentedPhotoOwner,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::Owner.def()"
-  )]
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Owner.def()")]
   Owner,
+  #[sea_orm(entity = "super::user_account::Entity")]
+  UserAccount,
 }

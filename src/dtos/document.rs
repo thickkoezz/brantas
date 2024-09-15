@@ -6,9 +6,9 @@ use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct PhotoAddRequest {
+pub struct DocumentAddRequest {
   pub owner_id: Uuid,
-  pub photo: String,
+  pub document: String,
   pub size: i32,
   pub title: Option<String>,
   pub caption: Option<String>,
@@ -18,9 +18,9 @@ pub struct PhotoAddRequest {
 }
 
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct PhotoUpdateRequest {
+pub struct DocumentUpdateRequest {
   pub owner_id: Uuid,
-  pub photo: String,
+  pub document: String,
   pub size: i32,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
@@ -32,10 +32,10 @@ pub struct PhotoUpdateRequest {
 }
 
 #[derive(Debug, Serialize, ToSchema, Default)]
-pub struct PhotoResponse {
+pub struct DocumentResponse {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
-  pub photo: String,
+  pub document: String,
   pub size: i32,
   pub updated_at: Option<DateTimeWithTimeZone>,
   pub deleted_at: Option<DateTimeWithTimeZone>,
@@ -46,12 +46,12 @@ pub struct PhotoResponse {
   pub is_private: bool,
 }
 
-impl From<crate::entities::photo::Model> for PhotoResponse {
-  fn from(m: crate::entities::photo::Model) -> Self {
+impl From<crate::entities::document::Model> for DocumentResponse {
+  fn from(m: crate::entities::document::Model) -> Self {
     Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
-      photo: m.photo,
+      document: m.document,
       size: m.size,
       updated_at: m.updated_at,
       deleted_at: m.deleted_at,
@@ -64,12 +64,12 @@ impl From<crate::entities::photo::Model> for PhotoResponse {
   }
 }
 
-impl From<crate::entities::photo::ActiveModel> for PhotoResponse {
-  fn from(m: crate::entities::photo::ActiveModel) -> Self {
+impl From<crate::entities::document::ActiveModel> for DocumentResponse {
+  fn from(m: crate::entities::document::ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       created_at: m.created_at.unwrap(),
-      photo: m.photo.unwrap(),
+      document: m.document.unwrap(),
       size: m.size.unwrap(),
       updated_at: m.updated_at.unwrap(),
       deleted_at: m.deleted_at.unwrap(),

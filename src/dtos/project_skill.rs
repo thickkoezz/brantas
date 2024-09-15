@@ -18,6 +18,7 @@ pub struct ProjectSkillResponse {
   pub person_id: Uuid,
   pub project_created_at: DateTimeWithTimeZone,
   pub skill_created_at: DateTimeWithTimeZone,
+  pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub description: Option<String>,
 }
@@ -28,6 +29,7 @@ impl From<crate::entities::project_skill::Model> for ProjectSkillResponse {
       person_id: m.person_id,
       project_created_at: m.project_created_at,
       skill_created_at: m.skill_created_at,
+      created_at: m.created_at,
       deleted_at: m.deleted_at,
       description: m.description,
     }
@@ -40,6 +42,7 @@ impl From<crate::entities::project_skill::ActiveModel> for ProjectSkillResponse 
       person_id: m.person_id.unwrap(),
       project_created_at: m.project_created_at.unwrap(),
       skill_created_at: m.skill_created_at.unwrap(),
+      created_at: m.created_at.unwrap(),
       deleted_at: m.deleted_at.unwrap(),
       description: m.description.unwrap(),
     }

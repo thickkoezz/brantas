@@ -6,12 +6,10 @@ use crate::db::init_db_conn;
 use crate::middleware::{cors::cors_middleware, handle_404::handle_404};
 use crate::routers::router;
 use config::{CERT_KEY, CFG};
-use lazy_static::lazy_static;
 use salvo::catcher::Catcher;
 use salvo::conn::rustls::{Keycert, RustlsConfig};
 use salvo::prelude::*;
 use salvo::server::ServerHandle;
-use std::env;
 use tokio::signal;
 use tracing::info;
 
@@ -42,10 +40,9 @@ async fn main() {
   init_db_conn().await;
   let router = router();
   let service: Service = router.into();
-  let service = service.catcher(Catcher::default().hoop(handle_404)); //.hoop(_cors_handler).hoop(handle_404));
+  let service = service.catcher(Catcher::default().hoop(handle_404));
   println!("🌪️ {} is starting ", &CFG.server.name);
   println!("🔄 listen on {}", &CFG.server.address);
-  let _cors_handler = cors_middleware();
   match CFG.server.ssl {
     true => {
       println!(

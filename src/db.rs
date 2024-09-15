@@ -1,4 +1,5 @@
 use crate::config::CFG;
+use anyhow::Error;
 use sea_orm::{entity::prelude::DatabaseConnection, ConnectOptions, Database};
 use std::time::Duration;
 use tokio::sync::OnceCell;
@@ -20,4 +21,9 @@ pub async fn init_db_conn() {
       .expect("Failed to open database")
   })
   .await;
+}
+
+pub fn get_db() -> Result<&'static DatabaseConnection, Error> {
+  DB.get()
+    .ok_or(anyhow::anyhow!(t!("database_connection_failed")))
 }

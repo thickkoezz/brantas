@@ -8,9 +8,10 @@ use validator::Validate;
 #[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
 pub struct GroupChatReactionAddRequest {
   pub owner_id: Uuid,
-  pub reacted_direct_chat_sender_id: Uuid,
-  pub reacted_direct_chat_receiver_id: Uuid,
-  pub reacted_direct_chat_created_at: DateTimeWithTimeZone,
+  pub reacted_group_chat_sender_id: Uuid,
+  pub reacted_group_chat_group_creator_id: Uuid,
+  pub reacted_group_chat_group_created_at: DateTimeWithTimeZone,
+  pub reacted_group_chat_created_at: DateTimeWithTimeZone,
   pub reaction_emoji: String,
 }
 

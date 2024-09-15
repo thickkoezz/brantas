@@ -24,8 +24,8 @@ pub async fn verify_password(password: String, password_hash: String) -> anyhow:
       Err(_) => Err(anyhow::anyhow!(t!("invalid_x", x = t!("password")))),
     }
   })
-    .await
-    .context("panic in verifying password hash")?
+  .await
+  .context("panic in verifying password hash")?
 }
 
 pub async fn hash_password(password: String, salt: SaltString) -> anyhow::Result<String> {
@@ -40,6 +40,6 @@ pub async fn hash_password(password: String, salt: SaltString) -> anyhow::Result
         .to_string(),
     )
   })
-    .await
-    .context("panic in generating password hash")?
+  .await
+  .context("panic in generating password hash")?
 }

@@ -1,27 +1,15 @@
-use askama::Template;
-use salvo::{oapi::endpoint, writing::Text, Request, Response};
 use crate::app_writer::AppResult;
-
-#[derive(Template)]
-#[template(path = "hello.html")]
-struct HelloTemplate<'a> {
-  name: &'a str,
-}
-
+use salvo::oapi::endpoint;
 #[endpoint]
-pub async fn hello(req: &mut Request, res: &mut Response) -> AppResult<()> {
-  let hello_tmpl = HelloTemplate {
-    name: req.param::<&str>("name").unwrap_or("World"),
-  };
-  res.render(Text::Html(hello_tmpl.render().unwrap()));
-  Ok(())
+pub async fn hello() -> AppResult<&'static str> {
+  Ok("Hello World from salvo")
 }
 
 #[allow(unused_imports)]
 mod tests {
+  use crate::config::CFG;
   use salvo::test::{ResponseExt, TestClient};
   use salvo::Service;
-  use crate::config::CFG;
 
   #[tokio::test]
   async fn test_hello_world() {
@@ -31,11 +19,11 @@ mod tests {
       "http://{}",
       &CFG.server.address.replace("0.0.0.0", "127.0.0.1")
     ))
-      .send(&service)
-      .await
-      .take_string()
-      .await
-      .unwrap();
+    .send(&service)
+    .await
+    .take_string()
+    .await
+    .unwrap();
     assert_eq!(content, "Hello World from salvo");
   }
 }

@@ -9,7 +9,6 @@ pub struct Model {
   pub owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
-  #[sea_orm(primary_key, auto_increment = false)]
   pub video: String,
   pub size: i32,
   pub updated_at: Option<DateTimeWithTimeZone>,
@@ -18,6 +17,7 @@ pub struct Model {
   pub caption: Option<String>,
   pub code: Option<String>,
   pub slug: Option<String>,
+  pub is_private: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

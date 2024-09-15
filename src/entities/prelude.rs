@@ -7,6 +7,8 @@ pub use super::chat_group_member::Entity as ChatGroupMember;
 pub use super::department::Entity as Department;
 pub use super::direct_chat::Entity as DirectChat;
 pub use super::direct_chat_reaction::Entity as DirectChatReaction;
+pub use super::document::Entity as Document;
+pub use super::document_comment::Entity as DocumentComment;
 pub use super::email::Entity as Email;
 pub use super::follow::Entity as Follow;
 pub use super::friend::Entity as Friend;

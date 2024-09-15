@@ -3,35 +3,38 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "tweet_bookmark")]
+#[sea_orm(table_name = "document_comment")]
 pub struct Model {
   #[sea_orm(primary_key, auto_increment = false)]
   pub owner_id: Uuid,
   #[sea_orm(primary_key, auto_increment = false)]
-  pub bookmarked_tweet_owner_id: Uuid,
-  #[sea_orm(primary_key, auto_increment = false)]
-  pub bookmarked_tweet_created_at: DateTimeWithTimeZone,
   pub created_at: DateTimeWithTimeZone,
+  pub commented_document_owner_id: Uuid,
+  pub commented_document_created_at: DateTimeWithTimeZone,
+  pub updated_at: Option<DateTimeWithTimeZone>,
+  pub deleted_at: Option<DateTimeWithTimeZone>,
+  pub content: String,
+  pub reaction_count: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
   #[sea_orm(
-    belongs_to = "super::tweet::Entity",
-    from = "(Column::BookmarkedTweetOwnerId, Column::BookmarkedTweetCreatedAt)",
-    to = "(super::tweet::Column::OwnerId, super::tweet::Column::CreatedAt)",
+    belongs_to = "super::document::Entity",
+    from = "(Column::CommentedDocumentOwnerId, Column::CommentedDocumentCreatedAt)",
+    to = "(super::document::Column::OwnerId, super::document::Column::CreatedAt)",
     on_update = "Cascade",
     on_delete = "Cascade"
   )]
-  Tweet,
+  Document,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
-    from = "Column::BookmarkedTweetOwnerId",
+    from = "Column::CommentedDocumentOwnerId",
     to = "super::user_account::Column::Id",
     on_update = "Cascade",
     on_delete = "Restrict"
   )]
-  BookmarkedTweetOwner,
+  CommentedDocumentOwner,
   #[sea_orm(
     belongs_to = "super::user_account::Entity",
     from = "Column::OwnerId",
@@ -42,9 +45,18 @@ pub enum Relation {
   Owner,
 }
 
-impl Related<super::tweet::Entity> for Entity {
+impl Related<super::document::Entity> for Entity {
   fn to() -> RelationDef {
-    Relation::Tweet.def()
+    Relation::Document.def()
+  }
+}
+
+impl Related<super::user_account::Entity> for Entity {
+  fn to() -> RelationDef {
+    super::document::Relation::Owner.def()
+  }
+  fn via() -> Option<RelationDef> {
+    Some(super::document::Relation::DocumentComment.def().rev())
   }
 }
 
@@ -52,13 +64,15 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(entity = "super::tweet::Entity")]
-  Tweet,
+  #[sea_orm(entity = "super::document::Entity")]
+  Document,
   #[sea_orm(
     entity = "super::user_account::Entity",
-    def = "Relation::BookmarkedTweetOwner.def()"
+    def = "Relation::CommentedDocumentOwner.def()"
   )]
-  BookmarkedTweetOwner,
+  CommentedDocumentOwner,
   #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Owner.def()")]
   Owner,
+  #[sea_orm(entity = "super::user_account::Entity")]
+  UserAccount,
 }

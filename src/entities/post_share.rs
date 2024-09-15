@@ -56,10 +56,7 @@ impl ActiveModelBehavior for ActiveModel {}
 pub enum RelatedEntity {
   #[sea_orm(entity = "super::post::Entity")]
   Post,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::Target.def()"
-  )]
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Target.def()")]
   Target,
   #[sea_orm(
     entity = "super::user_account::Entity",

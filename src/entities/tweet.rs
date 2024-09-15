@@ -41,6 +41,8 @@ pub enum Relation {
     on_delete = "Cascade"
   )]
   Retweeted,
+  #[sea_orm(has_many = "super::tweet_bookmark::Entity")]
+  TweetBookmark,
   #[sea_orm(has_many = "super::tweet_reaction::Entity")]
   TweetReaction,
   #[sea_orm(
@@ -51,6 +53,12 @@ pub enum Relation {
     on_delete = "Restrict"
   )]
   Owner,
+}
+
+impl Related<super::tweet_bookmark::Entity> for Entity {
+  fn to() -> RelationDef {
+    Relation::TweetBookmark.def()
+  }
 }
 
 impl Related<super::tweet_reaction::Entity> for Entity {
@@ -69,28 +77,18 @@ impl ActiveModelBehavior for ActiveModel {}
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelatedEntity)]
 pub enum RelatedEntity {
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Replied.def()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Replied.def()")]
   Replied,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Retweeted.def()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Retweeted.def()")]
   Retweeted,
+  #[sea_orm(entity = "super::tweet_bookmark::Entity")]
+  TweetBookmark,
   #[sea_orm(entity = "super::tweet_reaction::Entity")]
   TweetReaction,
   #[sea_orm(entity = "super::user_account::Entity")]
   Owner,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Replied.def().rev()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Replied.def().rev()")]
   Reply,
-  #[sea_orm(
-    entity = "Entity",
-    def = "Relation::Retweeted.def().rev()"
-  )]
+  #[sea_orm(entity = "Entity", def = "Relation::Retweeted.def().rev()")]
   Retweet,
 }

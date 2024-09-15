@@ -57,10 +57,7 @@ impl ActiveModelBehavior for ActiveModel {}
 pub enum RelatedEntity {
   #[sea_orm(entity = "super::note::Entity")]
   Note,
-  #[sea_orm(
-    entity = "super::user_account::Entity",
-    def = "Relation::Editor.def()"
-  )]
+  #[sea_orm(entity = "super::user_account::Entity", def = "Relation::Editor.def()")]
   Editor,
   #[sea_orm(
     entity = "super::user_account::Entity",
