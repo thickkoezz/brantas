@@ -1,6 +1,6 @@
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::tweet_bookmark::{TweetBookmarkAddRequest, TweetBookmarkResponse};
+use crate::dtos::tweet_bookmark::TweetBookmarkDTO;
 use crate::entities::{prelude::TweetBookmark, tweet_bookmark};
 use crate::services::PaginatorOption;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -8,7 +8,7 @@ use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_tweet_bookmark(req: TweetBookmarkAddRequest) -> AppResult<TweetBookmarkResponse> {
+pub async fn add_tweet_bookmark(req: TweetBookmarkDTO) -> AppResult<TweetBookmarkDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -19,11 +19,11 @@ pub async fn add_tweet_bookmark(req: TweetBookmarkAddRequest) -> AppResult<Tweet
     created_at: Set(DateTimeWithTimeZone::from(chrono::Local::now())),
   };
   let tweet_bookmark = TweetBookmark::insert(model.clone()).exec(db).await?;
-  Ok(TweetBookmarkResponse {
+  Ok(TweetBookmarkDTO {
     owner_id: tweet_bookmark.last_insert_id.0,
     bookmarked_tweet_owner_id: tweet_bookmark.last_insert_id.1,
     bookmarked_tweet_created_at: tweet_bookmark.last_insert_id.2,
-    ..TweetBookmarkResponse::from(model)
+    ..TweetBookmarkDTO::from(model)
   })
 }
 
@@ -50,7 +50,7 @@ pub async fn delete_tweet_bookmark(
 
 pub async fn get_tweet_bookmark(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<TweetBookmarkResponse>> {
+) -> AppResult<Vec<TweetBookmarkDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -62,17 +62,17 @@ pub async fn get_tweet_bookmark(
         .await?;
       let res = tweet_bookmarks
         .into_iter()
-        .map(|tweet_bookmark: tweet_bookmark::Model| TweetBookmarkResponse::from(tweet_bookmark))
+        .map(|tweet_bookmark: tweet_bookmark::Model| TweetBookmarkDTO::from(tweet_bookmark))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let tweet_bookmarks = TweetBookmark::find().all(db).await?;
       let res = tweet_bookmarks
         .into_iter()
-        .map(|tweet_bookmark: tweet_bookmark::Model| TweetBookmarkResponse::from(tweet_bookmark))
+        .map(|tweet_bookmark: tweet_bookmark::Model| TweetBookmarkDTO::from(tweet_bookmark))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

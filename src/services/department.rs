@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::department::{DepartmentAddRequest, DepartmentResponse};
+use crate::dtos::department::DepartmentDTO;
 use crate::entities::{department, prelude::Department};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_department(req: DepartmentAddRequest) -> AppResult<DepartmentResponse> {
+pub async fn add_department(req: DepartmentDTO) -> AppResult<DepartmentDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -29,9 +29,9 @@ pub async fn add_department(req: DepartmentAddRequest) -> AppResult<DepartmentRe
     logo: Set(req.logo),
   };
   let department = Department::insert(model.clone()).exec(db).await?;
-  Ok(DepartmentResponse {
+  Ok(DepartmentDTO {
     id: department.last_insert_id,
-    ..DepartmentResponse::from(model)
+    ..DepartmentDTO::from(model)
   })
 }
 
@@ -46,7 +46,7 @@ pub async fn delete_department(deletion_mode: DeletionMode, id: Uuid) -> AppResu
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("department"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let department = Department::find_by_id(id).one(db).await?;
       if department.is_none() {
@@ -59,13 +59,13 @@ pub async fn delete_department(deletion_mode: DeletionMode, id: Uuid) -> AppResu
       )));
       department.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_department(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<DepartmentResponse>> {
+) -> AppResult<Vec<DepartmentDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -77,17 +77,17 @@ pub async fn get_department(
         .await?;
       let res = departments
         .into_iter()
-        .map(|department: department::Model| DepartmentResponse::from(department))
+        .map(|department: department::Model| DepartmentDTO::from(department))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let departments = Department::find().all(db).await?;
       let res = departments
         .into_iter()
-        .map(|department: department::Model| DepartmentResponse::from(department))
+        .map(|department: department::Model| DepartmentDTO::from(department))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

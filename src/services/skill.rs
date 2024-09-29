@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::skill::{SkillAddRequest, SkillResponse};
+use crate::dtos::skill::SkillDTO;
 use crate::entities::{prelude::Skill, skill};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_skill(req: SkillAddRequest) -> AppResult<SkillResponse> {
+pub async fn add_skill(req: SkillDTO) -> AppResult<SkillDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -21,10 +21,10 @@ pub async fn add_skill(req: SkillAddRequest) -> AppResult<SkillResponse> {
     description: Set(req.description),
   };
   let skill = Skill::insert(model.clone()).exec(db).await?;
-  Ok(SkillResponse {
+  Ok(SkillDTO {
     person_id: skill.last_insert_id.0,
     created_at: skill.last_insert_id.1,
-    ..SkillResponse::from(model)
+    ..SkillDTO::from(model)
   })
 }
 
@@ -45,7 +45,7 @@ pub async fn delete_skill(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("skill"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let skill = Skill::find_by_id((person_id, created_at)).one(db).await?;
       if skill.is_none() {
@@ -58,11 +58,11 @@ pub async fn delete_skill(
       )));
       skill.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_skill(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<SkillResponse>> {
+pub async fn get_skill(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<SkillDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -74,17 +74,17 @@ pub async fn get_skill(paginator_option: Option<PaginatorOption>) -> AppResult<V
         .await?;
       let res = skills
         .into_iter()
-        .map(|skill: skill::Model| SkillResponse::from(skill))
+        .map(|skill: skill::Model| SkillDTO::from(skill))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let skills = Skill::find().all(db).await?;
       let res = skills
         .into_iter()
-        .map(|skill: skill::Model| SkillResponse::from(skill))
+        .map(|skill: skill::Model| SkillDTO::from(skill))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

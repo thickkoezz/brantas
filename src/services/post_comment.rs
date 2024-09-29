@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::post_comment::{PostCommentAddRequest, PostCommentResponse};
+use crate::dtos::post_comment::PostCommentDTO;
 use crate::entities::{post_comment, prelude::PostComment};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_post_comment(req: PostCommentAddRequest) -> AppResult<PostCommentResponse> {
+pub async fn add_post_comment(req: PostCommentDTO) -> AppResult<PostCommentDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -23,10 +23,10 @@ pub async fn add_post_comment(req: PostCommentAddRequest) -> AppResult<PostComme
     reaction_count: Set(0),
   };
   let post_comment = PostComment::insert(model.clone()).exec(db).await?;
-  Ok(PostCommentResponse {
+  Ok(PostCommentDTO {
     owner_id: post_comment.last_insert_id.0,
     created_at: post_comment.last_insert_id.1,
-    ..PostCommentResponse::from(model)
+    ..PostCommentDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_post_comment(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("comment"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let post_comment = PostComment::find_by_id((owner_id, created_at))
         .one(db)
@@ -62,13 +62,13 @@ pub async fn delete_post_comment(
       )));
       post_comment.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_post_comment(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<PostCommentResponse>> {
+) -> AppResult<Vec<PostCommentDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +80,17 @@ pub async fn get_post_comment(
         .await?;
       let res = post_comments
         .into_iter()
-        .map(|post_comment: post_comment::Model| PostCommentResponse::from(post_comment))
+        .map(|post_comment: post_comment::Model| PostCommentDTO::from(post_comment))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let post_comments = PostComment::find().all(db).await?;
       let res = post_comments
         .into_iter()
-        .map(|post_comment: post_comment::Model| PostCommentResponse::from(post_comment))
+        .map(|post_comment: post_comment::Model| PostCommentDTO::from(post_comment))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

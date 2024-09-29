@@ -1,31 +1,86 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct JobProjectAddRequest {
-  pub organization_id: Uuid,
-  pub person_id: Uuid,
-  pub job_created_at: DateTimeWithTimeZone,
-  pub project_created_at: DateTimeWithTimeZone,
-  pub description: Option<String>,
-}
+pub type ID = (Uuid, Uuid, DateTimeWithTimeZone, DateTimeWithTimeZone);
 
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct JobProjectResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct JobProjectDTO {
   pub organization_id: Uuid,
   pub person_id: Uuid,
   pub job_created_at: DateTimeWithTimeZone,
   pub project_created_at: DateTimeWithTimeZone,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub description: Option<String>,
 }
 
-impl From<crate::entities::job_project::Model> for JobProjectResponse {
+impl JobProjectDTO {
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (
+      self.organization_id.clone(),
+      self.person_id.clone(),
+      self.job_created_at.clone(),
+      self.project_created_at.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.organization_id = v.0;
+    self.person_id = v.1;
+    self.job_created_at = v.2;
+    self.project_created_at = v.3;
+    self
+  }
+
+  pub fn set_organization_id(&mut self, v: Uuid) -> &mut Self {
+    self.organization_id = v;
+    self
+  }
+
+  pub fn set_person_id(&mut self, v: Uuid) -> &mut Self {
+    self.person_id = v;
+    self
+  }
+
+  pub fn set_job_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.job_created_at = v;
+    self
+  }
+
+  pub fn set_project_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.project_created_at = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+
+  pub fn set_description(&mut self, v: Option<String>) -> &mut Self {
+    self.description = v;
+    self
+  }
+}
+
+impl From<crate::entities::job_project::Model> for JobProjectDTO {
   fn from(m: crate::entities::job_project::Model) -> Self {
     Self {
       organization_id: m.organization_id,
@@ -39,7 +94,7 @@ impl From<crate::entities::job_project::Model> for JobProjectResponse {
   }
 }
 
-impl From<crate::entities::job_project::ActiveModel> for JobProjectResponse {
+impl From<crate::entities::job_project::ActiveModel> for JobProjectDTO {
   fn from(m: crate::entities::job_project::ActiveModel) -> Self {
     Self {
       organization_id: m.organization_id.unwrap(),

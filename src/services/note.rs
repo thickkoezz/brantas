@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::note::{NoteAddRequest, NoteResponse};
+use crate::dtos::note::NoteDTO;
 use crate::entities::{note, prelude::Note};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_note(req: NoteAddRequest) -> AppResult<NoteResponse> {
+pub async fn add_note(req: NoteDTO) -> AppResult<NoteDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -21,10 +21,10 @@ pub async fn add_note(req: NoteAddRequest) -> AppResult<NoteResponse> {
     content: Set(req.content),
   };
   let note = Note::insert(model.clone()).exec(db).await?;
-  Ok(NoteResponse {
+  Ok(NoteDTO {
     owner_id: note.last_insert_id.0,
     created_at: note.last_insert_id.1,
-    ..NoteResponse::from(model)
+    ..NoteDTO::from(model)
   })
 }
 
@@ -43,7 +43,7 @@ pub async fn delete_note(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("note"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let note = Note::find_by_id((owner_id, created_at)).one(db).await?;
       if note.is_none() {
@@ -56,11 +56,11 @@ pub async fn delete_note(
       )));
       note.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_note(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<NoteResponse>> {
+pub async fn get_note(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<NoteDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -72,17 +72,17 @@ pub async fn get_note(paginator_option: Option<PaginatorOption>) -> AppResult<Ve
         .await?;
       let res = notes
         .into_iter()
-        .map(|note: note::Model| NoteResponse::from(note))
+        .map(|note: note::Model| NoteDTO::from(note))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let notes = Note::find().all(db).await?;
       let res = notes
         .into_iter()
-        .map(|note: note::Model| NoteResponse::from(note))
+        .map(|note: note::Model| NoteDTO::from(note))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

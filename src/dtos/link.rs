@@ -1,41 +1,77 @@
+use salvo::macros::Extractible;
 use salvo::oapi::ToSchema;
-use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct LinkAddRequest {
-  pub owner_id: Option<Uuid>,
-  pub link_url: String,
-  pub hashtag: Option<String>,
-}
+pub type ID = Uuid;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct LinkUpdateRequest {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct LinkDTO {
   pub id: Uuid,
-  pub owner_id: Option<Uuid>,
-  pub updated_at: Option<DateTimeWithTimeZone>,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
-  pub link_url: String,
-  pub hashtag: Option<String>,
-  pub use_count: i32,
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct LinkResponse {
-  pub id: Uuid,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub owner_id: Option<Uuid>,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub updated_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub link_url: String,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub hashtag: Option<String>,
   pub use_count: i32,
 }
 
-impl From<crate::entities::link::Model> for LinkResponse {
+impl LinkDTO {
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
+
+  pub fn set_id(&mut self, v: Uuid) -> &mut Self {
+    self.id = v;
+    self
+  }
+
+  pub fn set_owner_id(&mut self, v: Option<Uuid>) -> &mut Self {
+    self.owner_id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.updated_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+
+  pub fn set_link_url(&mut self, v: String) -> &mut Self {
+    self.link_url = v;
+    self
+  }
+
+  pub fn set_hashtag(&mut self, v: Option<String>) -> &mut Self {
+    self.hashtag = v;
+    self
+  }
+
+  pub fn set_use_count(&mut self, v: i32) -> &mut Self {
+    self.use_count = v;
+    self
+  }
+}
+
+impl From<crate::entities::link::Model> for LinkDTO {
   fn from(m: crate::entities::link::Model) -> Self {
     Self {
       id: m.id,
@@ -50,7 +86,7 @@ impl From<crate::entities::link::Model> for LinkResponse {
   }
 }
 
-impl From<crate::entities::link::ActiveModel> for LinkResponse {
+impl From<crate::entities::link::ActiveModel> for LinkDTO {
   fn from(m: crate::entities::link::ActiveModel) -> Self {
     Self {
       id: m.id.unwrap(),

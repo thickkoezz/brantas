@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::chat_group::{ChatGroupAddRequest, ChatGroupResponse};
+use crate::dtos::chat_group::{ChatGroupDTO, ChatGroupDTO};
 use crate::entities::{chat_group, prelude::ChatGroup};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_chat_group(req: ChatGroupAddRequest) -> AppResult<ChatGroupResponse> {
+pub async fn add_chat_group(req: ChatGroupDTO) -> AppResult<ChatGroupDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -23,10 +23,10 @@ pub async fn add_chat_group(req: ChatGroupAddRequest) -> AppResult<ChatGroupResp
     is_channel: Set(req.is_channel),
   };
   let chat_group = ChatGroup::insert(model.clone()).exec(db).await?;
-  Ok(ChatGroupResponse {
+  Ok(ChatGroupDTO {
     creator_id: chat_group.last_insert_id.0,
     created_at: chat_group.last_insert_id.1,
-    ..ChatGroupResponse::from(model)
+    ..ChatGroupDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_chat_group(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("chat_group"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let chat_group = ChatGroup::find_by_id((creator_id, created_at))
         .one(db)
@@ -62,13 +62,13 @@ pub async fn delete_chat_group(
       )));
       chat_group.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_chat_group(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<ChatGroupResponse>> {
+) -> AppResult<Vec<ChatGroupDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +80,17 @@ pub async fn get_chat_group(
         .await?;
       let res = chat_groups
         .into_iter()
-        .map(|chat_group: chat_group::Model| ChatGroupResponse::from(chat_group))
+        .map(|chat_group: chat_group::Model| ChatGroupDTO::from(chat_group))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let chat_groups = ChatGroup::find().all(db).await?;
       let res = chat_groups
         .into_iter()
-        .map(|chat_group: chat_group::Model| ChatGroupResponse::from(chat_group))
+        .map(|chat_group: chat_group::Model| ChatGroupDTO::from(chat_group))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

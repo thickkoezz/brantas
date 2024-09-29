@@ -1,6 +1,6 @@
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::tweet_reaction::{TweetReactionAddRequest, TweetReactionResponse};
+use crate::dtos::tweet_reaction::TweetReactionDTO;
 use crate::entities::{prelude::TweetReaction, tweet_reaction};
 use crate::services::PaginatorOption;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -8,7 +8,7 @@ use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_tweet_reaction(req: TweetReactionAddRequest) -> AppResult<TweetReactionResponse> {
+pub async fn add_tweet_reaction(req: TweetReactionDTO) -> AppResult<TweetReactionDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -20,11 +20,11 @@ pub async fn add_tweet_reaction(req: TweetReactionAddRequest) -> AppResult<Tweet
     reaction_emoji: Set(req.reaction_emoji),
   };
   let tweet_reaction = TweetReaction::insert(model.clone()).exec(db).await?;
-  Ok(TweetReactionResponse {
+  Ok(TweetReactionDTO {
     owner_id: tweet_reaction.last_insert_id.0,
     reacted_tweet_owner_id: tweet_reaction.last_insert_id.1,
     reacted_tweet_created_at: tweet_reaction.last_insert_id.2,
-    ..TweetReactionResponse::from(model)
+    ..TweetReactionDTO::from(model)
   })
 }
 
@@ -48,7 +48,7 @@ pub async fn delete_tweet_reaction(
 
 pub async fn get_tweet_reaction(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<TweetReactionResponse>> {
+) -> AppResult<Vec<TweetReactionDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -60,17 +60,17 @@ pub async fn get_tweet_reaction(
         .await?;
       let res = tweet_reactions
         .into_iter()
-        .map(|tweet_reaction: tweet_reaction::Model| TweetReactionResponse::from(tweet_reaction))
+        .map(|tweet_reaction: tweet_reaction::Model| TweetReactionDTO::from(tweet_reaction))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let tweet_reactions = TweetReaction::find().all(db).await?;
       let res = tweet_reactions
         .into_iter()
-        .map(|tweet_reaction: tweet_reaction::Model| TweetReactionResponse::from(tweet_reaction))
+        .map(|tweet_reaction: tweet_reaction::Model| TweetReactionDTO::from(tweet_reaction))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

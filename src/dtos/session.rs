@@ -5,23 +5,39 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct SessionAddRequest {
+pub type ID = Uuid;
+
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct SessionDTO {
   pub id: Uuid,
   pub session_token: String,
   pub user_account_id: Uuid,
   pub expires: DateTimeWithTimeZone,
 }
 
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct SessionResponse {
-  pub id: Uuid,
-  pub session_token: String,
-  pub user_account_id: Uuid,
-  pub expires: DateTimeWithTimeZone,
+impl SessionDTO {
+  pub fn set_id(&mut self, v: Uuid) -> &mut Self {
+    self.id = v;
+    self
+  }
+
+  pub fn set_session_token(&mut self, v: String) -> &mut Self {
+    self.session_token = v;
+    self
+  }
+
+  pub fn set_user_account_id(&mut self, v: Uuid) -> &mut Self {
+    self.user_account_id = v;
+    self
+  }
+
+  pub fn set_expires(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.expires = v;
+    self
+  }
 }
 
-impl From<crate::entities::session::Model> for SessionResponse {
+impl From<crate::entities::session::Model> for SessionDTO {
   fn from(m: crate::entities::session::Model) -> Self {
     Self {
       id: m.id,
@@ -32,7 +48,7 @@ impl From<crate::entities::session::Model> for SessionResponse {
   }
 }
 
-impl From<crate::entities::session::ActiveModel> for SessionResponse {
+impl From<crate::entities::session::ActiveModel> for SessionDTO {
   fn from(m: crate::entities::session::ActiveModel) -> Self {
     Self {
       id: m.id.unwrap(),

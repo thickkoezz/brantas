@@ -83,6 +83,11 @@ pub trait AddOne {
   async fn add_one(&self) -> AppResult<Self::Output>;
 }
 
+pub trait AddMany {
+  type Output;
+  async fn add_one(&self) -> AppResult<Self::Output>;
+}
+
 pub trait UpdateOne {
   type Output;
   async fn update_one(&self) -> AppResult<Self::Output>;
@@ -97,13 +102,4 @@ impl Default for DeletionMode {
   fn default() -> Self {
     DeletionMode::Soft
   }
-}
-
-pub struct ItemToDelete<T> {
-  deletion_mode: DeletionMode,
-  x: T,
-}
-
-trait DeleteService {
-  fn delete_one_by_id(&self) -> AppResult<()>;
 }

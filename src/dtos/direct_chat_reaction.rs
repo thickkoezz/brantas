@@ -1,3 +1,4 @@
+use crate::entities::direct_chat_reaction::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -5,17 +6,10 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct DirectChatReactionAddRequest {
-  pub owner_id: Uuid,
-  pub reacted_direct_chat_sender_id: Uuid,
-  pub reacted_direct_chat_receiver_id: Uuid,
-  pub reacted_direct_chat_created_at: DateTimeWithTimeZone,
-  pub reaction_emoji: String,
-}
+pub type ID = (Uuid, Uuid, Uuid, DateTimeWithTimeZone);
 
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct DirectChatReactionResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct DirectChatReactionDTO {
   pub owner_id: Uuid,
   pub reacted_direct_chat_sender_id: Uuid,
   pub reacted_direct_chat_receiver_id: Uuid,
@@ -24,8 +18,57 @@ pub struct DirectChatReactionResponse {
   pub reaction_emoji: String,
 }
 
-impl From<crate::entities::direct_chat_reaction::Model> for DirectChatReactionResponse {
-  fn from(m: crate::entities::direct_chat_reaction::Model) -> Self {
+impl DirectChatReactionDTO {
+  pub fn get_id(&self) -> ID {
+    (
+      self.owner_id.clone(),
+      self.reacted_direct_chat_sender_id.clone(),
+      self.reacted_direct_chat_receiver_id.clone(),
+      self.reacted_direct_chat_created_at,
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.owner_id = v.0;
+    self.reacted_direct_chat_sender_id = v.1;
+    self.reacted_direct_chat_receiver_id = v.2;
+    self.reacted_direct_chat_created_at = v.3;
+    self
+  }
+
+  pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
+    self.owner_id = v;
+    self
+  }
+
+  pub fn set_reacted_direct_chat_sender_id(&mut self, v: Uuid) -> &mut Self {
+    self.reacted_direct_chat_sender_id = v;
+    self
+  }
+
+  pub fn set_reacted_direct_chat_receiver_id(&mut self, v: Uuid) -> &mut Self {
+    self.reacted_direct_chat_receiver_id = v;
+    self
+  }
+
+  pub fn set_reacted_direct_chat_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.reacted_direct_chat_created_at = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_reaction_emoji(&mut self, v: String) -> &mut Self {
+    self.reaction_emoji = v;
+    self
+  }
+}
+
+impl From<Model> for DirectChatReactionDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       reacted_direct_chat_sender_id: m.reacted_direct_chat_sender_id,
@@ -37,8 +80,8 @@ impl From<crate::entities::direct_chat_reaction::Model> for DirectChatReactionRe
   }
 }
 
-impl From<crate::entities::direct_chat_reaction::ActiveModel> for DirectChatReactionResponse {
-  fn from(m: crate::entities::direct_chat_reaction::ActiveModel) -> Self {
+impl From<ActiveModel> for DirectChatReactionDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       reacted_direct_chat_sender_id: m.reacted_direct_chat_sender_id.unwrap(),

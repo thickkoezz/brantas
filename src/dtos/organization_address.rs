@@ -1,38 +1,64 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct OrganizationAddressAddRequest {
-  pub organization_id: Uuid,
-  pub city_id: i32,
-  pub department_id: Uuid,
-  pub description: Option<String>,
-}
+pub type ID = (Uuid, i32);
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct OrganizationAddressUpdateRequest {
-  pub organization_id: Uuid,
-  pub city_id: i32,
-  pub updated_at: Option<DateTimeWithTimeZone>,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
-  pub description: Option<String>,
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct OrganizationAddressResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct OrganizationAddressDTO {
   pub organization_id: Uuid,
   pub city_id: i32,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub updated_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub description: Option<String>,
 }
 
-impl From<crate::entities::organization_address::Model> for OrganizationAddressResponse {
+impl OrganizationAddressDTO {
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
+
+  pub fn set_organization_id(&mut self, v: Uuid) -> &mut Self {
+    self.organization_id = v;
+    self
+  }
+
+  pub fn set_city_id(&mut self, v: i32) -> &mut Self {
+    self.city_id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.updated_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+
+  pub fn set_description(&mut self, v: Option<String>) -> &mut Self {
+    self.description = v;
+    self
+  }
+}
+
+impl From<crate::entities::organization_address::Model> for OrganizationAddressDTO {
   fn from(m: crate::entities::organization_address::Model) -> Self {
     Self {
       organization_id: m.organization_id,
@@ -45,7 +71,7 @@ impl From<crate::entities::organization_address::Model> for OrganizationAddressR
   }
 }
 
-impl From<crate::entities::organization_address::ActiveModel> for OrganizationAddressResponse {
+impl From<crate::entities::organization_address::ActiveModel> for OrganizationAddressDTO {
   fn from(m: crate::entities::organization_address::ActiveModel) -> Self {
     Self {
       organization_id: m.organization_id.unwrap(),

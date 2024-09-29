@@ -1,9 +1,7 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::organization_administrator::{
-  OrganizationAdministratorAddRequest, OrganizationAdministratorResponse,
-};
+use crate::dtos::organization_administrator::OrganizationAdministratorDTO;
 use crate::entities::{organization_administrator, prelude::OrganizationAdministrator};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
@@ -11,8 +9,8 @@ use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
 pub async fn add_organization_administrator(
-  req: OrganizationAdministratorAddRequest,
-) -> AppResult<OrganizationAdministratorResponse> {
+  req: OrganizationAdministratorDTO,
+) -> AppResult<OrganizationAdministratorDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -26,10 +24,10 @@ pub async fn add_organization_administrator(
   let organization_administrator = OrganizationAdministrator::insert(model.clone())
     .exec(db)
     .await?;
-  Ok(OrganizationAdministratorResponse {
+  Ok(OrganizationAdministratorDTO {
     organization_id: organization_administrator.last_insert_id.0,
     administrator_id: organization_administrator.last_insert_id.1,
-    ..OrganizationAdministratorResponse::from(model)
+    ..OrganizationAdministratorDTO::from(model)
   })
 }
 
@@ -52,7 +50,7 @@ pub async fn delete_organization_administrator(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("administrator"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let organization_administrator =
         OrganizationAdministrator::find_by_id((organization_id, administrator_id, department_id))
@@ -69,13 +67,13 @@ pub async fn delete_organization_administrator(
       )));
       organization_administrator.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_organization_administrator(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<OrganizationAdministratorResponse>> {
+) -> AppResult<Vec<OrganizationAdministratorDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -89,23 +87,23 @@ pub async fn get_organization_administrator(
         .into_iter()
         .map(
           |organization_administrator: organization_administrator::Model| {
-            OrganizationAdministratorResponse::from(organization_administrator)
+            OrganizationAdministratorDTO::from(organization_administrator)
           },
         )
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let organization_administrators = OrganizationAdministrator::find().all(db).await?;
       let res = organization_administrators
         .into_iter()
         .map(
           |organization_administrator: organization_administrator::Model| {
-            OrganizationAdministratorResponse::from(organization_administrator)
+            OrganizationAdministratorDTO::from(organization_administrator)
           },
         )
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

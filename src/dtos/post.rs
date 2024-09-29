@@ -1,58 +1,113 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct PostAddRequest {
-  pub owner_id: Uuid,
-  pub title: String,
-  pub content: String,
-  pub is_published: bool,
-  pub hashtag: Option<String>,
-  pub is_public: bool,
-  pub group_name: Option<String>,
-  pub can_comment: bool,
-}
+pub type ID = (Uuid, DateTimeWithTimeZone);
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct PostUpdateRequest {
-  pub owner_id: Uuid,
-  pub updated_at: Option<DateTimeWithTimeZone>,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
-  pub title: String,
-  pub content: String,
-  pub is_published: bool,
-  pub hashtag: Option<String>,
-  pub view_count: i32,
-  pub reply_count: i32,
-  pub react_count: i32,
-  pub is_public: bool,
-  pub group_name: Option<String>,
-  pub can_comment: bool,
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct PostResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct PostDTO {
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub updated_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub title: String,
   pub content: String,
   pub is_published: bool,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub hashtag: Option<String>,
   pub view_count: i32,
   pub comment_count: i32,
   pub reaction_count: i32,
   pub is_public: bool,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub group_name: Option<String>,
   pub can_comment: bool,
 }
 
-impl From<crate::entities::post::Model> for PostResponse {
+impl PostDTO {
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
+
+  pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
+    self.owner_id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.updated_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+
+  pub fn set_title(&mut self, v: String) -> &mut Self {
+    self.title = v;
+    self
+  }
+
+  pub fn set_content(&mut self, v: String) -> &mut Self {
+    self.content = v;
+    self
+  }
+
+  pub fn set_is_published(&mut self, v: bool) -> &mut Self {
+    self.is_published = v;
+    self
+  }
+
+  pub fn set_hashtag(&mut self, v: Option<String>) -> &mut Self {
+    self.hashtag = v;
+    self
+  }
+
+  pub fn set_view_count(&mut self, v: i32) -> &mut Self {
+    self.view_count = v;
+    self
+  }
+
+  pub fn set_comment_count(&mut self, v: i32) -> &mut Self {
+    self.comment_count = v;
+    self
+  }
+
+  pub fn set_reaction_count(&mut self, v: i32) -> &mut Self {
+    self.reaction_count = v;
+    self
+  }
+
+  pub fn set_is_public(&mut self, v: bool) -> &mut Self {
+    self.is_public = v;
+    self
+  }
+
+  pub fn set_group_name(&mut self, v: Option<String>) -> &mut Self {
+    self.group_name = v;
+    self
+  }
+
+  pub fn set_can_comment(&mut self, v: bool) -> &mut Self {
+    self.can_comment = v;
+    self
+  }
+}
+
+impl From<crate::entities::post::Model> for PostDTO {
   fn from(m: crate::entities::post::Model) -> Self {
     Self {
       owner_id: m.owner_id,
@@ -73,7 +128,7 @@ impl From<crate::entities::post::Model> for PostResponse {
   }
 }
 
-impl From<crate::entities::post::ActiveModel> for PostResponse {
+impl From<crate::entities::post::ActiveModel> for PostDTO {
   fn from(m: crate::entities::post::ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),

@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::direct_chat::{DirectChatAddRequest, DirectChatResponse};
+use crate::dtos::direct_chat::DirectChatDTO;
 use crate::entities::{direct_chat, prelude::DirectChat};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_direct_chat(req: DirectChatAddRequest) -> AppResult<DirectChatResponse> {
+pub async fn add_direct_chat(req: DirectChatDTO) -> AppResult<DirectChatDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -31,11 +31,11 @@ pub async fn add_direct_chat(req: DirectChatAddRequest) -> AppResult<DirectChatR
     pin_expired_at: Set(None),
   };
   let direct_chat = DirectChat::insert(model.clone()).exec(db).await?;
-  Ok(DirectChatResponse {
+  Ok(DirectChatDTO {
     sender_id: direct_chat.last_insert_id.0,
     receiver_id: direct_chat.last_insert_id.1,
     created_at: direct_chat.last_insert_id.2,
-    ..DirectChatResponse::from(model)
+    ..DirectChatDTO::from(model)
   })
 }
 
@@ -57,7 +57,7 @@ pub async fn delete_direct_chat(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("chat"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let direct_chat = DirectChat::find_by_id((sender_id, receiver_id, created_at))
         .one(db)
@@ -72,13 +72,13 @@ pub async fn delete_direct_chat(
       )));
       direct_chat.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_direct_chat(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<DirectChatResponse>> {
+) -> AppResult<Vec<DirectChatDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -90,17 +90,17 @@ pub async fn get_direct_chat(
         .await?;
       let res = direct_chats
         .into_iter()
-        .map(|direct_chat: direct_chat::Model| DirectChatResponse::from(direct_chat))
+        .map(|direct_chat: direct_chat::Model| DirectChatDTO::from(direct_chat))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let direct_chats = DirectChat::find().all(db).await?;
       let res = direct_chats
         .into_iter()
-        .map(|direct_chat: direct_chat::Model| DirectChatResponse::from(direct_chat))
+        .map(|direct_chat: direct_chat::Model| DirectChatDTO::from(direct_chat))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

@@ -1,10 +1,7 @@
+use crate::dtos::user_account::UserAccountDTO;
 use crate::services::PaginatorOption;
 use crate::{
   app_writer::{AppResult, AppWriter, ErrorResponseBuilder},
-  dtos::user_account::{
-    UserAccountAddRequest, UserAccountLoginRequest, UserAccountLoginResponse, UserAccountResponse,
-    UserAccountUpdateRequest,
-  },
   services,
   services::user_account,
 };
@@ -26,17 +23,17 @@ async fn hello() -> &'static str {
 }
 
 #[endpoint(tags("user_accounts"))]
-pub async fn post_login(req: JsonBody<UserAccountLoginRequest>, res: &mut Response) {
-  let result: AppResult<UserAccountLoginResponse> = user_account::login(req.0).await;
+pub async fn post_login(req: JsonBody<UserAccountDTO>, res: &mut Response) {
+  let result: AppResult<UserAccountDTO> = user_account::login(req.0).await;
   match result {
     Ok(data) => {
-      let jwt_token = data.token.clone();
+      let jwt_token = data.token.unwrap().clone();
       let cookie = Cookie::build(("jwt_token", jwt_token))
         .path("/")
         .http_only(true)
         .build();
       res.add_cookie(cookie);
-    },
+    }
     Err(e) => ErrorResponseBuilder::with_err(e).into_response(res),
   }
 }
@@ -54,8 +51,8 @@ pub fn create_routers() -> Vec<Router> {
 
 #[endpoint(tags("user_accounts"))]
 pub async fn post_add_user_account(
-  new_user: JsonBody<UserAccountAddRequest>,
-) -> AppWriter<UserAccountResponse> {
+  new_user: JsonBody<UserAccountDTO>,
+) -> AppWriter<UserAccountDTO> {
   let result = user_account::add_user_account(new_user.0).await;
   AppWriter(result)
 }
@@ -64,10 +61,8 @@ pub async fn post_add_user_account(
   parameters(
     ("id", description = "user id"),
   ))]
-pub async fn put_update_user_account(
-  req: &mut Request,
-) -> AppResult<AppWriter<UserAccountResponse>> {
-  let req: UserAccountUpdateRequest = req.extract().await?;
+pub async fn put_update_user_account(req: &mut Request) -> AppResult<AppWriter<UserAccountDTO>> {
+  let req: UserAccountDTO = req.extract().await?;
   let result = user_account::update_user_account(req).await;
   Ok(AppWriter(result))
 }
@@ -79,7 +74,7 @@ pub async fn delete_user_account(id: PathParam<Uuid>) -> AppWriter<()> {
 }
 
 #[endpoint(tags("user_accounts"))]
-pub async fn get_user_accounts() -> AppWriter<Vec<UserAccountResponse>> {
+pub async fn get_user_accounts() -> AppWriter<Vec<UserAccountDTO>> {
   let option = Option::from(PaginatorOption {
     page_size: 500,
     page: 1,

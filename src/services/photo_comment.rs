@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::photo_comment::{PhotoCommentAddRequest, PhotoCommentResponse};
+use crate::dtos::photo_comment::PhotoCommentDTO;
 use crate::entities::{photo_comment, prelude::PhotoComment};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_photo_comment(req: PhotoCommentAddRequest) -> AppResult<PhotoCommentResponse> {
+pub async fn add_photo_comment(req: PhotoCommentDTO) -> AppResult<PhotoCommentDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -23,10 +23,10 @@ pub async fn add_photo_comment(req: PhotoCommentAddRequest) -> AppResult<PhotoCo
     reaction_count: Set(0),
   };
   let photo_comment = PhotoComment::insert(model.clone()).exec(db).await?;
-  Ok(PhotoCommentResponse {
+  Ok(PhotoCommentDTO {
     owner_id: photo_comment.last_insert_id.0,
     created_at: photo_comment.last_insert_id.1,
-    ..PhotoCommentResponse::from(model)
+    ..PhotoCommentDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_photo_comment(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("comment"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let photo_comment = PhotoComment::find_by_id((owner_id, created_at))
         .one(db)
@@ -62,13 +62,13 @@ pub async fn delete_photo_comment(
       )));
       photo_comment.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_photo_comment(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<PhotoCommentResponse>> {
+) -> AppResult<Vec<PhotoCommentDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +80,17 @@ pub async fn get_photo_comment(
         .await?;
       let res = photo_comments
         .into_iter()
-        .map(|photo_comment: photo_comment::Model| PhotoCommentResponse::from(photo_comment))
+        .map(|photo_comment: photo_comment::Model| PhotoCommentDTO::from(photo_comment))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let photo_comments = PhotoComment::find().all(db).await?;
       let res = photo_comments
         .into_iter()
-        .map(|photo_comment: photo_comment::Model| PhotoCommentResponse::from(photo_comment))
+        .map(|photo_comment: photo_comment::Model| PhotoCommentDTO::from(photo_comment))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

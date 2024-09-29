@@ -5,28 +5,62 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct StarredChatResponseAddRequest {
-  pub creator_id: Uuid,
-  pub chat_sender_id: Option<Uuid>,
-  pub direct_chat_receiver_id: Option<Uuid>,
-  pub group_chat_group_creator_id: Option<Uuid>,
-  pub group_chat_group_created_at: Option<DateTimeWithTimeZone>,
-  pub chat_created_at: Option<DateTimeWithTimeZone>,
-}
+pub type ID = (Uuid, DateTimeWithTimeZone);
 
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct StarredChatResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct StarredChatDTO {
   pub creator_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub chat_sender_id: Option<Uuid>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub direct_chat_receiver_id: Option<Uuid>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub group_chat_group_creator_id: Option<Uuid>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub group_chat_group_created_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub chat_created_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::starred_chat::Model> for StarredChatResponse {
+impl StarredChatDTO {
+  pub fn set_creator_id(&mut self, v: Uuid) -> &mut Self {
+    self.creator_id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_chat_sender_id(&mut self, v: Option<Uuid>) -> &mut Self {
+    self.chat_sender_id = v;
+    self
+  }
+
+  pub fn set_direct_chat_receiver_id(&mut self, v: Option<Uuid>) -> &mut Self {
+    self.direct_chat_receiver_id = v;
+    self
+  }
+
+  pub fn set_group_chat_group_creator_id(&mut self, v: Option<Uuid>) -> &mut Self {
+    self.group_chat_group_creator_id = v;
+    self
+  }
+
+  pub fn set_group_chat_group_created_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.group_chat_group_created_at = v;
+    self
+  }
+
+  pub fn set_chat_created_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.chat_created_at = v;
+    self
+  }
+}
+
+impl From<crate::entities::starred_chat::Model> for StarredChatDTO {
   fn from(m: crate::entities::starred_chat::Model) -> Self {
     Self {
       creator_id: m.creator_id,
@@ -40,7 +74,7 @@ impl From<crate::entities::starred_chat::Model> for StarredChatResponse {
   }
 }
 
-impl From<crate::entities::starred_chat::ActiveModel> for StarredChatResponse {
+impl From<crate::entities::starred_chat::ActiveModel> for StarredChatDTO {
   fn from(m: crate::entities::starred_chat::ActiveModel) -> Self {
     Self {
       creator_id: m.creator_id.unwrap(),

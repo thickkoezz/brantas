@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::project_skill::{ProjectSkillAddRequest, ProjectSkillResponse};
+use crate::dtos::project_skill::ProjectSkillDTO;
 use crate::entities::{prelude::ProjectSkill, project_skill};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_project_skill(req: ProjectSkillAddRequest) -> AppResult<ProjectSkillResponse> {
+pub async fn add_project_skill(req: ProjectSkillDTO) -> AppResult<ProjectSkillDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -21,11 +21,11 @@ pub async fn add_project_skill(req: ProjectSkillAddRequest) -> AppResult<Project
     description: Set(req.description),
   };
   let project_skill = ProjectSkill::insert(model.clone()).exec(db).await?;
-  Ok(ProjectSkillResponse {
+  Ok(ProjectSkillDTO {
     person_id: project_skill.last_insert_id.0,
     project_created_at: project_skill.last_insert_id.1,
     skill_created_at: project_skill.last_insert_id.2,
-    ..ProjectSkillResponse::from(model)
+    ..ProjectSkillDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_project_skill(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("skill"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let project_skill =
         ProjectSkill::find_by_id((person_id, project_created_at, skill_created_at))
@@ -63,13 +63,13 @@ pub async fn delete_project_skill(
       )));
       project_skill.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_project_skill(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<ProjectSkillResponse>> {
+) -> AppResult<Vec<ProjectSkillDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -81,17 +81,17 @@ pub async fn get_project_skill(
         .await?;
       let res = project_skills
         .into_iter()
-        .map(|project_skill: project_skill::Model| ProjectSkillResponse::from(project_skill))
+        .map(|project_skill: project_skill::Model| ProjectSkillDTO::from(project_skill))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let project_skills = ProjectSkill::find().all(db).await?;
       let res = project_skills
         .into_iter()
-        .map(|project_skill: project_skill::Model| ProjectSkillResponse::from(project_skill))
+        .map(|project_skill: project_skill::Model| ProjectSkillDTO::from(project_skill))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

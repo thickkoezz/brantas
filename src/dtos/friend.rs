@@ -1,25 +1,59 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct FriendAddRequest {
-  pub invitor_id: Uuid,
-  pub invitee_id: Uuid,
-}
+pub type ID = (Uuid, Uuid);
 
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct FriendResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct FriendDTO {
   pub invitor_id: Uuid,
   pub invitee_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
+impl FriendDTO {
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
 
-impl From<crate::entities::friend::Model> for FriendResponse {
+  pub fn get_id(&self) -> ID {
+    (self.invitor_id.clone(), self.invitee_id.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.invitor_id = v.0;
+    self.invitee_id = v.1;
+    self
+  }
+
+  pub fn set_invitor_id(&mut self, v: Uuid) -> &mut Self {
+    self.invitor_id = v;
+    self
+  }
+
+  pub fn set_invitee_id(&mut self, v: Uuid) -> &mut Self {
+    self.invitee_id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+}
+
+impl From<crate::entities::friend::Model> for FriendDTO {
   fn from(m: crate::entities::friend::Model) -> Self {
     Self {
       invitor_id: m.invitor_id,
@@ -30,7 +64,7 @@ impl From<crate::entities::friend::Model> for FriendResponse {
   }
 }
 
-impl From<crate::entities::friend::ActiveModel> for FriendResponse {
+impl From<crate::entities::friend::ActiveModel> for FriendDTO {
   fn from(m: crate::entities::friend::ActiveModel) -> Self {
     Self {
       invitor_id: m.invitor_id.unwrap(),

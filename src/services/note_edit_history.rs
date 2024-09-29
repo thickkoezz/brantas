@@ -1,16 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::note_edit_history::{NoteEditHistoryAddRequest, NoteEditHistoryResponse};
+use crate::dtos::note_edit_history::NoteEditHistoryDTO;
 use crate::entities::{note_edit_history, prelude::NoteEditHistory};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_note_edit_history(
-  req: NoteEditHistoryAddRequest,
-) -> AppResult<NoteEditHistoryResponse> {
+pub async fn add_note_edit_history(req: NoteEditHistoryDTO) -> AppResult<NoteEditHistoryDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -24,12 +22,12 @@ pub async fn add_note_edit_history(
     deleted_at: Set(None),
   };
   let note_edit_history = NoteEditHistory::insert(model.clone()).exec(db).await?;
-  Ok(NoteEditHistoryResponse {
+  Ok(NoteEditHistoryDTO {
     note_owner_id: note_edit_history.last_insert_id.0,
     note_created_at: note_edit_history.last_insert_id.1,
     editor_id: note_edit_history.last_insert_id.2,
     created_at: note_edit_history.last_insert_id.3,
-    ..NoteEditHistoryResponse::from(model)
+    ..NoteEditHistoryDTO::from(model)
   })
 }
 
@@ -53,7 +51,7 @@ pub async fn delete_note_edit_history(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("history"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let note_edit_history =
         NoteEditHistory::find_by_id((note_owner_id, note_created_at, editor_id, created_at))
@@ -69,13 +67,13 @@ pub async fn delete_note_edit_history(
       )));
       note_edit_history.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_note_edit_history(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<NoteEditHistoryResponse>> {
+) -> AppResult<Vec<NoteEditHistoryDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -88,20 +86,20 @@ pub async fn get_note_edit_history(
       let res = note_edit_histories
         .into_iter()
         .map(|note_edit_history: note_edit_history::Model| {
-          NoteEditHistoryResponse::from(note_edit_history)
+          NoteEditHistoryDTO::from(note_edit_history)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let note_edit_histories = NoteEditHistory::find().all(db).await?;
       let res = note_edit_histories
         .into_iter()
         .map(|note_edit_history: note_edit_history::Model| {
-          NoteEditHistoryResponse::from(note_edit_history)
+          NoteEditHistoryDTO::from(note_edit_history)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

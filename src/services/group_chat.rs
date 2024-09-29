@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::group_chat::{GroupChatAddRequest, GroupChatResponse};
+use crate::dtos::group_chat::GroupChatDTO;
 use crate::entities::{group_chat, prelude::GroupChat};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_group_chat(req: GroupChatAddRequest) -> AppResult<GroupChatResponse> {
+pub async fn add_group_chat(req: GroupChatDTO) -> AppResult<GroupChatDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -31,12 +31,12 @@ pub async fn add_group_chat(req: GroupChatAddRequest) -> AppResult<GroupChatResp
     pin_expired_at: Set(req.pin_expired_at),
   };
   let group_chat = GroupChat::insert(model.clone()).exec(db).await?;
-  Ok(GroupChatResponse {
+  Ok(GroupChatDTO {
     sender_id: group_chat.last_insert_id.0,
     group_creator_id: group_chat.last_insert_id.1,
     group_created_at: group_chat.last_insert_id.2,
     created_at: group_chat.last_insert_id.3,
-    ..GroupChatResponse::from(model)
+    ..GroupChatDTO::from(model)
   })
 }
 
@@ -60,7 +60,7 @@ pub async fn delete_group_chat(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("chat"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let group_chat =
         GroupChat::find_by_id((sender_id, group_creator_id, group_created_at, created_at))
@@ -76,13 +76,13 @@ pub async fn delete_group_chat(
       )));
       group_chat.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_group_chat(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<GroupChatResponse>> {
+) -> AppResult<Vec<GroupChatDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -94,17 +94,17 @@ pub async fn get_group_chat(
         .await?;
       let res = group_chats
         .into_iter()
-        .map(|group_chat: group_chat::Model| GroupChatResponse::from(group_chat))
+        .map(|group_chat: group_chat::Model| GroupChatDTO::from(group_chat))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let group_chats = GroupChat::find().all(db).await?;
       let res = group_chats
         .into_iter()
-        .map(|group_chat: group_chat::Model| GroupChatResponse::from(group_chat))
+        .map(|group_chat: group_chat::Model| GroupChatDTO::from(group_chat))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

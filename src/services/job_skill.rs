@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::job_skill::{JobSkillAddRequest, JobSkillResponse};
+use crate::dtos::job_skill::JobSkillDTO;
 use crate::entities::{job_skill, prelude::JobSkill};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_job_skill(req: JobSkillAddRequest) -> AppResult<JobSkillResponse> {
+pub async fn add_job_skill(req: JobSkillDTO) -> AppResult<JobSkillDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -22,12 +22,12 @@ pub async fn add_job_skill(req: JobSkillAddRequest) -> AppResult<JobSkillRespons
     description: Set(req.description),
   };
   let job_skill = JobSkill::insert(model.clone()).exec(db).await?;
-  Ok(JobSkillResponse {
+  Ok(JobSkillDTO {
     organization_id: job_skill.last_insert_id.0,
     person_id: job_skill.last_insert_id.1,
     job_created_at: job_skill.last_insert_id.2,
     skill_created_at: job_skill.last_insert_id.3,
-    ..JobSkillResponse::from(model)
+    ..JobSkillDTO::from(model)
   })
 }
 
@@ -51,7 +51,7 @@ pub async fn delete_job_skill(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("skill"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let job_skill =
         JobSkill::find_by_id((organization_id, person_id, job_created_at, skill_created_at))
@@ -67,13 +67,13 @@ pub async fn delete_job_skill(
       )));
       job_skill.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_job_skill(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<JobSkillResponse>> {
+) -> AppResult<Vec<JobSkillDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -85,17 +85,17 @@ pub async fn get_job_skill(
         .await?;
       let res = job_skills
         .into_iter()
-        .map(|job_skill: job_skill::Model| JobSkillResponse::from(job_skill))
+        .map(|job_skill: job_skill::Model| JobSkillDTO::from(job_skill))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let job_skills = JobSkill::find().all(db).await?;
       let res = job_skills
         .into_iter()
-        .map(|job_skill: job_skill::Model| JobSkillResponse::from(job_skill))
+        .map(|job_skill: job_skill::Model| JobSkillDTO::from(job_skill))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

@@ -1,13 +1,13 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::link_code::{LinkCodeAddRequest, LinkCodeResponse};
+use crate::dtos::link_code::LinkCodeDTO;
 use crate::entities::{link_code, prelude::LinkCode};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 
-pub async fn add_link_code(req: LinkCodeAddRequest) -> AppResult<LinkCodeResponse> {
+pub async fn add_link_code(req: LinkCodeDTO) -> AppResult<LinkCodeDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -25,9 +25,9 @@ pub async fn add_link_code(req: LinkCodeAddRequest) -> AppResult<LinkCodeRespons
     deleted_at: Set(None),
   };
   let link_code = LinkCode::insert(model.clone()).exec(db).await?;
-  Ok(LinkCodeResponse {
+  Ok(LinkCodeDTO {
     code: link_code.last_insert_id,
-    ..LinkCodeResponse::from(model)
+    ..LinkCodeDTO::from(model)
   })
 }
 
@@ -42,7 +42,7 @@ pub async fn delete_link_code(deletion_mode: DeletionMode, code: String) -> AppR
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("code"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let link_code = LinkCode::find_by_id(code).one(db).await?;
       if link_code.is_none() {
@@ -55,13 +55,13 @@ pub async fn delete_link_code(deletion_mode: DeletionMode, code: String) -> AppR
       )));
       link_code.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_link_code(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<LinkCodeResponse>> {
+) -> AppResult<Vec<LinkCodeDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -73,17 +73,17 @@ pub async fn get_link_code(
         .await?;
       let res = link_codes
         .into_iter()
-        .map(|link_code: link_code::Model| LinkCodeResponse::from(link_code))
+        .map(|link_code: link_code::Model| LinkCodeDTO::from(link_code))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let link_codes = LinkCode::find().all(db).await?;
       let res = link_codes
         .into_iter()
-        .map(|link_code: link_code::Model| LinkCodeResponse::from(link_code))
+        .map(|link_code: link_code::Model| LinkCodeDTO::from(link_code))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

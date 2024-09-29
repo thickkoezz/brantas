@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::tweet::{TweetAddRequest, TweetResponse};
+use crate::dtos::tweet::{TweetDTO, TweetDTO};
 use crate::entities::{prelude::Tweet, tweet};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_tweet(req: TweetAddRequest) -> AppResult<TweetResponse> {
+pub async fn add_tweet(req: TweetDTO) -> AppResult<TweetDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -29,10 +29,10 @@ pub async fn add_tweet(req: TweetAddRequest) -> AppResult<TweetResponse> {
     deleted_at: Set(None),
   };
   let tweet = Tweet::insert(model.clone()).exec(db).await?;
-  Ok(TweetResponse {
+  Ok(TweetDTO {
     owner_id: tweet.last_insert_id.0,
     created_at: tweet.last_insert_id.1,
-    ..TweetResponse::from(model)
+    ..TweetDTO::from(model)
   })
 }
 
@@ -51,7 +51,7 @@ pub async fn delete_tweet(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("tweet"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let tweet = Tweet::find_by_id((owner_id, created_at)).one(db).await?;
       if tweet.is_none() {
@@ -64,11 +64,11 @@ pub async fn delete_tweet(
       )));
       tweet.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_tweet(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<TweetResponse>> {
+pub async fn get_tweet(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<TweetDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +80,17 @@ pub async fn get_tweet(paginator_option: Option<PaginatorOption>) -> AppResult<V
         .await?;
       let res = tweets
         .into_iter()
-        .map(|tweet: tweet::Model| TweetResponse::from(tweet))
+        .map(|tweet: tweet::Model| TweetDTO::from(tweet))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let tweets = Tweet::find().all(db).await?;
       let res = tweets
         .into_iter()
-        .map(|tweet: tweet::Model| TweetResponse::from(tweet))
+        .map(|tweet: tweet::Model| TweetDTO::from(tweet))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

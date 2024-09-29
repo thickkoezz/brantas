@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::post_share::{PostShareAddRequest, PostShareResponse};
+use crate::dtos::post_share::PostShareDTO;
 use crate::entities::{post_share, prelude::PostShare};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_post_share(req: PostShareAddRequest) -> AppResult<PostShareResponse> {
+pub async fn add_post_share(req: PostShareDTO) -> AppResult<PostShareDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -21,11 +21,11 @@ pub async fn add_post_share(req: PostShareAddRequest) -> AppResult<PostShareResp
     deleted_at: Set(None),
   };
   let post_share = PostShare::insert(model.clone()).exec(db).await?;
-  Ok(PostShareResponse {
+  Ok(PostShareDTO {
     post_owner_id: post_share.last_insert_id.0,
     post_created_at: post_share.last_insert_id.1,
     target_id: post_share.last_insert_id.2,
-    ..PostShareResponse::from(model)
+    ..PostShareDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_post_share(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("user"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let post_share = PostShare::find_by_id((post_owner_id, post_created_at, target_id))
         .one(db)
@@ -62,13 +62,13 @@ pub async fn delete_post_share(
       )));
       post_share.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_post_share(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<PostShareResponse>> {
+) -> AppResult<Vec<PostShareDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +80,17 @@ pub async fn get_post_share(
         .await?;
       let res = post_shares
         .into_iter()
-        .map(|post_share: post_share::Model| PostShareResponse::from(post_share))
+        .map(|post_share: post_share::Model| PostShareDTO::from(post_share))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let post_shares = PostShare::find().all(db).await?;
       let res = post_shares
         .into_iter()
-        .map(|post_share: post_share::Model| PostShareResponse::from(post_share))
+        .map(|post_share: post_share::Model| PostShareDTO::from(post_share))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

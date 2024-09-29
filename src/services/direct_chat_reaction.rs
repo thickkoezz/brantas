@@ -1,6 +1,6 @@
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::direct_chat_reaction::{DirectChatReactionAddRequest, DirectChatReactionResponse};
+use crate::dtos::direct_chat_reaction::DirectChatReactionDTO;
 use crate::entities::{direct_chat_reaction, prelude::DirectChatReaction};
 use crate::services::PaginatorOption;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -9,8 +9,8 @@ use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
 pub async fn add_direct_chat_reaction(
-  req: DirectChatReactionAddRequest,
-) -> AppResult<DirectChatReactionResponse> {
+  req: DirectChatReactionDTO,
+) -> AppResult<DirectChatReactionDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -23,12 +23,12 @@ pub async fn add_direct_chat_reaction(
     reaction_emoji: Set(req.reaction_emoji),
   };
   let direct_chat_reaction = DirectChatReaction::insert(model.clone()).exec(db).await?;
-  Ok(DirectChatReactionResponse {
+  Ok(DirectChatReactionDTO {
     owner_id: direct_chat_reaction.last_insert_id.0,
     reacted_direct_chat_sender_id: direct_chat_reaction.last_insert_id.1,
     reacted_direct_chat_receiver_id: direct_chat_reaction.last_insert_id.2,
     reacted_direct_chat_created_at: direct_chat_reaction.last_insert_id.3,
-    ..DirectChatReactionResponse::from(model)
+    ..DirectChatReactionDTO::from(model)
   })
 }
 
@@ -57,7 +57,7 @@ pub async fn delete_direct_chat_reaction(
 
 pub async fn get_direct_chat_reaction(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<DirectChatReactionResponse>> {
+) -> AppResult<Vec<DirectChatReactionDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -70,20 +70,20 @@ pub async fn get_direct_chat_reaction(
       let res = direct_chat_reactions
         .into_iter()
         .map(|direct_chat_reaction: direct_chat_reaction::Model| {
-          DirectChatReactionResponse::from(direct_chat_reaction)
+          DirectChatReactionDTO::from(direct_chat_reaction)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let direct_chat_reactions = DirectChatReaction::find().all(db).await?;
       let res = direct_chat_reactions
         .into_iter()
         .map(|direct_chat_reaction: direct_chat_reaction::Model| {
-          DirectChatReactionResponse::from(direct_chat_reaction)
+          DirectChatReactionDTO::from(direct_chat_reaction)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

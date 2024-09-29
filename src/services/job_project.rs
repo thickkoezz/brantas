@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::job_project::{JobProjectAddRequest, JobProjectResponse};
+use crate::dtos::job_project::JobProjectDTO;
 use crate::entities::{job_project, prelude::JobProject};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_job_project(req: JobProjectAddRequest) -> AppResult<JobProjectResponse> {
+pub async fn add_job_project(req: JobProjectDTO) -> AppResult<JobProjectDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -22,12 +22,12 @@ pub async fn add_job_project(req: JobProjectAddRequest) -> AppResult<JobProjectR
     description: Set(req.description),
   };
   let job_project = JobProject::insert(model.clone()).exec(db).await?;
-  Ok(JobProjectResponse {
+  Ok(JobProjectDTO {
     organization_id: job_project.last_insert_id.0,
     person_id: job_project.last_insert_id.1,
     job_created_at: job_project.last_insert_id.2,
     project_created_at: job_project.last_insert_id.3,
-    ..JobProjectResponse::from(model)
+    ..JobProjectDTO::from(model)
   })
 }
 
@@ -55,7 +55,7 @@ pub async fn delete_job_project(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("job_project"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let job_project = JobProject::find_by_id((
         organization_id,
@@ -75,13 +75,13 @@ pub async fn delete_job_project(
       )));
       job_project.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_job_project(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<JobProjectResponse>> {
+) -> AppResult<Vec<JobProjectDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -93,17 +93,17 @@ pub async fn get_job_project(
         .await?;
       let res = job_projects
         .into_iter()
-        .map(|job_project: job_project::Model| JobProjectResponse::from(job_project))
+        .map(|job_project: job_project::Model| JobProjectDTO::from(job_project))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let job_projects = JobProject::find().all(db).await?;
       let res = job_projects
         .into_iter()
-        .map(|job_project: job_project::Model| JobProjectResponse::from(job_project))
+        .map(|job_project: job_project::Model| JobProjectDTO::from(job_project))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

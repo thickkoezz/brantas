@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::project::{ProjectAddRequest, ProjectResponse};
+use crate::dtos::project::ProjectDTO;
 use crate::entities::{prelude::Project, project};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_project(req: ProjectAddRequest) -> AppResult<ProjectResponse> {
+pub async fn add_project(req: ProjectDTO) -> AppResult<ProjectDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -23,10 +23,10 @@ pub async fn add_project(req: ProjectAddRequest) -> AppResult<ProjectResponse> {
     end_date: Set(req.end_date),
   };
   let project = Project::insert(model.clone()).exec(db).await?;
-  Ok(ProjectResponse {
+  Ok(ProjectDTO {
     person_id: project.last_insert_id.0,
     created_at: project.last_insert_id.1,
-    ..ProjectResponse::from(model)
+    ..ProjectDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_project(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("project"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let project = Project::find_by_id((person_id, created_at)).one(db).await?;
       if project.is_none() {
@@ -60,13 +60,11 @@ pub async fn delete_project(
       )));
       project.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_project(
-  paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<ProjectResponse>> {
+pub async fn get_project(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<ProjectDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -78,17 +76,17 @@ pub async fn get_project(
         .await?;
       let res = projects
         .into_iter()
-        .map(|project: project::Model| ProjectResponse::from(project))
+        .map(|project: project::Model| ProjectDTO::from(project))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let projects = Project::find().all(db).await?;
       let res = projects
         .into_iter()
-        .map(|project: project::Model| ProjectResponse::from(project))
+        .map(|project: project::Model| ProjectDTO::from(project))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

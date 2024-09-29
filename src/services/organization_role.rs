@@ -1,16 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::organization_role::{OrganizationRoleAddRequest, OrganizationRoleResponse};
+use crate::dtos::organization_role::OrganizationRoleDTO;
 use crate::entities::{organization_role, prelude::OrganizationRole};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_organization_role(
-  req: OrganizationRoleAddRequest,
-) -> AppResult<OrganizationRoleResponse> {
+pub async fn add_organization_role(req: OrganizationRoleDTO) -> AppResult<OrganizationRoleDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -24,10 +22,10 @@ pub async fn add_organization_role(
     deleted_at: Set(None),
   };
   let organization_role = OrganizationRole::insert(model.clone()).exec(db).await?;
-  Ok(OrganizationRoleResponse {
+  Ok(OrganizationRoleDTO {
     organization_id: organization_role.last_insert_id.0,
     name: organization_role.last_insert_id.1,
-    ..OrganizationRoleResponse::from(model)
+    ..OrganizationRoleDTO::from(model)
   })
 }
 
@@ -48,7 +46,7 @@ pub async fn delete_organization_role(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("role"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let organization_role = OrganizationRole::find_by_id((organization_id, name))
         .one(db)
@@ -63,13 +61,13 @@ pub async fn delete_organization_role(
       )));
       organization_role.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_organization_role(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<OrganizationRoleResponse>> {
+) -> AppResult<Vec<OrganizationRoleDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -82,20 +80,20 @@ pub async fn get_organization_role(
       let res = organization_roles
         .into_iter()
         .map(|organization_role: organization_role::Model| {
-          OrganizationRoleResponse::from(organization_role)
+          OrganizationRoleDTO::from(organization_role)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let organization_roles = OrganizationRole::find().all(db).await?;
       let res = organization_roles
         .into_iter()
         .map(|organization_role: organization_role::Model| {
-          OrganizationRoleResponse::from(organization_role)
+          OrganizationRoleDTO::from(organization_role)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

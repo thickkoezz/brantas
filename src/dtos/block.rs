@@ -1,33 +1,82 @@
+use crate::entities::block::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono::Local;
+use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::Validate;
+use validator::{Validate, ValidationError};
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct AddRequest {
-  pub blocker_id: Uuid,
-  pub target_id: Uuid,
-}
+pub type ID = (Uuid, Uuid);
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UpdateRequest {
-  pub blocker_id: Uuid,
-  pub target_id: Uuid,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct Response {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct BlockDTO {
   pub blocker_id: Uuid,
   pub target_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
-impl From<crate::entities::block::Model> for Response {
-  fn from(m: crate::entities::block::Model) -> Self {
+impl BlockDTO {
+  pub fn new(blocker_id: Uuid, target_id: Uuid) -> Self {
+    Self {
+      blocker_id,
+      target_id,
+      created_at: DateTimeWithTimeZone::from(Local::now()),
+      ..Default::default()
+    }
+  }
+
+  pub fn validate(&self) -> Result<(), ValidationError> {
+    todo!()
+  }
+
+  pub fn create(blocker_id: Uuid, target_id: Uuid) -> Self {
+    Self {
+      ..Self::new(blocker_id, target_id)
+    }
+  }
+
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (self.blocker_id.clone(), self.target_id.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.blocker_id = v.0;
+    self.target_id = v.1;
+    self
+  }
+
+  pub fn set_blocker_id(&mut self, v: Uuid) -> &mut Self {
+    self.blocker_id = v;
+    self
+  }
+
+  pub fn set_target_id(&mut self, v: Uuid) -> &mut Self {
+    self.target_id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+}
+
+impl From<Model> for BlockDTO {
+  fn from(m: Model) -> Self {
     Self {
       blocker_id: m.blocker_id,
       target_id: m.target_id,
@@ -37,13 +86,35 @@ impl From<crate::entities::block::Model> for Response {
   }
 }
 
-impl From<crate::entities::block::ActiveModel> for Response {
-  fn from(m: crate::entities::block::ActiveModel) -> Self {
+impl From<ActiveModel> for BlockDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       blocker_id: m.blocker_id.unwrap(),
       target_id: m.target_id.unwrap(),
       created_at: m.created_at.unwrap(),
       deleted_at: m.deleted_at.unwrap(),
+    }
+  }
+}
+
+impl Into<Model> for BlockDTO {
+  fn into(self) -> Model {
+    Model {
+      blocker_id: self.blocker_id,
+      target_id: self.target_id,
+      created_at: self.created_at,
+      deleted_at: self.deleted_at,
+    }
+  }
+}
+
+impl Into<ActiveModel> for BlockDTO {
+  fn into(self) -> ActiveModel {
+    ActiveModel {
+      blocker_id: Set(self.blocker_id),
+      target_id: Set(self.target_id),
+      created_at: Set(self.created_at),
+      deleted_at: Set(self.deleted_at),
     }
   }
 }

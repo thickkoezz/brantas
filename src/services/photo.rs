@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::photo::{PhotoAddRequest, PhotoResponse};
+use crate::dtos::photo::PhotoDTO;
 use crate::entities::{photo, prelude::Photo};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_photo(req: PhotoAddRequest) -> AppResult<PhotoResponse> {
+pub async fn add_photo(req: PhotoDTO) -> AppResult<PhotoDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -26,10 +26,10 @@ pub async fn add_photo(req: PhotoAddRequest) -> AppResult<PhotoResponse> {
     is_private: Set(req.is_private),
   };
   let photo = Photo::insert(model.clone()).exec(db).await?;
-  Ok(PhotoResponse {
+  Ok(PhotoDTO {
     owner_id: photo.last_insert_id.0,
     created_at: photo.last_insert_id.1,
-    ..PhotoResponse::from(model)
+    ..PhotoDTO::from(model)
   })
 }
 
@@ -48,7 +48,7 @@ pub async fn delete_photo(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("photo"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let photo = Photo::find_by_id((owner_id, created_at)).one(db).await?;
       if photo.is_none() {
@@ -61,11 +61,11 @@ pub async fn delete_photo(
       )));
       photo.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_photo(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<PhotoResponse>> {
+pub async fn get_photo(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<PhotoDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -77,17 +77,17 @@ pub async fn get_photo(paginator_option: Option<PaginatorOption>) -> AppResult<V
         .await?;
       let res = photos
         .into_iter()
-        .map(|photo: photo::Model| PhotoResponse::from(photo))
+        .map(|photo: photo::Model| PhotoDTO::from(photo))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let photos = Photo::find().all(db).await?;
       let res = photos
         .into_iter()
-        .map(|photo: photo::Model| PhotoResponse::from(photo))
+        .map(|photo: photo::Model| PhotoDTO::from(photo))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

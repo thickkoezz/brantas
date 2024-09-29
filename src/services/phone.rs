@@ -1,13 +1,13 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::phone::{PhoneAddRequest, PhoneResponse};
+use crate::dtos::phone::PhoneDTO;
 use crate::entities::{phone, prelude::Phone};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 
-pub async fn add_phone(req: PhoneAddRequest) -> AppResult<PhoneResponse> {
+pub async fn add_phone(req: PhoneDTO) -> AppResult<PhoneDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -21,9 +21,9 @@ pub async fn add_phone(req: PhoneAddRequest) -> AppResult<PhoneResponse> {
     is_suspended: Set(false),
   };
   let phone = Phone::insert(model.clone()).exec(db).await?;
-  Ok(PhoneResponse {
+  Ok(PhoneDTO {
     phone: phone.last_insert_id,
-    ..PhoneResponse::from(model)
+    ..PhoneDTO::from(model)
   })
 }
 
@@ -38,7 +38,7 @@ pub async fn delete_phone(deletion_mode: DeletionMode, phone: String) -> AppResu
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("person"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let phone = Phone::find_by_id(phone).one(db).await?;
       if phone.is_none() {
@@ -51,11 +51,11 @@ pub async fn delete_phone(deletion_mode: DeletionMode, phone: String) -> AppResu
       )));
       phone.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_phone(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<PhoneResponse>> {
+pub async fn get_phone(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<PhoneDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -67,17 +67,17 @@ pub async fn get_phone(paginator_option: Option<PaginatorOption>) -> AppResult<V
         .await?;
       let res = phones
         .into_iter()
-        .map(|phone: phone::Model| PhoneResponse::from(phone))
+        .map(|phone: phone::Model| PhoneDTO::from(phone))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let phones = Phone::find().all(db).await?;
       let res = phones
         .into_iter()
-        .map(|phone: phone::Model| PhoneResponse::from(phone))
+        .map(|phone: phone::Model| PhoneDTO::from(phone))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

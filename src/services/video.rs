@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::video::{VideoAddRequest, VideoResponse};
+use crate::dtos::video::VideoDTO;
 use crate::entities::{prelude::Video, video};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_video(req: VideoAddRequest) -> AppResult<VideoResponse> {
+pub async fn add_video(req: VideoDTO) -> AppResult<VideoDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -26,10 +26,10 @@ pub async fn add_video(req: VideoAddRequest) -> AppResult<VideoResponse> {
     is_private: Set(req.is_private),
   };
   let video = Video::insert(model.clone()).exec(db).await?;
-  Ok(VideoResponse {
+  Ok(VideoDTO {
     owner_id: video.last_insert_id.0,
     created_at: video.last_insert_id.1,
-    ..VideoResponse::from(model)
+    ..VideoDTO::from(model)
   })
 }
 
@@ -48,7 +48,7 @@ pub async fn delete_video(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("video"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let video = Video::find_by_id((owner_id, created_at)).one(db).await?;
       if video.is_none() {
@@ -61,11 +61,11 @@ pub async fn delete_video(
       )));
       video.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_video(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<VideoResponse>> {
+pub async fn get_video(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<VideoDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -77,17 +77,17 @@ pub async fn get_video(paginator_option: Option<PaginatorOption>) -> AppResult<V
         .await?;
       let res = videos
         .into_iter()
-        .map(|video: video::Model| VideoResponse::from(video))
+        .map(|video: video::Model| VideoDTO::from(video))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let videos = Video::find().all(db).await?;
       let res = videos
         .into_iter()
-        .map(|video: video::Model| VideoResponse::from(video))
+        .map(|video: video::Model| VideoDTO::from(video))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

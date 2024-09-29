@@ -1,40 +1,69 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct EmailAddRequest {
-  pub email: String,
-  pub owner_id: Uuid,
-  pub is_verified: bool,
-  pub is_suspended: bool,
-}
+pub type ID = String;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct EmailUpdateRequest {
-  pub email: String,
-  pub owner_id: Uuid,
-  pub updated_at: Option<DateTimeWithTimeZone>,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
-  pub is_verified: bool,
-  pub is_suspended: bool,
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct EmailResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct EmailDTO {
   pub email: String,
   pub owner_id: Uuid,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub updated_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub is_verified: bool,
   pub is_suspended: bool,
 }
 
-impl From<crate::entities::email::Model> for EmailResponse {
+impl EmailDTO {
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
+
+  pub fn set_email(&mut self, v: String) -> &mut Self {
+    self.email = v;
+    self
+  }
+
+  pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
+    self.owner_id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.updated_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+
+  pub fn set_is_verified(&mut self, v: bool) -> &mut Self {
+    self.is_verified = v;
+    self
+  }
+
+  pub fn set_is_suspended(&mut self, v: bool) -> &mut Self {
+    self.is_suspended = v;
+    self
+  }
+}
+
+impl From<crate::entities::email::Model> for EmailDTO {
   fn from(m: crate::entities::email::Model) -> Self {
     Self {
       email: m.email,
@@ -48,7 +77,7 @@ impl From<crate::entities::email::Model> for EmailResponse {
   }
 }
 
-impl From<crate::entities::email::ActiveModel> for EmailResponse {
+impl From<crate::entities::email::ActiveModel> for EmailDTO {
   fn from(m: crate::entities::email::ActiveModel) -> Self {
     Self {
       email: m.email.unwrap(),

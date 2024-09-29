@@ -1,13 +1,11 @@
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::verification_token::{VerificationTokenAddRequest, VerificationTokenResponse};
+use crate::dtos::verification_token::VerificationTokenDTO;
 use crate::entities::{prelude::VerificationToken, verification_token};
 use crate::services::PaginatorOption;
 use sea_orm::{EntityTrait, PaginatorTrait, Set};
 
-pub async fn add_verification_token(
-  req: VerificationTokenAddRequest,
-) -> AppResult<VerificationTokenResponse> {
+pub async fn add_verification_token(req: VerificationTokenDTO) -> AppResult<VerificationTokenDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -17,10 +15,10 @@ pub async fn add_verification_token(
     expires: Set(req.expires),
   };
   let verification_token = VerificationToken::insert(model.clone()).exec(db).await?;
-  Ok(VerificationTokenResponse {
+  Ok(VerificationTokenDTO {
     identifier: verification_token.last_insert_id.0,
     token: verification_token.last_insert_id.1,
-    ..VerificationTokenResponse::from(model)
+    ..VerificationTokenDTO::from(model)
   })
 }
 
@@ -39,7 +37,7 @@ pub async fn delete_verification_token(identifier: String, token: String) -> App
 
 pub async fn get_verification_token(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<VerificationTokenResponse>> {
+) -> AppResult<Vec<VerificationTokenDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -52,20 +50,20 @@ pub async fn get_verification_token(
       let res = verification_tokens
         .into_iter()
         .map(|verification_token: verification_token::Model| {
-          VerificationTokenResponse::from(verification_token)
+          VerificationTokenDTO::from(verification_token)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let verification_tokens = VerificationToken::find().all(db).await?;
       let res = verification_tokens
         .into_iter()
         .map(|verification_token: verification_token::Model| {
-          VerificationTokenResponse::from(verification_token)
+          VerificationTokenDTO::from(verification_token)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

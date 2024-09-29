@@ -18,7 +18,7 @@ pub struct Model {
   #[sea_orm(column_type = "Decimal(Some((11, 8)))", nullable)]
   pub longitude: Option<Decimal>,
   pub created_at: Option<DateTime>,
-  pub updated_at: DateTime,
+  pub updated_at: Option<DateTime>,
   pub flag: i16,
   pub wikidataid: Option<String>,
 }

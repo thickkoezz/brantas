@@ -1,6 +1,6 @@
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::group_chat_reaction::{GroupChatReactionAddRequest, GroupChatReactionResponse};
+use crate::dtos::group_chat_reaction::GroupChatReactionDTO;
 use crate::entities::{group_chat_reaction, prelude::GroupChatReaction};
 use crate::services::PaginatorOption;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -8,9 +8,7 @@ use sea_orm::ActiveValue::Set;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait};
 use uuid::Uuid;
 
-pub async fn add_group_chat_reaction(
-  req: GroupChatReactionAddRequest,
-) -> AppResult<GroupChatReactionResponse> {
+pub async fn add_group_chat_reaction(req: GroupChatReactionDTO) -> AppResult<GroupChatReactionDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -24,13 +22,13 @@ pub async fn add_group_chat_reaction(
     reaction_emoji: Default::default(),
   };
   let group_chat_reaction = GroupChatReaction::insert(model.clone()).exec(db).await?;
-  Ok(GroupChatReactionResponse {
+  Ok(GroupChatReactionDTO {
     owner_id: group_chat_reaction.last_insert_id.0,
     reacted_group_chat_sender_id: group_chat_reaction.last_insert_id.1,
     reacted_group_chat_group_creator_id: group_chat_reaction.last_insert_id.2,
     reacted_group_chat_group_created_at: group_chat_reaction.last_insert_id.3,
     created_at: group_chat_reaction.last_insert_id.4,
-    ..GroupChatReactionResponse::from(model)
+    ..GroupChatReactionDTO::from(model)
   })
 }
 
@@ -61,7 +59,7 @@ pub async fn delete_group_chat_reaction(
 
 pub async fn get_group_chat_reaction(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<GroupChatReactionResponse>> {
+) -> AppResult<Vec<GroupChatReactionDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -74,20 +72,20 @@ pub async fn get_group_chat_reaction(
       let res = group_chat_reactions
         .into_iter()
         .map(|group_chat_reaction: group_chat_reaction::Model| {
-          GroupChatReactionResponse::from(group_chat_reaction)
+          GroupChatReactionDTO::from(group_chat_reaction)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let group_chat_reactions = GroupChatReaction::find().all(db).await?;
       let res = group_chat_reactions
         .into_iter()
         .map(|group_chat_reaction: group_chat_reaction::Model| {
-          GroupChatReactionResponse::from(group_chat_reaction)
+          GroupChatReactionDTO::from(group_chat_reaction)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

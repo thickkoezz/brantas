@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::message::{MessageAddRequest, MessageResponse};
+use crate::dtos::message::MessageDTO;
 use crate::entities::{message, prelude::Message};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_message(req: MessageAddRequest) -> AppResult<MessageResponse> {
+pub async fn add_message(req: MessageDTO) -> AppResult<MessageDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -21,11 +21,11 @@ pub async fn add_message(req: MessageAddRequest) -> AppResult<MessageResponse> {
     deleted_at: Set(None),
   };
   let message = Message::insert(model.clone()).exec(db).await?;
-  Ok(MessageResponse {
+  Ok(MessageDTO {
     owner_id: message.last_insert_id.0,
     receiver_id: message.last_insert_id.1,
     created_at: message.last_insert_id.2,
-    ..MessageResponse::from(model)
+    ..MessageDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_message(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("message"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let message = Message::find_by_id((owner_id, receiver_id, created_at))
         .one(db)
@@ -62,13 +62,11 @@ pub async fn delete_message(
       )));
       message.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_message(
-  paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<MessageResponse>> {
+pub async fn get_message(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<MessageDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +78,17 @@ pub async fn get_message(
         .await?;
       let res = messages
         .into_iter()
-        .map(|message: message::Model| MessageResponse::from(message))
+        .map(|message: message::Model| MessageDTO::from(message))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let messages = Message::find().all(db).await?;
       let res = messages
         .into_iter()
-        .map(|message: message::Model| MessageResponse::from(message))
+        .map(|message: message::Model| MessageDTO::from(message))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

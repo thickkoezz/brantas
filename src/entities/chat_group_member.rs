@@ -11,7 +11,6 @@ pub struct Model {
   pub group_created_at: DateTimeWithTimeZone,
   #[sea_orm(primary_key, auto_increment = false)]
   pub member_id: Uuid,
-  #[sea_orm(primary_key, auto_increment = false)]
   pub created_at: DateTimeWithTimeZone,
   pub deleted_at: Option<DateTimeWithTimeZone>,
 }

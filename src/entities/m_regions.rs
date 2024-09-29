@@ -11,7 +11,7 @@ pub struct Model {
   #[sea_orm(column_type = "JsonBinary", nullable)]
   pub translations: Option<Json>,
   pub created_at: Option<DateTime>,
-  pub updated_at: DateTime,
+  pub updated_at: Option<DateTime>,
   pub flag: i16,
   pub wikidataid: Option<String>,
 }

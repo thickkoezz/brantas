@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::document::{DocumentAddRequest, DocumentResponse};
+use crate::dtos::document::DocumentDTO;
 use crate::entities::{document, prelude::Document};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_document(req: DocumentAddRequest) -> AppResult<DocumentResponse> {
+pub async fn add_document(req: DocumentDTO) -> AppResult<DocumentDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -26,10 +26,10 @@ pub async fn add_document(req: DocumentAddRequest) -> AppResult<DocumentResponse
     is_private: Set(req.is_private),
   };
   let document = Document::insert(model.clone()).exec(db).await?;
-  Ok(DocumentResponse {
+  Ok(DocumentDTO {
     owner_id: document.last_insert_id.0,
     created_at: document.last_insert_id.1,
-    ..DocumentResponse::from(model)
+    ..DocumentDTO::from(model)
   })
 }
 
@@ -50,7 +50,7 @@ pub async fn delete_document(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("document"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let document = Document::find_by_id((owner_id, created_at)).one(db).await?;
       if document.is_none() {
@@ -63,13 +63,13 @@ pub async fn delete_document(
       )));
       document.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_document(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<DocumentResponse>> {
+) -> AppResult<Vec<DocumentDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -81,17 +81,17 @@ pub async fn get_document(
         .await?;
       let res = documents
         .into_iter()
-        .map(|document: document::Model| DocumentResponse::from(document))
+        .map(|document: document::Model| DocumentDTO::from(document))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let documents = Document::find().all(db).await?;
       let res = documents
         .into_iter()
-        .map(|document: document::Model| DocumentResponse::from(document))
+        .map(|document: document::Model| DocumentDTO::from(document))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

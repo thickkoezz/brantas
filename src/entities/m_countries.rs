@@ -34,7 +34,7 @@ pub struct Model {
   pub emoji: Option<String>,
   pub emojiu: Option<String>,
   pub created_at: Option<DateTime>,
-  pub updated_at: DateTime,
+  pub updated_at: Option<DateTime>,
   pub flag: i16,
   pub wikidataid: Option<String>,
 }

@@ -1,6 +1,6 @@
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::post_bookmark::{PostBookmarkAddRequest, PostBookmarkResponse};
+use crate::dtos::post_bookmark::PostBookmarkDTO;
 use crate::entities::{post_bookmark, prelude::PostBookmark};
 use crate::services::PaginatorOption;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -8,7 +8,7 @@ use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_post_bookmark(req: PostBookmarkAddRequest) -> AppResult<PostBookmarkResponse> {
+pub async fn add_post_bookmark(req: PostBookmarkDTO) -> AppResult<PostBookmarkDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -19,11 +19,11 @@ pub async fn add_post_bookmark(req: PostBookmarkAddRequest) -> AppResult<PostBoo
     created_at: Set(DateTimeWithTimeZone::from(chrono::Local::now())),
   };
   let post_bookmark = PostBookmark::insert(model.clone()).exec(db).await?;
-  Ok(PostBookmarkResponse {
+  Ok(PostBookmarkDTO {
     owner_id: post_bookmark.last_insert_id.0,
     bookmarked_post_owner_id: post_bookmark.last_insert_id.1,
     bookmarked_post_created_at: post_bookmark.last_insert_id.2,
-    ..PostBookmarkResponse::from(model)
+    ..PostBookmarkDTO::from(model)
   })
 }
 
@@ -50,7 +50,7 @@ pub async fn delete_post_bookmark(
 
 pub async fn get_post_bookmark(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<PostBookmarkResponse>> {
+) -> AppResult<Vec<PostBookmarkDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -62,17 +62,17 @@ pub async fn get_post_bookmark(
         .await?;
       let res = post_bookmarks
         .into_iter()
-        .map(|post_bookmark: post_bookmark::Model| PostBookmarkResponse::from(post_bookmark))
+        .map(|post_bookmark: post_bookmark::Model| PostBookmarkDTO::from(post_bookmark))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let post_bookmarks = PostBookmark::find().all(db).await?;
       let res = post_bookmarks
         .into_iter()
-        .map(|post_bookmark: post_bookmark::Model| PostBookmarkResponse::from(post_bookmark))
+        .map(|post_bookmark: post_bookmark::Model| PostBookmarkDTO::from(post_bookmark))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

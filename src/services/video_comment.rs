@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::video_comment::{VideoCommentAddRequest, VideoCommentResponse};
+use crate::dtos::video_comment::VideoCommentDTO;
 use crate::entities::{prelude::VideoComment, video_comment};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_video_comment(req: VideoCommentAddRequest) -> AppResult<VideoCommentResponse> {
+pub async fn add_video_comment(req: VideoCommentDTO) -> AppResult<VideoCommentDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -23,10 +23,10 @@ pub async fn add_video_comment(req: VideoCommentAddRequest) -> AppResult<VideoCo
     reaction_count: Set(0),
   };
   let video_comment = VideoComment::insert(model.clone()).exec(db).await?;
-  Ok(VideoCommentResponse {
+  Ok(VideoCommentDTO {
     owner_id: video_comment.last_insert_id.0,
     created_at: video_comment.last_insert_id.1,
-    ..VideoCommentResponse::from(model)
+    ..VideoCommentDTO::from(model)
   })
 }
 
@@ -47,7 +47,7 @@ pub async fn delete_video_comment(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("comment"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let video_comment = VideoComment::find_by_id((owner_id, created_at))
         .one(db)
@@ -62,13 +62,13 @@ pub async fn delete_video_comment(
       )));
       video_comment.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_video_comment(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<VideoCommentResponse>> {
+) -> AppResult<Vec<VideoCommentDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +80,17 @@ pub async fn get_video_comment(
         .await?;
       let res = video_comments
         .into_iter()
-        .map(|video_comment: video_comment::Model| VideoCommentResponse::from(video_comment))
+        .map(|video_comment: video_comment::Model| VideoCommentDTO::from(video_comment))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let video_comments = VideoComment::find().all(db).await?;
       let res = video_comments
         .into_iter()
-        .map(|video_comment: video_comment::Model| VideoCommentResponse::from(video_comment))
+        .map(|video_comment: video_comment::Model| VideoCommentDTO::from(video_comment))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

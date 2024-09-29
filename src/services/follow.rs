@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::follow::{FollowAddRequest, FollowResponse};
+use crate::dtos::follow::FollowDTO;
 use crate::entities::{follow, prelude::Follow};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_follow(req: FollowAddRequest) -> AppResult<FollowResponse> {
+pub async fn add_follow(req: FollowDTO) -> AppResult<FollowDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -19,10 +19,10 @@ pub async fn add_follow(req: FollowAddRequest) -> AppResult<FollowResponse> {
     deleted_at: Set(None),
   };
   let follow = Follow::insert(model.clone()).exec(db).await?;
-  Ok(FollowResponse {
+  Ok(FollowDTO {
     follower_id: follow.last_insert_id.0,
     target_id: follow.last_insert_id.1,
-    ..FollowResponse::from(model)
+    ..FollowDTO::from(model)
   })
 }
 
@@ -43,7 +43,7 @@ pub async fn delete_follow(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("follow"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let follow = Follow::find_by_id((follower_id, target_id)).one(db).await?;
       if follow.is_none() {
@@ -56,13 +56,11 @@ pub async fn delete_follow(
       )));
       follow.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_follow(
-  paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<FollowResponse>> {
+pub async fn get_follow(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<FollowDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -74,17 +72,17 @@ pub async fn get_follow(
         .await?;
       let res = follows
         .into_iter()
-        .map(|follow: follow::Model| FollowResponse::from(follow))
+        .map(|follow: follow::Model| FollowDTO::from(follow))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let follows = Follow::find().all(db).await?;
       let res = follows
         .into_iter()
-        .map(|follow: follow::Model| FollowResponse::from(follow))
+        .map(|follow: follow::Model| FollowDTO::from(follow))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

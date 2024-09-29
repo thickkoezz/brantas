@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::person::{PersonAddRequest, PersonResponse};
+use crate::dtos::person::PersonDTO;
 use crate::entities::{person, prelude::Person};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_person(req: PersonAddRequest) -> AppResult<PersonResponse> {
+pub async fn add_person(req: PersonDTO) -> AppResult<PersonDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -31,9 +31,9 @@ pub async fn add_person(req: PersonAddRequest) -> AppResult<PersonResponse> {
     nickname: Set(req.nickname),
   };
   let person = Person::insert(model.clone()).exec(db).await?;
-  Ok(PersonResponse {
+  Ok(PersonDTO {
     id: person.last_insert_id,
-    ..PersonResponse::from(model)
+    ..PersonDTO::from(model)
   })
 }
 
@@ -48,7 +48,7 @@ pub async fn delete_person(deletion_mode: DeletionMode, id: Uuid) -> AppResult<(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("person"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let person = Person::find_by_id(id).one(db).await?;
       if person.is_none() {
@@ -61,13 +61,11 @@ pub async fn delete_person(deletion_mode: DeletionMode, id: Uuid) -> AppResult<(
       )));
       person.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_person(
-  paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<PersonResponse>> {
+pub async fn get_person(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<PersonDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -79,17 +77,17 @@ pub async fn get_person(
         .await?;
       let res = persons
         .into_iter()
-        .map(|person: person::Model| PersonResponse::from(person))
+        .map(|person: person::Model| PersonDTO::from(person))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let persons = Person::find().all(db).await?;
       let res = persons
         .into_iter()
-        .map(|person: person::Model| PersonResponse::from(person))
+        .map(|person: person::Model| PersonDTO::from(person))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

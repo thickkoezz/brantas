@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::organization::{OrganizationAddRequest, OrganizationResponse};
+use crate::dtos::organization::OrganizationDTO;
 use crate::entities::{organization, prelude::Organization};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_organization(req: OrganizationAddRequest) -> AppResult<OrganizationResponse> {
+pub async fn add_organization(req: OrganizationDTO) -> AppResult<OrganizationDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -28,9 +28,9 @@ pub async fn add_organization(req: OrganizationAddRequest) -> AppResult<Organiza
     logo: Set(req.logo),
   };
   let organization = Organization::insert(model.clone()).exec(db).await?;
-  Ok(OrganizationResponse {
+  Ok(OrganizationDTO {
     id: organization.last_insert_id,
-    ..OrganizationResponse::from(model)
+    ..OrganizationDTO::from(model)
   })
 }
 
@@ -45,7 +45,7 @@ pub async fn delete_organization(deletion_mode: DeletionMode, id: Uuid) -> AppRe
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("organization"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let organization = Organization::find_by_id(id).one(db).await?;
       if organization.is_none() {
@@ -58,13 +58,13 @@ pub async fn delete_organization(deletion_mode: DeletionMode, id: Uuid) -> AppRe
       )));
       organization.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_organization(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<OrganizationResponse>> {
+) -> AppResult<Vec<OrganizationDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -76,17 +76,17 @@ pub async fn get_organization(
         .await?;
       let res = organizations
         .into_iter()
-        .map(|organization: organization::Model| OrganizationResponse::from(organization))
+        .map(|organization: organization::Model| OrganizationDTO::from(organization))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let organizations = Organization::find().all(db).await?;
       let res = organizations
         .into_iter()
-        .map(|organization: organization::Model| OrganizationResponse::from(organization))
+        .map(|organization: organization::Model| OrganizationDTO::from(organization))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

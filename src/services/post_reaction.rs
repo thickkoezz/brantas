@@ -1,6 +1,6 @@
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::post_reaction::{PostReactionAddRequest, PostReactionResponse};
+use crate::dtos::post_reaction::PostReactionDTO;
 use crate::entities::{post_reaction, prelude::PostReaction};
 use crate::services::PaginatorOption;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -8,7 +8,7 @@ use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_post_reaction(req: PostReactionAddRequest) -> AppResult<PostReactionResponse> {
+pub async fn add_post_reaction(req: PostReactionDTO) -> AppResult<PostReactionDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -20,11 +20,11 @@ pub async fn add_post_reaction(req: PostReactionAddRequest) -> AppResult<PostRea
     reaction_emoji: Set(req.reaction_emoji),
   };
   let post_reaction = PostReaction::insert(model.clone()).exec(db).await?;
-  Ok(PostReactionResponse {
+  Ok(PostReactionDTO {
     owner_id: post_reaction.last_insert_id.0,
     reacted_post_owner_id: post_reaction.last_insert_id.1,
     reacted_post_created_at: post_reaction.last_insert_id.2,
-    ..PostReactionResponse::from(model)
+    ..PostReactionDTO::from(model)
   })
 }
 
@@ -48,7 +48,7 @@ pub async fn delete_post_reaction(
 
 pub async fn get_post_reaction(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<PostReactionResponse>> {
+) -> AppResult<Vec<PostReactionDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -60,17 +60,17 @@ pub async fn get_post_reaction(
         .await?;
       let res = post_reactions
         .into_iter()
-        .map(|post_reaction: post_reaction::Model| PostReactionResponse::from(post_reaction))
+        .map(|post_reaction: post_reaction::Model| PostReactionDTO::from(post_reaction))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let post_reactions = PostReaction::find().all(db).await?;
       let res = post_reactions
         .into_iter()
-        .map(|post_reaction: post_reaction::Model| PostReactionResponse::from(post_reaction))
+        .map(|post_reaction: post_reaction::Model| PostReactionDTO::from(post_reaction))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

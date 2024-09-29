@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::job::{JobAddRequest, JobResponse};
+use crate::dtos::job::JobDTO;
 use crate::entities::{job, prelude::Job};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_job(req: JobAddRequest) -> AppResult<JobResponse> {
+pub async fn add_job(req: JobDTO) -> AppResult<JobDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -26,10 +26,10 @@ pub async fn add_job(req: JobAddRequest) -> AppResult<JobResponse> {
     deleted_at: Set(None),
   };
   let job = Job::insert(model.clone()).exec(db).await?;
-  Ok(JobResponse {
+  Ok(JobDTO {
     organization_id: job.last_insert_id.0,
     person_id: job.last_insert_id.1,
-    ..JobResponse::from(model)
+    ..JobDTO::from(model)
   })
 }
 
@@ -51,7 +51,7 @@ pub async fn delete_job(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("job"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let job = Job::find_by_id((organization_id, person_id, created_at))
         .one(db)
@@ -66,11 +66,11 @@ pub async fn delete_job(
       )));
       job.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_job(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<JobResponse>> {
+pub async fn get_job(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<JobDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -82,17 +82,17 @@ pub async fn get_job(paginator_option: Option<PaginatorOption>) -> AppResult<Vec
         .await?;
       let res = jobs
         .into_iter()
-        .map(|job: job::Model| JobResponse::from(job))
+        .map(|job: job::Model| JobDTO::from(job))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let jobs = Job::find().all(db).await?;
       let res = jobs
         .into_iter()
-        .map(|job: job::Model| JobResponse::from(job))
+        .map(|job: job::Model| JobDTO::from(job))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

@@ -66,7 +66,7 @@ async fn main() {
       let handle = server.handle();
       tokio::spawn(shutdown_signal(handle));
       server.serve(service).await;
-    },
+    }
     false => {
       println!(
         "📖 Open API Page: http://{}/scalar",
@@ -81,7 +81,7 @@ async fn main() {
       let handle = server.handle();
       tokio::spawn(shutdown_signal(handle));
       server.serve(service).await;
-    },
+    }
   }
 }
 

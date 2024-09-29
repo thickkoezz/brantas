@@ -1,16 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::balance_history::{BalanceHistoryAddRequest, BalanceHistoryResponse};
+use crate::dtos::balance_history::BalanceHistoryDTO;
 use crate::entities::{balance_history, prelude::BalanceHistory};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_balance_history(
-  req: BalanceHistoryAddRequest,
-) -> AppResult<BalanceHistoryResponse> {
+pub async fn add_balance_history(req: BalanceHistoryDTO) -> AppResult<BalanceHistoryDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -22,11 +20,11 @@ pub async fn add_balance_history(
     deleted_at: Set(None),
   };
   let balance_history = BalanceHistory::insert(model.clone()).exec(db).await?;
-  Ok(BalanceHistoryResponse {
+  Ok(BalanceHistoryDTO {
     owner_id: balance_history.last_insert_id.0,
     created_at: balance_history.last_insert_id.1,
     ref_id: balance_history.last_insert_id.2,
-    ..BalanceHistoryResponse::from(model)
+    ..BalanceHistoryDTO::from(model)
   })
 }
 
@@ -48,7 +46,7 @@ pub async fn delete_balance_history(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("balance_history"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let balance_history = BalanceHistory::find_by_id((owner_id, created_at, ref_id))
         .one(db)
@@ -63,13 +61,13 @@ pub async fn delete_balance_history(
       )));
       balance_history.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_balance_history(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<BalanceHistoryResponse>> {
+) -> AppResult<Vec<BalanceHistoryDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -81,21 +79,17 @@ pub async fn get_balance_history(
         .await?;
       let res = balance_histories
         .into_iter()
-        .map(|balance_history: balance_history::Model| {
-          BalanceHistoryResponse::from(balance_history)
-        })
+        .map(|balance_history: balance_history::Model| BalanceHistoryDTO::from(balance_history))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let balance_histories = BalanceHistory::find().all(db).await?;
       let res = balance_histories
         .into_iter()
-        .map(|balance_history: balance_history::Model| {
-          BalanceHistoryResponse::from(balance_history)
-        })
+        .map(|balance_history: balance_history::Model| BalanceHistoryDTO::from(balance_history))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

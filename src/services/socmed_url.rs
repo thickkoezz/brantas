@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::socmed_url::{SocmedUrlAddRequest, SocmedUrlResponse};
+use crate::dtos::socmed_url::SocmedUrlDTO;
 use crate::entities::{prelude::SocmedUrl, socmed_url};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_socmed_url(req: SocmedUrlAddRequest) -> AppResult<SocmedUrlResponse> {
+pub async fn add_socmed_url(req: SocmedUrlDTO) -> AppResult<SocmedUrlDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -20,10 +20,10 @@ pub async fn add_socmed_url(req: SocmedUrlAddRequest) -> AppResult<SocmedUrlResp
     deleted_at: Set(None),
   };
   let socmed_url = SocmedUrl::insert(model.clone()).exec(db).await?;
-  Ok(SocmedUrlResponse {
+  Ok(SocmedUrlDTO {
     socmed_url: socmed_url.last_insert_id.0,
     owner_id: socmed_url.last_insert_id.1,
-    ..SocmedUrlResponse::from(model)
+    ..SocmedUrlDTO::from(model)
   })
 }
 
@@ -44,7 +44,7 @@ pub async fn delete_socmed_url(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("socmed_url"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let socmed_url = SocmedUrl::find_by_id((socmed_url, owner_id))
         .one(db)
@@ -59,13 +59,13 @@ pub async fn delete_socmed_url(
       )));
       socmed_url.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_socmed_url(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<SocmedUrlResponse>> {
+) -> AppResult<Vec<SocmedUrlDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -77,17 +77,17 @@ pub async fn get_socmed_url(
         .await?;
       let res = socmed_urls
         .into_iter()
-        .map(|socmed_url: socmed_url::Model| SocmedUrlResponse::from(socmed_url))
+        .map(|socmed_url: socmed_url::Model| SocmedUrlDTO::from(socmed_url))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let socmed_urls = SocmedUrl::find().all(db).await?;
       let res = socmed_urls
         .into_iter()
-        .map(|socmed_url: socmed_url::Model| SocmedUrlResponse::from(socmed_url))
+        .map(|socmed_url: socmed_url::Model| SocmedUrlDTO::from(socmed_url))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

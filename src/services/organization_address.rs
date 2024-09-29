@@ -1,9 +1,7 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::organization_address::{
-  OrganizationAddressAddRequest, OrganizationAddressResponse,
-};
+use crate::dtos::organization_address::OrganizationAddressDTO;
 use crate::entities::{organization_address, prelude::OrganizationAddress};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
@@ -11,8 +9,8 @@ use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
 pub async fn add_organization_address(
-  req: OrganizationAddressAddRequest,
-) -> AppResult<OrganizationAddressResponse> {
+  req: OrganizationAddressDTO,
+) -> AppResult<OrganizationAddressDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -25,10 +23,10 @@ pub async fn add_organization_address(
     description: Set(req.description),
   };
   let organization_address = OrganizationAddress::insert(model.clone()).exec(db).await?;
-  Ok(OrganizationAddressResponse {
+  Ok(OrganizationAddressDTO {
     organization_id: organization_address.last_insert_id.0,
     city_id: organization_address.last_insert_id.1,
-    ..OrganizationAddressResponse::from(model)
+    ..OrganizationAddressDTO::from(model)
   })
 }
 
@@ -49,7 +47,7 @@ pub async fn delete_organization_address(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("address"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let organization_address = OrganizationAddress::find_by_id((organization_id, city_id))
         .one(db)
@@ -65,13 +63,13 @@ pub async fn delete_organization_address(
       )));
       organization_address.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_organization_address(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<OrganizationAddressResponse>> {
+) -> AppResult<Vec<OrganizationAddressDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -84,20 +82,20 @@ pub async fn get_organization_address(
       let res = organization_address
         .into_iter()
         .map(|organization_address: organization_address::Model| {
-          OrganizationAddressResponse::from(organization_address)
+          OrganizationAddressDTO::from(organization_address)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let organization_address = OrganizationAddress::find().all(db).await?;
       let res = organization_address
         .into_iter()
         .map(|organization_address: organization_address::Model| {
-          OrganizationAddressResponse::from(organization_address)
+          OrganizationAddressDTO::from(organization_address)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

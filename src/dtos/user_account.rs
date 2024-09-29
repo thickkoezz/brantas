@@ -1,102 +1,341 @@
+use crate::entities::user_account;
 use salvo::prelude::{Extractible, ToSchema};
 use sea_orm::prelude::{DateTimeWithTimeZone, Decimal};
+use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct UserAccountAddRequest {
-  pub owner_id: Uuid,
-  #[validate(email)]
-  pub email: String,
-  #[validate(length(min = 5, message = "username length must be greater than 5"))]
-  pub username: Option<String>,
-  pub picture: Option<String>,
-  pub password: Option<String>,
-  pub salt: Option<String>,
-  pub balance: Decimal,
-  pub is_super_admin: bool,
-  pub r#type: String,
-  pub provider: String,
-  pub provider_account_id: String,
-  pub refresh_token: Option<String>,
-  pub access_token: Option<String>,
-  pub token_type: Option<String>,
-  pub scope: Option<String>,
-  pub id_token: Option<String>,
-  pub session_state: Option<String>,
-  pub expires_at: Option<DateTimeWithTimeZone>,
-  pub refresh_token_expires_in: Option<i32>,
-}
+pub type ID = Uuid;
 
-#[derive(Debug, Deserialize, ToSchema, Default)]
-pub struct UserAccountLoginRequest {
-  pub username: String,
-  pub password: String,
-}
-
-#[derive(Debug, Deserialize, Validate, Extractible, ToSchema, Default)]
-#[salvo(extract(default_source(from = "body", parse = "json")))]
-pub struct UserAccountUpdateRequest {
-  pub id: Uuid,
-  pub owner_id: Uuid,
-  #[validate(email)]
-  pub email: String,
-  pub username: String,
-  pub picture: Option<String>,
-  pub password: Option<String>,
-  pub salt: Option<String>,
-  pub updated_at: Option<DateTimeWithTimeZone>,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
-  pub balance: Decimal,
-  pub is_super_admin: bool,
-  pub r#type: String,
-  pub provider: String,
-  pub provider_account_id: String,
-  pub refresh_token: Option<String>,
-  pub access_token: Option<String>,
-  pub token_type: Option<String>,
-  pub scope: Option<String>,
-  pub id_token: Option<String>,
-  pub session_state: Option<String>,
-  pub expires_at: Option<DateTimeWithTimeZone>,
-  pub refresh_token_expires_in: Option<i32>,
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct UserAccountResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct UserAccountDTO {
   pub id: Uuid,
   pub owner_id: Uuid,
   pub email: String,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub username: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub picture: Option<String>,
+  #[serde(skip_serializing)]
+  pub password: Option<String>,
+  #[serde(skip_serializing)]
   pub salt: Option<String>,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub updated_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub balance: Decimal,
   pub is_super_admin: bool,
   pub r#type: String,
   pub provider: String,
   pub provider_account_id: String,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub refresh_token: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub access_token: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub token_type: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub scope: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub id_token: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub session_state: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub expires_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub refresh_token_expires_in: Option<i32>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub token: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub exp: Option<i64>,
 }
 
-impl From<crate::entities::user_account::Model> for UserAccountResponse {
-  fn from(m: crate::entities::user_account::Model) -> Self {
+impl UserAccountDTO {
+  pub fn new() -> Self {
+    Self {
+      id: Uuid::new_v4(),
+      created_at: DateTimeWithTimeZone::from(Local::now()),
+      ..Default::default()
+    }
+  }
+
+  pub fn create() -> Self {
+    Self { ..Self::new() }
+  }
+
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
+
+  pub fn set_id(&mut self, v: Uuid) -> &mut Self {
+    self.id = v;
+    self
+  }
+
+  pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
+    self.owner_id = v;
+    self
+  }
+
+  pub fn set_email(&mut self, v: String) -> &mut Self {
+    self.email = v;
+    self
+  }
+
+  pub fn set_username(&mut self, v: Option<String>) -> &mut Self {
+    self.username = v;
+    self
+  }
+
+  pub fn set_picture(&mut self, v: Option<String>) -> &mut Self {
+    self.picture = v;
+    self
+  }
+
+  pub fn set_password(&mut self, v: Option<String>) -> &mut Self {
+    self.password = v;
+    self
+  }
+
+  pub fn set_salt(&mut self, v: Option<String>) -> &mut Self {
+    self.salt = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.updated_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+
+  pub fn set_balance(&mut self, v: Decimal) -> &mut Self {
+    self.balance = v;
+    self
+  }
+
+  pub fn set_is_super_admin(&mut self, v: bool) -> &mut Self {
+    self.is_super_admin = v;
+    self
+  }
+
+  pub fn set_type(&mut self, v: String) -> &mut Self {
+    self.r#type = v;
+    self
+  }
+
+  pub fn set_provider(&mut self, v: String) -> &mut Self {
+    self.provider = v;
+    self
+  }
+
+  pub fn set_provider_account_id(&mut self, v: String) -> &mut Self {
+    self.provider_account_id = v;
+    self
+  }
+
+  pub fn set_refresh_token(&mut self, v: String) -> &mut Self {
+    self.refresh_token = Some(v);
+    self
+  }
+
+  pub fn set_access_token(&mut self, v: String) -> &mut Self {
+    self.access_token = Some(v);
+    self
+  }
+
+  pub fn set_token_type(&mut self, v: String) -> &mut Self {
+    self.token_type = Some(v);
+    self
+  }
+
+  pub fn set_scope(&mut self, v: String) -> &mut Self {
+    self.scope = Some(v);
+    self
+  }
+
+  pub fn set_id_token(&mut self, v: Option<String>) -> &mut Self {
+    self.id_token = v;
+    self
+  }
+
+  pub fn set_session_state(&mut self, v: Option<String>) -> &mut Self {
+    self.session_state = v;
+    self
+  }
+
+  pub fn set_expires_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.expires_at = Some(v);
+    self
+  }
+
+  pub fn set_refresh_token_expires_in(&mut self, v: Option<i32>) -> &mut Self {
+    self.refresh_token_expires_in = v;
+    self
+  }
+
+  pub fn set_token(&mut self, v: Option<String>) -> &mut Self {
+    self.token = v;
+    self
+  }
+
+  pub fn set_exp(&mut self, v: Option<i64>) -> &mut Self {
+    self.exp = v;
+    self
+  }
+}
+
+impl UserAccountDTO {
+  pub fn new(id: Uuid) -> Result<Self, String> {
+    Ok(Self {
+      id,
+      created_at: DateTimeWithTimeZone::from(chrono::Local::now()),
+      ..Default::default()
+    })
+  }
+
+  pub fn get_id(&self) -> ID {
+    self.id
+  }
+
+  pub fn set_id(&mut self, id: ID) -> &mut Self {
+    self.id = id;
+    self
+  }
+
+  pub fn set_owner_id(&mut self, val: Uuid) -> &mut Self {
+    self.owner_id = val;
+    self
+  }
+
+  pub fn set_email(&mut self, val: String) -> &mut Self {
+    self.email = val;
+    self
+  }
+
+  pub fn set_username(&mut self, val: Option<String>) -> &mut Self {
+    self.username = val;
+    self
+  }
+
+  pub fn set_picture(&mut self, val: Option<String>) -> &mut Self {
+    self.picture = val;
+    self
+  }
+
+  pub fn set_password(&mut self, val: Option<String>) -> &mut Self {
+    self.password = val;
+    self
+  }
+
+  pub fn set_salt(&mut self, val: Option<String>) -> &mut Self {
+    self.salt = val;
+    self
+  }
+
+  pub fn set_created_at(&mut self, val: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = val;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, val: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.updated_at = val;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, val: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = val;
+    self
+  }
+
+  pub fn set_balance(&mut self, val: Decimal) -> &mut Self {
+    self.balance = val;
+    self
+  }
+
+  pub fn set_is_super_admin(&mut self, val: bool) -> &mut Self {
+    self.is_super_admin = val;
+    self
+  }
+
+  pub fn set_type(&mut self, val: String) -> &mut Self {
+    self.r#type = val;
+    self
+  }
+
+  pub fn set_provider(&mut self, val: String) -> &mut Self {
+    self.provider = val;
+    self
+  }
+
+  pub fn set_provider_account_id(&mut self, val: String) -> &mut Self {
+    self.provider_account_id = val;
+    self
+  }
+
+  pub fn set_refresh_token(&mut self, val: Option<String>) -> &mut Self {
+    self.refresh_token = val;
+    self
+  }
+
+  pub fn set_access_token(&mut self, val: Option<String>) -> &mut Self {
+    self.access_token = val;
+    self
+  }
+
+  pub fn set_token_type(&mut self, val: Option<String>) -> &mut Self {
+    self.token_type = val;
+    self
+  }
+
+  pub fn set_scope(&mut self, val: Option<String>) -> &mut Self {
+    self.scope = val;
+    self
+  }
+
+  pub fn set_id_token(&mut self, val: Option<String>) -> &mut Self {
+    self.id_token = val;
+    self
+  }
+
+  pub fn set_session_state(&mut self, val: Option<String>) -> &mut Self {
+    self.session_state = val;
+    self
+  }
+
+  pub fn set_expires_at(&mut self, val: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.expires_at = val;
+    self
+  }
+
+  pub fn set_refresh_token_expires_in(&mut self, val: Option<i32>) -> &mut Self {
+    self.refresh_token_expires_in = val;
+    self
+  }
+}
+
+impl From<user_account::Model> for UserAccountDTO {
+  fn from(m: user_account::Model) -> Self {
     Self {
       id: m.id,
       owner_id: m.owner_id,
       email: m.email,
       username: m.username,
       picture: m.picture,
+      password: m.password,
       salt: m.salt,
       created_at: m.created_at,
       updated_at: m.updated_at,
@@ -114,18 +353,20 @@ impl From<crate::entities::user_account::Model> for UserAccountResponse {
       session_state: m.session_state,
       expires_at: m.expires_at,
       refresh_token_expires_in: m.refresh_token_expires_in,
+      ..Default::default()
     }
   }
 }
 
-impl From<crate::entities::user_account::ActiveModel> for UserAccountResponse {
-  fn from(m: crate::entities::user_account::ActiveModel) -> Self {
+impl From<user_account::ActiveModel> for UserAccountDTO {
+  fn from(m: user_account::ActiveModel) -> Self {
     Self {
       id: m.id.unwrap(),
       owner_id: m.owner_id.unwrap(),
       email: m.email.unwrap(),
       username: m.username.unwrap(),
       picture: m.picture.unwrap(),
+      password: m.password.unwrap(),
       salt: m.salt.unwrap(),
       created_at: m.created_at.unwrap(),
       updated_at: m.updated_at.unwrap(),
@@ -143,14 +384,7 @@ impl From<crate::entities::user_account::ActiveModel> for UserAccountResponse {
       session_state: m.session_state.unwrap(),
       expires_at: m.expires_at.unwrap(),
       refresh_token_expires_in: m.refresh_token_expires_in.unwrap(),
+      ..Default::default()
     }
   }
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct UserAccountLoginResponse {
-  pub id: Uuid,
-  pub username: String,
-  pub token: String,
-  pub exp: i64,
 }

@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::note_share::{NoteShareAddRequest, NoteShareResponse};
+use crate::dtos::note_share::NoteShareDTO;
 use crate::entities::{note_share, prelude::NoteShare};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_note_share(req: NoteShareAddRequest) -> AppResult<NoteShareResponse> {
+pub async fn add_note_share(req: NoteShareDTO) -> AppResult<NoteShareDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -21,12 +21,12 @@ pub async fn add_note_share(req: NoteShareAddRequest) -> AppResult<NoteShareResp
     deleted_at: Set(None),
   };
   let note_share = NoteShare::insert(model.clone()).exec(db).await?;
-  Ok(NoteShareResponse {
+  Ok(NoteShareDTO {
     note_owner_id: note_share.last_insert_id.0,
     note_created_at: note_share.last_insert_id.1,
     editor_id: note_share.last_insert_id.2,
     created_at: note_share.last_insert_id.3,
-    ..NoteShareResponse::from(model)
+    ..NoteShareDTO::from(model)
   })
 }
 
@@ -49,7 +49,7 @@ pub async fn delete_note_share(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("user"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let note_share =
         NoteShare::find_by_id((note_owner_id, note_created_at, editor_id, created_at))
@@ -65,13 +65,13 @@ pub async fn delete_note_share(
       )));
       note_share.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_note_share(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<NoteShareResponse>> {
+) -> AppResult<Vec<NoteShareDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -83,17 +83,17 @@ pub async fn get_note_share(
         .await?;
       let res = note_shares
         .into_iter()
-        .map(|note_share: note_share::Model| NoteShareResponse::from(note_share))
+        .map(|note_share: note_share::Model| NoteShareDTO::from(note_share))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let note_shares = NoteShare::find().all(db).await?;
       let res = note_shares
         .into_iter()
-        .map(|note_share: note_share::Model| NoteShareResponse::from(note_share))
+        .map(|note_share: note_share::Model| NoteShareDTO::from(note_share))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

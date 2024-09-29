@@ -5,18 +5,10 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct GroupChatReactionAddRequest {
-  pub owner_id: Uuid,
-  pub reacted_group_chat_sender_id: Uuid,
-  pub reacted_group_chat_group_creator_id: Uuid,
-  pub reacted_group_chat_group_created_at: DateTimeWithTimeZone,
-  pub reacted_group_chat_created_at: DateTimeWithTimeZone,
-  pub reaction_emoji: String,
-}
+pub type ID = (Uuid, Uuid, Uuid, DateTimeWithTimeZone, DateTimeWithTimeZone);
 
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct GroupChatReactionResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct GroupChatReactionDTO {
   pub owner_id: Uuid,
   pub reacted_group_chat_sender_id: Uuid,
   pub reacted_group_chat_group_creator_id: Uuid,
@@ -26,7 +18,63 @@ pub struct GroupChatReactionResponse {
   pub reaction_emoji: String,
 }
 
-impl From<crate::entities::group_chat_reaction::Model> for GroupChatReactionResponse {
+impl GroupChatReactionDTO {
+  pub fn get_id(&self) -> ID {
+    (
+      self.owner_id.clone(),
+      self.reacted_group_chat_sender_id.clone(),
+      self.reacted_group_chat_group_creator_id.clone(),
+      self.reacted_group_chat_group_created_at.clone(),
+      self.reacted_group_chat_created_at.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.owner_id = v.0;
+    self.reacted_group_chat_sender_id = v.1;
+    self.reacted_group_chat_group_creator_id = v.2;
+    self.reacted_group_chat_group_created_at = v.3;
+    self.reacted_group_chat_created_at = v.4;
+    self
+  }
+
+  pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
+    self.owner_id = v;
+    self
+  }
+
+  pub fn set_reacted_group_chat_sender_id(&mut self, v: Uuid) -> &mut Self {
+    self.reacted_group_chat_sender_id = v;
+    self
+  }
+
+  pub fn set_reacted_group_chat_group_creator_id(&mut self, v: Uuid) -> &mut Self {
+    self.reacted_group_chat_group_creator_id = v;
+    self
+  }
+
+  pub fn set_reacted_group_chat_group_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.reacted_group_chat_group_created_at = v;
+    self
+  }
+
+  pub fn set_reacted_group_chat_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.reacted_group_chat_created_at = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_reaction_emoji(&mut self, v: String) -> &mut Self {
+    self.reaction_emoji = v;
+    self
+  }
+}
+
+impl From<crate::entities::group_chat_reaction::Model> for GroupChatReactionDTO {
   fn from(m: crate::entities::group_chat_reaction::Model) -> Self {
     Self {
       owner_id: m.owner_id,
@@ -40,7 +88,7 @@ impl From<crate::entities::group_chat_reaction::Model> for GroupChatReactionResp
   }
 }
 
-impl From<crate::entities::group_chat_reaction::ActiveModel> for GroupChatReactionResponse {
+impl From<crate::entities::group_chat_reaction::ActiveModel> for GroupChatReactionDTO {
   fn from(m: crate::entities::group_chat_reaction::ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),

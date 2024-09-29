@@ -1,58 +1,125 @@
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::{Date, DateTimeWithTimeZone, Json};
+use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct OrganizationAddRequest {
-  pub id: Uuid,
-  pub name: String,
-  pub abbreviation: Option<String>,
-  pub description: Option<String>,
-  pub dob: Option<Date>,
-  pub dead_at: Option<Date>,
-  pub extra_info: Option<Json>,
-  pub is_dead: bool,
-  pub parent_id: Option<Uuid>,
-  pub logo: Option<String>,
-}
+pub type ID = Uuid;
 
-#[derive(Deserialize, Debug, Validate, Extractible, ToSchema, Default)]
-pub struct OrganizationUpdateRequest {
-  pub id: Uuid,
-  pub updated_at: Option<DateTimeWithTimeZone>,
-  pub deleted_at: Option<DateTimeWithTimeZone>,
-  pub name: String,
-  pub abbreviation: Option<String>,
-  pub description: Option<String>,
-  pub dob: Option<Date>,
-  pub dead_at: Option<Date>,
-  pub extra_info: Option<Json>,
-  pub is_dead: bool,
-  pub parent_id: Option<Uuid>,
-  pub logo: Option<String>,
-}
-
-#[derive(Debug, Serialize, ToSchema, Default)]
-pub struct OrganizationResponse {
+#[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
+pub struct OrganizationDTO {
   pub id: Uuid,
   pub created_at: DateTimeWithTimeZone,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub updated_at: Option<DateTimeWithTimeZone>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub deleted_at: Option<DateTimeWithTimeZone>,
   pub name: String,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub abbreviation: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub description: Option<String>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub dob: Option<Date>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub dead_at: Option<Date>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub extra_info: Option<Json>,
   pub is_dead: bool,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub parent_id: Option<Uuid>,
+  #[serde(skip_serializing_if = "Option::is_none")]
   pub logo: Option<String>,
 }
 
-impl From<crate::entities::organization::Model> for OrganizationResponse {
+impl OrganizationDTO {
+  pub fn new() -> Self {
+    Self {
+      id: Uuid::new_v4(),
+      created_at: DateTimeWithTimeZone::from(Local::now()),
+      ..Default::default()
+    }
+  }
+
+  pub fn create() -> Self {
+    Self { ..Self::new() }
+  }
+
+  pub fn delete(&mut self) -> &mut Self {
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self
+  }
+
+  pub fn set_id(&mut self, v: Uuid) -> &mut Self {
+    self.id = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.updated_at = v;
+    self
+  }
+
+  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
+    self.deleted_at = v;
+    self
+  }
+
+  pub fn set_name(&mut self, v: String) -> &mut Self {
+    self.name = v;
+    self
+  }
+
+  pub fn set_abbreviation(&mut self, v: String) -> &mut Self {
+    self.abbreviation = Some(v);
+    self
+  }
+
+  pub fn set_description(&mut self, v: String) -> &mut Self {
+    self.description = Some(v);
+    self
+  }
+
+  pub fn set_dob(&mut self, v: Date) -> &mut Self {
+    self.dob = Some(v);
+    self
+  }
+
+  pub fn set_dead_at(&mut self, v: Option<Date>) -> &mut Self {
+    self.dead_at = v;
+    self
+  }
+
+  pub fn set_extra_info(&mut self, v: Json) -> &mut Self {
+    self.extra_info = Some(v);
+    self
+  }
+
+  pub fn set_is_dead(&mut self, v: bool) -> &mut Self {
+    self.is_dead = v;
+    self
+  }
+
+  pub fn set_parent_id(&mut self, v: Option<Uuid>) -> &mut Self {
+    self.parent_id = v;
+    self
+  }
+
+  pub fn set_logo(&mut self, v: Option<String>) -> &mut Self {
+    self.logo = v;
+    self
+  }
+}
+
+impl From<crate::entities::organization::Model> for OrganizationDTO {
   fn from(m: crate::entities::organization::Model) -> Self {
     Self {
       id: m.id,
@@ -72,7 +139,7 @@ impl From<crate::entities::organization::Model> for OrganizationResponse {
   }
 }
 
-impl From<crate::entities::organization::ActiveModel> for OrganizationResponse {
+impl From<crate::entities::organization::ActiveModel> for OrganizationDTO {
   fn from(m: crate::entities::organization::ActiveModel) -> Self {
     Self {
       id: m.id.unwrap(),

@@ -12,7 +12,7 @@ pub struct Model {
   pub translations: Option<Json>,
   pub region_id: i16,
   pub created_at: Option<DateTime>,
-  pub updated_at: DateTime,
+  pub updated_at: Option<DateTime>,
   pub flag: i16,
   pub wikidataid: Option<String>,
 }

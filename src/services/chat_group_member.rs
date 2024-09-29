@@ -1,16 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::chat_group_member::{ChatGroupMemberAddRequest, ChatGroupMemberResponse};
+use crate::dtos::chat_group_member::ChatGroupMemberDTO;
 use crate::entities::{chat_group_member, prelude::ChatGroupMember};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_chat_group_member(
-  req: ChatGroupMemberAddRequest,
-) -> AppResult<ChatGroupMemberResponse> {
+pub async fn add_chat_group_member(req: ChatGroupMemberDTO) -> AppResult<ChatGroupMemberDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -22,12 +20,11 @@ pub async fn add_chat_group_member(
     deleted_at: Set(None),
   };
   let chat_group_member = ChatGroupMember::insert(model.clone()).exec(db).await?;
-  Ok(ChatGroupMemberResponse {
+  Ok(ChatGroupMemberDTO {
     group_creator_id: chat_group_member.last_insert_id.0,
     group_created_at: chat_group_member.last_insert_id.1,
     member_id: chat_group_member.last_insert_id.2,
-    created_at: chat_group_member.last_insert_id.3,
-    ..ChatGroupMemberResponse::from(model)
+    ..ChatGroupMemberDTO::from(model)
   })
 }
 
@@ -43,18 +40,17 @@ pub async fn delete_chat_group_member(
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
   match deletion_mode {
     DeletionMode::Hard => {
-      let result =
-        ChatGroupMember::delete_by_id((group_creator_id, group_created_at, member_id, created_at))
-          .exec(db)
-          .await?;
+      let result = ChatGroupMember::delete_by_id((group_creator_id, group_created_at, member_id))
+        .exec(db)
+        .await?;
       match result.rows_affected {
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("member"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let chat_group_member =
-        ChatGroupMember::find_by_id((group_creator_id, group_created_at, member_id, created_at))
+        ChatGroupMember::find_by_id((group_creator_id, group_created_at, member_id))
           .one(db)
           .await?;
       if chat_group_member.is_none() {
@@ -67,13 +63,13 @@ pub async fn delete_chat_group_member(
       )));
       chat_group_member.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_chat_group_member(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<ChatGroupMemberResponse>> {
+) -> AppResult<Vec<ChatGroupMemberDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -86,20 +82,20 @@ pub async fn get_chat_group_member(
       let res = chat_group_members
         .into_iter()
         .map(|chat_group_member: chat_group_member::Model| {
-          ChatGroupMemberResponse::from(chat_group_member)
+          ChatGroupMemberDTO::from(chat_group_member)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let chat_group_members = ChatGroupMember::find().all(db).await?;
       let res = chat_group_members
         .into_iter()
         .map(|chat_group_member: chat_group_member::Model| {
-          ChatGroupMemberResponse::from(chat_group_member)
+          ChatGroupMemberDTO::from(chat_group_member)
         })
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

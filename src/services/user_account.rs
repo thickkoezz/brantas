@@ -1,10 +1,7 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::user_account::{
-  UserAccountAddRequest, UserAccountLoginRequest, UserAccountLoginResponse, UserAccountResponse,
-  UserAccountUpdateRequest,
-};
+use crate::dtos::user_account::UserAccountDTO;
 use crate::entities::{prelude::UserAccount, user_account};
 use crate::middleware::jwt::get_token;
 use crate::utils::rand_utils;
@@ -15,7 +12,7 @@ use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter, Set};
 use uuid::Uuid;
 
-pub async fn add_user_account(req: UserAccountAddRequest) -> AppResult<UserAccountResponse> {
+pub async fn add_user_account(req: UserAccountDTO) -> AppResult<UserAccountDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -52,13 +49,13 @@ pub async fn add_user_account(req: UserAccountAddRequest) -> AppResult<UserAccou
     refresh_token_expires_in: Set(req.refresh_token_expires_in),
   };
   let user_account = UserAccount::insert(model.clone()).exec(db).await?;
-  Ok(UserAccountResponse {
+  Ok(UserAccountDTO {
     id: user_account.last_insert_id,
-    ..UserAccountResponse::from(model)
+    ..UserAccountDTO::from(model)
   })
 }
 
-pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginResponse> {
+pub async fn login(req: UserAccountDTO) -> AppResult<UserAccountDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -74,7 +71,7 @@ pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginRe
     return Err(anyhow::anyhow!(t!("x_not_set", x = t!("password"))).into());
   }
   let password = user_account.password.unwrap();
-  if rand_utils::verify_password(req.password, password)
+  if rand_utils::verify_password(req.password.unwrap(), password)
     .await
     .is_err()
   {
@@ -84,16 +81,17 @@ pub async fn login(req: UserAccountLoginRequest) -> AppResult<UserAccountLoginRe
     user_account.username.clone().unwrap_or_default(),
     user_account.id.to_string().clone(),
   )?;
-  let res = UserAccountLoginResponse {
+  let res = UserAccountDTO {
     id: user_account.id,
-    username: user_account.username.unwrap_or_default(),
-    token,
-    exp,
+    username: user_account.username,
+    token: Some(token),
+    exp: Some(exp),
+    ..Default::default()
   };
   Ok(res)
 }
 
-pub async fn update_user_account(req: UserAccountUpdateRequest) -> AppResult<UserAccountResponse> {
+pub async fn update_user_account(req: UserAccountDTO) -> AppResult<UserAccountDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -133,7 +131,7 @@ pub async fn update_user_account(req: UserAccountUpdateRequest) -> AppResult<Use
   user_account.refresh_token_expires_in = Set(req.refresh_token_expires_in);
 
   let user: user_account::Model = user_account.update(db).await?;
-  Ok(UserAccountResponse::from(user))
+  Ok(UserAccountDTO::from(user))
 }
 
 pub async fn delete_user_account(deletion_mode: DeletionMode, id: Uuid) -> AppResult<()> {
@@ -147,7 +145,7 @@ pub async fn delete_user_account(deletion_mode: DeletionMode, id: Uuid) -> AppRe
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("user_account"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let user_account = UserAccount::find_by_id(id).one(db).await?;
       if user_account.is_none() {
@@ -160,13 +158,13 @@ pub async fn delete_user_account(deletion_mode: DeletionMode, id: Uuid) -> AppRe
       )));
       user_account.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
 pub async fn get_user_accounts(
   paginator_option: Option<PaginatorOption>,
-) -> AppResult<Vec<UserAccountResponse>> {
+) -> AppResult<Vec<UserAccountDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -178,17 +176,17 @@ pub async fn get_user_accounts(
         .await?;
       let res = user_accounts
         .into_iter()
-        .map(|user: user_account::Model| UserAccountResponse::from(user))
+        .map(|user: user_account::Model| UserAccountDTO::from(user))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let user_accounts = UserAccount::find().all(db).await?;
       let res = user_accounts
         .into_iter()
-        .map(|user_account: user_account::Model| UserAccountResponse::from(user_account))
+        .map(|user_account: user_account::Model| UserAccountDTO::from(user_account))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }

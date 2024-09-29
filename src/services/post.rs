@@ -1,14 +1,14 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::post::{PostAddRequest, PostResponse};
+use crate::dtos::post::PostDTO;
 use crate::entities::{post, prelude::Post};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;
 use sea_orm::{ActiveModelTrait, EntityTrait, PaginatorTrait, Set};
 use uuid::Uuid;
 
-pub async fn add_post(req: PostAddRequest) -> AppResult<PostResponse> {
+pub async fn add_post(req: PostDTO) -> AppResult<PostDTO> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -29,10 +29,10 @@ pub async fn add_post(req: PostAddRequest) -> AppResult<PostResponse> {
     can_comment: Set(req.can_comment),
   };
   let post = Post::insert(model.clone()).exec(db).await?;
-  Ok(PostResponse {
+  Ok(PostDTO {
     owner_id: post.last_insert_id.0,
     created_at: post.last_insert_id.1,
-    ..PostResponse::from(model)
+    ..PostDTO::from(model)
   })
 }
 
@@ -51,7 +51,7 @@ pub async fn delete_post(
         0 => Err(anyhow::anyhow!(t!("x_not_deleted", x = t!("post"))).into()),
         _ => Ok(()),
       }
-    },
+    }
     DeletionMode::Soft => {
       let post = Post::find_by_id((owner_id, created_at)).one(db).await?;
       if post.is_none() {
@@ -64,11 +64,11 @@ pub async fn delete_post(
       )));
       post.update(db).await?;
       Ok(())
-    },
+    }
   }
 }
 
-pub async fn get_post(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<PostResponse>> {
+pub async fn get_post(paginator_option: Option<PaginatorOption>) -> AppResult<Vec<PostDTO>> {
   let db = DB
     .get()
     .ok_or(anyhow::anyhow!(t!("database_connection_failed")))?;
@@ -80,17 +80,17 @@ pub async fn get_post(paginator_option: Option<PaginatorOption>) -> AppResult<Ve
         .await?;
       let res = posts
         .into_iter()
-        .map(|post: post::Model| PostResponse::from(post))
+        .map(|post: post::Model| PostDTO::from(post))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
     None => {
       let posts = Post::find().all(db).await?;
       let res = posts
         .into_iter()
-        .map(|post: post::Model| PostResponse::from(post))
+        .map(|post: post::Model| PostDTO::from(post))
         .collect::<Vec<_>>();
       Ok(res)
-    },
+    }
   }
 }
