@@ -1,10 +1,11 @@
+use crate::entities::project::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::{Date, DateTimeWithTimeZone};
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::{Validate, ValidationError};
+use validator::Validate;
 
 pub type ID = (Uuid, DateTimeWithTimeZone);
 
@@ -27,7 +28,17 @@ pub struct ProjectDTO {
 
 impl ProjectDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (self.person_id.clone(), self.created_at.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.person_id = v.0;
+    self.created_at = v.1;
     self
   }
 
@@ -72,8 +83,8 @@ impl ProjectDTO {
   }
 }
 
-impl From<crate::entities::project::Model> for ProjectDTO {
-  fn from(m: crate::entities::project::Model) -> Self {
+impl From<Model> for ProjectDTO {
+  fn from(m: Model) -> Self {
     Self {
       person_id: m.person_id,
       created_at: m.created_at,
@@ -87,8 +98,8 @@ impl From<crate::entities::project::Model> for ProjectDTO {
   }
 }
 
-impl From<crate::entities::project::ActiveModel> for ProjectDTO {
-  fn from(m: crate::entities::project::ActiveModel) -> Self {
+impl From<ActiveModel> for ProjectDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       person_id: m.person_id.unwrap(),
       created_at: m.created_at.unwrap(),

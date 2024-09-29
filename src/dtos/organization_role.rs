@@ -1,7 +1,8 @@
+use crate::entities::organization_role::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::{DateTimeWithTimeZone, Json};
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -25,7 +26,17 @@ pub struct OrganizationRoleDTO {
 
 impl OrganizationRoleDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (self.organization_id.clone(), self.name.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.organization_id = v.0;
+    self.name = v.1;
     self
   }
 
@@ -65,8 +76,8 @@ impl OrganizationRoleDTO {
   }
 }
 
-impl From<crate::entities::organization_role::Model> for OrganizationRoleDTO {
-  fn from(m: crate::entities::organization_role::Model) -> Self {
+impl From<Model> for OrganizationRoleDTO {
+  fn from(m: Model) -> Self {
     Self {
       organization_id: m.organization_id,
       name: m.name,
@@ -79,8 +90,8 @@ impl From<crate::entities::organization_role::Model> for OrganizationRoleDTO {
   }
 }
 
-impl From<crate::entities::organization_role::ActiveModel> for OrganizationRoleDTO {
-  fn from(m: crate::entities::organization_role::ActiveModel) -> Self {
+impl From<ActiveModel> for OrganizationRoleDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       organization_id: m.organization_id.unwrap(),
       name: m.name.unwrap(),

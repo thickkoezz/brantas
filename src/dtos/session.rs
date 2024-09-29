@@ -1,3 +1,4 @@
+use crate::entities::session::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -37,8 +38,8 @@ impl SessionDTO {
   }
 }
 
-impl From<crate::entities::session::Model> for SessionDTO {
-  fn from(m: crate::entities::session::Model) -> Self {
+impl From<Model> for SessionDTO {
+  fn from(m: Model) -> Self {
     Self {
       id: m.id,
       session_token: m.session_token,
@@ -48,8 +49,8 @@ impl From<crate::entities::session::Model> for SessionDTO {
   }
 }
 
-impl From<crate::entities::session::ActiveModel> for SessionDTO {
-  fn from(m: crate::entities::session::ActiveModel) -> Self {
+impl From<ActiveModel> for SessionDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       id: m.id.unwrap(),
       session_token: m.session_token.unwrap(),

@@ -1,7 +1,7 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::tweet::{TweetDTO, TweetDTO};
+use crate::dtos::tweet::TweetDTO;
 use crate::entities::{prelude::Tweet, tweet};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;

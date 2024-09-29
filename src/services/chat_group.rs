@@ -1,7 +1,7 @@
 use super::{DeletionMode, PaginatorOption};
 use crate::app_writer::AppResult;
 use crate::db::DB;
-use crate::dtos::chat_group::{ChatGroupDTO, ChatGroupDTO};
+use crate::dtos::chat_group::ChatGroupDTO;
 use crate::entities::{chat_group, prelude::ChatGroup};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono;

@@ -2,6 +2,7 @@ use crate::entities::direct_chat_reaction::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -19,6 +20,40 @@ pub struct DirectChatReactionDTO {
 }
 
 impl DirectChatReactionDTO {
+  pub fn new(
+    owner_id: Uuid,
+    reacted_direct_chat_sender_id: Uuid,
+    reacted_direct_chat_receiver_id: Uuid,
+    reacted_direct_chat_created_at: DateTimeWithTimeZone,
+  ) -> Self {
+    Self {
+      owner_id,
+      reacted_direct_chat_sender_id,
+      reacted_direct_chat_receiver_id,
+      reacted_direct_chat_created_at,
+      created_at: DateTimeWithTimeZone::from(Local::now()),
+      ..Default::default()
+    }
+  }
+
+  pub fn create(
+    owner_id: Uuid,
+    reacted_direct_chat_sender_id: Uuid,
+    reacted_direct_chat_receiver_id: Uuid,
+    reacted_direct_chat_created_at: DateTimeWithTimeZone,
+    reaction_emoji: String,
+  ) -> Self {
+    Self {
+      reaction_emoji,
+      ..Self::new(
+        owner_id,
+        reacted_direct_chat_sender_id,
+        reacted_direct_chat_receiver_id,
+        reacted_direct_chat_created_at,
+      )
+    }
+  }
+
   pub fn get_id(&self) -> ID {
     (
       self.owner_id.clone(),

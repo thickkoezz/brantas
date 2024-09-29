@@ -1,7 +1,8 @@
+use crate::entities::job_skill::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -23,7 +24,7 @@ pub struct JobSkillDTO {
 
 impl JobSkillDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
     self
   }
 
@@ -80,8 +81,8 @@ impl JobSkillDTO {
   }
 }
 
-impl From<crate::entities::job_skill::Model> for JobSkillDTO {
-  fn from(m: crate::entities::job_skill::Model) -> Self {
+impl From<Model> for JobSkillDTO {
+  fn from(m: Model) -> Self {
     Self {
       organization_id: m.organization_id,
       person_id: m.person_id,
@@ -94,8 +95,8 @@ impl From<crate::entities::job_skill::Model> for JobSkillDTO {
   }
 }
 
-impl From<crate::entities::job_skill::ActiveModel> for JobSkillDTO {
-  fn from(m: crate::entities::job_skill::ActiveModel) -> Self {
+impl From<ActiveModel> for JobSkillDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       organization_id: m.organization_id.unwrap(),
       person_id: m.person_id.unwrap(),

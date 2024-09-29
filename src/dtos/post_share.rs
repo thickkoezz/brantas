@@ -1,7 +1,8 @@
+use crate::entities::post_share::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -21,7 +22,22 @@ pub struct PostShareDTO {
 
 impl PostShareDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (
+      self.post_owner_id.clone(),
+      self.post_created_at.clone(),
+      self.target_id.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.post_owner_id = v.0;
+    self.post_created_at = v.1;
+    self.target_id = v.2;
     self
   }
 
@@ -56,8 +72,8 @@ impl PostShareDTO {
   }
 }
 
-impl From<crate::entities::post_share::Model> for PostShareDTO {
-  fn from(m: crate::entities::post_share::Model) -> Self {
+impl From<Model> for PostShareDTO {
+  fn from(m: Model) -> Self {
     Self {
       post_owner_id: m.post_owner_id,
       post_created_at: m.post_created_at,
@@ -69,8 +85,8 @@ impl From<crate::entities::post_share::Model> for PostShareDTO {
   }
 }
 
-impl From<crate::entities::post_share::ActiveModel> for PostShareDTO {
-  fn from(m: crate::entities::post_share::ActiveModel) -> Self {
+impl From<ActiveModel> for PostShareDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       post_owner_id: m.post_owner_id.unwrap(),
       post_created_at: m.post_created_at.unwrap(),

@@ -1,7 +1,6 @@
 use crate::entities::user_account;
 use salvo::prelude::{Extractible, ToSchema};
 use sea_orm::prelude::{DateTimeWithTimeZone, Decimal};
-use sea_orm::sqlx::types::chrono;
 use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -63,148 +62,9 @@ impl UserAccountDTO {
     }
   }
 
-  pub fn create() -> Self {
-    Self { ..Self::new() }
-  }
-
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
     self
-  }
-
-  pub fn set_id(&mut self, v: Uuid) -> &mut Self {
-    self.id = v;
-    self
-  }
-
-  pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
-    self.owner_id = v;
-    self
-  }
-
-  pub fn set_email(&mut self, v: String) -> &mut Self {
-    self.email = v;
-    self
-  }
-
-  pub fn set_username(&mut self, v: Option<String>) -> &mut Self {
-    self.username = v;
-    self
-  }
-
-  pub fn set_picture(&mut self, v: Option<String>) -> &mut Self {
-    self.picture = v;
-    self
-  }
-
-  pub fn set_password(&mut self, v: Option<String>) -> &mut Self {
-    self.password = v;
-    self
-  }
-
-  pub fn set_salt(&mut self, v: Option<String>) -> &mut Self {
-    self.salt = v;
-    self
-  }
-
-  pub fn set_created_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
-    self.created_at = v;
-    self
-  }
-
-  pub fn set_updated_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
-    self.updated_at = v;
-    self
-  }
-
-  pub fn set_deleted_at(&mut self, v: Option<DateTimeWithTimeZone>) -> &mut Self {
-    self.deleted_at = v;
-    self
-  }
-
-  pub fn set_balance(&mut self, v: Decimal) -> &mut Self {
-    self.balance = v;
-    self
-  }
-
-  pub fn set_is_super_admin(&mut self, v: bool) -> &mut Self {
-    self.is_super_admin = v;
-    self
-  }
-
-  pub fn set_type(&mut self, v: String) -> &mut Self {
-    self.r#type = v;
-    self
-  }
-
-  pub fn set_provider(&mut self, v: String) -> &mut Self {
-    self.provider = v;
-    self
-  }
-
-  pub fn set_provider_account_id(&mut self, v: String) -> &mut Self {
-    self.provider_account_id = v;
-    self
-  }
-
-  pub fn set_refresh_token(&mut self, v: String) -> &mut Self {
-    self.refresh_token = Some(v);
-    self
-  }
-
-  pub fn set_access_token(&mut self, v: String) -> &mut Self {
-    self.access_token = Some(v);
-    self
-  }
-
-  pub fn set_token_type(&mut self, v: String) -> &mut Self {
-    self.token_type = Some(v);
-    self
-  }
-
-  pub fn set_scope(&mut self, v: String) -> &mut Self {
-    self.scope = Some(v);
-    self
-  }
-
-  pub fn set_id_token(&mut self, v: Option<String>) -> &mut Self {
-    self.id_token = v;
-    self
-  }
-
-  pub fn set_session_state(&mut self, v: Option<String>) -> &mut Self {
-    self.session_state = v;
-    self
-  }
-
-  pub fn set_expires_at(&mut self, v: DateTimeWithTimeZone) -> &mut Self {
-    self.expires_at = Some(v);
-    self
-  }
-
-  pub fn set_refresh_token_expires_in(&mut self, v: Option<i32>) -> &mut Self {
-    self.refresh_token_expires_in = v;
-    self
-  }
-
-  pub fn set_token(&mut self, v: Option<String>) -> &mut Self {
-    self.token = v;
-    self
-  }
-
-  pub fn set_exp(&mut self, v: Option<i64>) -> &mut Self {
-    self.exp = v;
-    self
-  }
-}
-
-impl UserAccountDTO {
-  pub fn new(id: Uuid) -> Result<Self, String> {
-    Ok(Self {
-      id,
-      created_at: DateTimeWithTimeZone::from(chrono::Local::now()),
-      ..Default::default()
-    })
   }
 
   pub fn get_id(&self) -> ID {
@@ -323,6 +183,16 @@ impl UserAccountDTO {
 
   pub fn set_refresh_token_expires_in(&mut self, val: Option<i32>) -> &mut Self {
     self.refresh_token_expires_in = val;
+    self
+  }
+
+  pub fn set_token(&mut self, v: Option<String>) -> &mut Self {
+    self.token = v;
+    self
+  }
+
+  pub fn set_exp(&mut self, v: Option<i64>) -> &mut Self {
+    self.exp = v;
     self
   }
 }

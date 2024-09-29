@@ -22,6 +22,47 @@ pub struct MRegionsDTO {
   pub wikidataid: Option<String>,
 }
 
+impl MRegionsDTO {
+  pub fn get_id(&self) -> ID {
+    self.id.clone()
+  }
+
+  pub fn set_id(&mut self, v: i16) -> &mut Self {
+    self.id = v;
+    self
+  }
+
+  pub fn set_name(&mut self, v: String) -> &mut Self {
+    self.name = v;
+    self
+  }
+
+  pub fn set_translations(&mut self, v: Option<Json>) -> &mut Self {
+    self.translations = v;
+    self
+  }
+
+  pub fn set_created_at(&mut self, v: Option<DateTime>) -> &mut Self {
+    self.created_at = v;
+    self
+  }
+
+  pub fn set_updated_at(&mut self, v: Option<DateTime>) -> &mut Self {
+    self.updated_at = v;
+    self
+  }
+
+  pub fn set_flag(&mut self, v: i16) -> &mut Self {
+    self.flag = v;
+    self
+  }
+
+  pub fn set_wikidataid(&mut self, v: Option<String>) -> &mut Self {
+    self.wikidataid = v;
+    self
+  }
+}
+
 impl From<Model> for MRegionsDTO {
   fn from(m: Model) -> Self {
     Self {

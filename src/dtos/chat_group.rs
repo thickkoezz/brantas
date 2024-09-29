@@ -2,7 +2,6 @@ use crate::entities::chat_group::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
 use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -29,7 +28,7 @@ impl ChatGroupDTO {
   pub fn new(creator_id: Uuid) -> Self {
     Self {
       creator_id,
-      created_at: DateTimeWithTimeZone::from(chrono::Local::now()),
+      created_at: DateTimeWithTimeZone::from(Local::now()),
       ..Default::default()
     }
   }

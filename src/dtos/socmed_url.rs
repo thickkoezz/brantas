@@ -1,7 +1,8 @@
+use crate::entities::socmed_url::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -21,7 +22,17 @@ pub struct SocmedUrlDTO {
 
 impl SocmedUrlDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (self.socmed_url.clone(), self.owner_id.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.socmed_url = v.0;
+    self.owner_id = v.1;
     self
   }
 
@@ -51,8 +62,8 @@ impl SocmedUrlDTO {
   }
 }
 
-impl From<crate::entities::socmed_url::Model> for SocmedUrlDTO {
-  fn from(m: crate::entities::socmed_url::Model) -> Self {
+impl From<Model> for SocmedUrlDTO {
+  fn from(m: Model) -> Self {
     Self {
       socmed_url: m.socmed_url,
       owner_id: m.owner_id,
@@ -63,8 +74,8 @@ impl From<crate::entities::socmed_url::Model> for SocmedUrlDTO {
   }
 }
 
-impl From<crate::entities::socmed_url::ActiveModel> for SocmedUrlDTO {
-  fn from(m: crate::entities::socmed_url::ActiveModel) -> Self {
+impl From<ActiveModel> for SocmedUrlDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       socmed_url: m.socmed_url.unwrap(),
       owner_id: m.owner_id.unwrap(),

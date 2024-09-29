@@ -1,7 +1,8 @@
+use crate::entities::phone::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -23,7 +24,16 @@ pub struct PhoneDTO {
 
 impl PhoneDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    self.phone.clone()
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.phone = v;
     self
   }
 
@@ -63,8 +73,8 @@ impl PhoneDTO {
   }
 }
 
-impl From<crate::entities::phone::Model> for PhoneDTO {
-  fn from(m: crate::entities::phone::Model) -> Self {
+impl From<Model> for PhoneDTO {
+  fn from(m: Model) -> Self {
     Self {
       phone: m.phone,
       owner_id: m.owner_id,
@@ -77,8 +87,8 @@ impl From<crate::entities::phone::Model> for PhoneDTO {
   }
 }
 
-impl From<crate::entities::phone::ActiveModel> for PhoneDTO {
-  fn from(m: crate::entities::phone::ActiveModel) -> Self {
+impl From<ActiveModel> for PhoneDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       phone: m.phone.unwrap(),
       owner_id: m.owner_id.unwrap(),

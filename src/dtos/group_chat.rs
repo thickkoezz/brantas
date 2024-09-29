@@ -1,7 +1,8 @@
+use crate::entities::group_chat::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -40,7 +41,7 @@ pub struct GroupChatDTO {
 
 impl GroupChatDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
     self
   }
 
@@ -142,8 +143,8 @@ impl GroupChatDTO {
   }
 }
 
-impl From<crate::entities::group_chat::Model> for GroupChatDTO {
-  fn from(m: crate::entities::group_chat::Model) -> Self {
+impl From<Model> for GroupChatDTO {
+  fn from(m: Model) -> Self {
     Self {
       sender_id: m.sender_id,
       group_creator_id: m.group_creator_id,
@@ -165,8 +166,8 @@ impl From<crate::entities::group_chat::Model> for GroupChatDTO {
   }
 }
 
-impl From<crate::entities::group_chat::ActiveModel> for GroupChatDTO {
-  fn from(m: crate::entities::group_chat::ActiveModel) -> Self {
+impl From<ActiveModel> for GroupChatDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       sender_id: m.sender_id.unwrap(),
       group_creator_id: m.group_creator_id.unwrap(),

@@ -1,7 +1,7 @@
+use crate::entities::organization::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::{Date, DateTimeWithTimeZone, Json};
-use sea_orm::sqlx::types::chrono;
 use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -49,8 +49,12 @@ impl OrganizationDTO {
   }
 
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
     self
+  }
+
+  pub fn get_id(&self) -> ID {
+    self.id.clone()
   }
 
   pub fn set_id(&mut self, v: Uuid) -> &mut Self {
@@ -119,8 +123,8 @@ impl OrganizationDTO {
   }
 }
 
-impl From<crate::entities::organization::Model> for OrganizationDTO {
-  fn from(m: crate::entities::organization::Model) -> Self {
+impl From<Model> for OrganizationDTO {
+  fn from(m: Model) -> Self {
     Self {
       id: m.id,
       created_at: m.created_at,
@@ -139,8 +143,8 @@ impl From<crate::entities::organization::Model> for OrganizationDTO {
   }
 }
 
-impl From<crate::entities::organization::ActiveModel> for OrganizationDTO {
-  fn from(m: crate::entities::organization::ActiveModel) -> Self {
+impl From<ActiveModel> for OrganizationDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       id: m.id.unwrap(),
       created_at: m.created_at.unwrap(),

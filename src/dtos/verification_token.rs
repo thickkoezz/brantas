@@ -1,8 +1,8 @@
+use crate::entities::verification_token::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use validator::Validate;
 
 pub type ID = (String, String);
@@ -15,6 +15,16 @@ pub struct VerificationTokenDTO {
 }
 
 impl VerificationTokenDTO {
+  pub fn get_id(&self) -> ID {
+    (self.identifier.clone(), self.token.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.identifier = v.0;
+    self.token = v.1;
+    self
+  }
+
   pub fn set_identifier(&mut self, v: String) -> &mut Self {
     self.identifier = v;
     self
@@ -31,8 +41,8 @@ impl VerificationTokenDTO {
   }
 }
 
-impl From<crate::entities::verification_token::Model> for VerificationTokenDTO {
-  fn from(m: crate::entities::verification_token::Model) -> Self {
+impl From<Model> for VerificationTokenDTO {
+  fn from(m: Model) -> Self {
     Self {
       identifier: m.identifier,
       token: m.token,
@@ -41,8 +51,8 @@ impl From<crate::entities::verification_token::Model> for VerificationTokenDTO {
   }
 }
 
-impl From<crate::entities::verification_token::ActiveModel> for VerificationTokenDTO {
-  fn from(m: crate::entities::verification_token::ActiveModel) -> Self {
+impl From<ActiveModel> for VerificationTokenDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       identifier: m.identifier.unwrap(),
       token: m.token.unwrap(),

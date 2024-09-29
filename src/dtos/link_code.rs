@@ -1,12 +1,13 @@
+use crate::entities::link_code::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-pub type ID = Uuid;
+pub type ID = String;
 
 #[derive(Debug, Default, Deserialize, Serialize, Extractible, ToSchema, Validate)]
 pub struct LinkCodeDTO {
@@ -23,7 +24,16 @@ pub struct LinkCodeDTO {
 
 impl LinkCodeDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    self.code.clone()
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.code = v;
     self
   }
 
@@ -63,8 +73,8 @@ impl LinkCodeDTO {
   }
 }
 
-impl From<crate::entities::link_code::Model> for LinkCodeDTO {
-  fn from(m: crate::entities::link_code::Model) -> Self {
+impl From<Model> for LinkCodeDTO {
+  fn from(m: Model) -> Self {
     Self {
       link_id: m.link_id,
       code: m.code,
@@ -77,8 +87,8 @@ impl From<crate::entities::link_code::Model> for LinkCodeDTO {
   }
 }
 
-impl From<crate::entities::link_code::ActiveModel> for LinkCodeDTO {
-  fn from(m: crate::entities::link_code::ActiveModel) -> Self {
+impl From<ActiveModel> for LinkCodeDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       link_id: m.link_id.unwrap(),
       code: m.code.unwrap(),

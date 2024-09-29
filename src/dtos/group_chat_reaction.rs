@@ -1,3 +1,4 @@
+use crate::entities::group_chat_reaction::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -74,8 +75,8 @@ impl GroupChatReactionDTO {
   }
 }
 
-impl From<crate::entities::group_chat_reaction::Model> for GroupChatReactionDTO {
-  fn from(m: crate::entities::group_chat_reaction::Model) -> Self {
+impl From<Model> for GroupChatReactionDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       reacted_group_chat_sender_id: m.reacted_group_chat_sender_id,
@@ -88,8 +89,8 @@ impl From<crate::entities::group_chat_reaction::Model> for GroupChatReactionDTO 
   }
 }
 
-impl From<crate::entities::group_chat_reaction::ActiveModel> for GroupChatReactionDTO {
-  fn from(m: crate::entities::group_chat_reaction::ActiveModel) -> Self {
+impl From<ActiveModel> for GroupChatReactionDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       reacted_group_chat_sender_id: m.reacted_group_chat_sender_id.unwrap(),

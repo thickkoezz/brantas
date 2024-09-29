@@ -1,7 +1,8 @@
+use crate::entities::email::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -23,7 +24,16 @@ pub struct EmailDTO {
 
 impl EmailDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    self.email.clone()
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.email = v;
     self
   }
 
@@ -63,8 +73,8 @@ impl EmailDTO {
   }
 }
 
-impl From<crate::entities::email::Model> for EmailDTO {
-  fn from(m: crate::entities::email::Model) -> Self {
+impl From<Model> for EmailDTO {
+  fn from(m: Model) -> Self {
     Self {
       email: m.email,
       owner_id: m.owner_id,
@@ -77,8 +87,8 @@ impl From<crate::entities::email::Model> for EmailDTO {
   }
 }
 
-impl From<crate::entities::email::ActiveModel> for EmailDTO {
-  fn from(m: crate::entities::email::ActiveModel) -> Self {
+impl From<ActiveModel> for EmailDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       email: m.email.unwrap(),
       owner_id: m.owner_id.unwrap(),

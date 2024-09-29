@@ -1,3 +1,4 @@
+use crate::entities::tweet_bookmark::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -16,6 +17,21 @@ pub struct TweetBookmarkDTO {
 }
 
 impl TweetBookmarkDTO {
+  pub fn get_id(&self) -> ID {
+    (
+      self.owner_id.clone(),
+      self.bookmarked_tweet_owner_id.clone(),
+      self.bookmarked_tweet_created_at.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.owner_id = v.0;
+    self.bookmarked_tweet_owner_id = v.1;
+    self.bookmarked_tweet_created_at = v.2;
+    self
+  }
+
   pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
     self.owner_id = v;
     self
@@ -37,8 +53,8 @@ impl TweetBookmarkDTO {
   }
 }
 
-impl From<crate::entities::tweet_bookmark::Model> for TweetBookmarkDTO {
-  fn from(m: crate::entities::tweet_bookmark::Model) -> Self {
+impl From<Model> for TweetBookmarkDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       bookmarked_tweet_owner_id: m.bookmarked_tweet_owner_id,
@@ -48,8 +64,8 @@ impl From<crate::entities::tweet_bookmark::Model> for TweetBookmarkDTO {
   }
 }
 
-impl From<crate::entities::tweet_bookmark::ActiveModel> for TweetBookmarkDTO {
-  fn from(m: crate::entities::tweet_bookmark::ActiveModel) -> Self {
+impl From<ActiveModel> for TweetBookmarkDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       bookmarked_tweet_owner_id: m.bookmarked_tweet_owner_id.unwrap(),

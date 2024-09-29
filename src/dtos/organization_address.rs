@@ -1,7 +1,8 @@
+use crate::entities::organization_address::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -23,7 +24,17 @@ pub struct OrganizationAddressDTO {
 
 impl OrganizationAddressDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (self.organization_id.clone(), self.city_id.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.organization_id = v.0;
+    self.city_id = v.1;
     self
   }
 
@@ -58,8 +69,8 @@ impl OrganizationAddressDTO {
   }
 }
 
-impl From<crate::entities::organization_address::Model> for OrganizationAddressDTO {
-  fn from(m: crate::entities::organization_address::Model) -> Self {
+impl From<Model> for OrganizationAddressDTO {
+  fn from(m: Model) -> Self {
     Self {
       organization_id: m.organization_id,
       city_id: m.city_id,
@@ -71,8 +82,8 @@ impl From<crate::entities::organization_address::Model> for OrganizationAddressD
   }
 }
 
-impl From<crate::entities::organization_address::ActiveModel> for OrganizationAddressDTO {
-  fn from(m: crate::entities::organization_address::ActiveModel) -> Self {
+impl From<ActiveModel> for OrganizationAddressDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       organization_id: m.organization_id.unwrap(),
       city_id: m.city_id.unwrap(),

@@ -1,7 +1,8 @@
+use crate::entities::note_edit_history::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -22,7 +23,24 @@ pub struct NoteEditHistoryDTO {
 
 impl NoteEditHistoryDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (
+      self.note_owner_id.clone(),
+      self.note_created_at.clone(),
+      self.editor_id.clone(),
+      self.created_at.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.note_owner_id = v.0;
+    self.note_created_at = v.1;
+    self.editor_id = v.2;
+    self.created_at = v.3;
     self
   }
 
@@ -62,8 +80,8 @@ impl NoteEditHistoryDTO {
   }
 }
 
-impl From<crate::entities::note_edit_history::Model> for NoteEditHistoryDTO {
-  fn from(m: crate::entities::note_edit_history::Model) -> Self {
+impl From<Model> for NoteEditHistoryDTO {
+  fn from(m: Model) -> Self {
     Self {
       note_owner_id: m.note_owner_id,
       note_created_at: m.note_created_at,
@@ -76,8 +94,8 @@ impl From<crate::entities::note_edit_history::Model> for NoteEditHistoryDTO {
   }
 }
 
-impl From<crate::entities::note_edit_history::ActiveModel> for NoteEditHistoryDTO {
-  fn from(m: crate::entities::note_edit_history::ActiveModel) -> Self {
+impl From<ActiveModel> for NoteEditHistoryDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       note_owner_id: m.note_owner_id.unwrap(),
       note_created_at: m.note_created_at.unwrap(),

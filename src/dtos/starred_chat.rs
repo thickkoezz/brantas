@@ -1,3 +1,4 @@
+use crate::entities::starred_chat::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -24,6 +25,16 @@ pub struct StarredChatDTO {
 }
 
 impl StarredChatDTO {
+  pub fn get_id(&self) -> ID {
+    (self.creator_id.clone(), self.created_at.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.creator_id = v.0;
+    self.created_at = v.1;
+    self
+  }
+
   pub fn set_creator_id(&mut self, v: Uuid) -> &mut Self {
     self.creator_id = v;
     self
@@ -60,8 +71,8 @@ impl StarredChatDTO {
   }
 }
 
-impl From<crate::entities::starred_chat::Model> for StarredChatDTO {
-  fn from(m: crate::entities::starred_chat::Model) -> Self {
+impl From<Model> for StarredChatDTO {
+  fn from(m: Model) -> Self {
     Self {
       creator_id: m.creator_id,
       created_at: m.created_at,
@@ -74,8 +85,8 @@ impl From<crate::entities::starred_chat::Model> for StarredChatDTO {
   }
 }
 
-impl From<crate::entities::starred_chat::ActiveModel> for StarredChatDTO {
-  fn from(m: crate::entities::starred_chat::ActiveModel) -> Self {
+impl From<ActiveModel> for StarredChatDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       creator_id: m.creator_id.unwrap(),
       created_at: m.created_at.unwrap(),

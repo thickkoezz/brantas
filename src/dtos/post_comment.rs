@@ -1,7 +1,8 @@
+use crate::entities::post_comment::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -24,7 +25,17 @@ pub struct PostCommentDTO {
 
 impl PostCommentDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (self.owner_id.clone(), self.created_at.clone())
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.owner_id = v.0;
+    self.created_at = v.1;
     self
   }
 
@@ -69,8 +80,8 @@ impl PostCommentDTO {
   }
 }
 
-impl From<crate::entities::post_comment::Model> for PostCommentDTO {
-  fn from(m: crate::entities::post_comment::Model) -> Self {
+impl From<Model> for PostCommentDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
@@ -84,8 +95,8 @@ impl From<crate::entities::post_comment::Model> for PostCommentDTO {
   }
 }
 
-impl From<crate::entities::post_comment::ActiveModel> for PostCommentDTO {
-  fn from(m: crate::entities::post_comment::ActiveModel) -> Self {
+impl From<ActiveModel> for PostCommentDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       created_at: m.created_at.unwrap(),

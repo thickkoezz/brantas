@@ -600,6 +600,9 @@ translation:
 tweet:
   en: Tweet
   id: Berkicau
+unable_to_block_self:
+  en: Unable to block self
+  id: Tidak bisa blokir diri sendiri
 unauthorized:
   en: Unauthorized
   id: Tidak sah

@@ -1,7 +1,8 @@
+use crate::entities::friend_group::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -21,7 +22,7 @@ pub struct FriendGroupDTO {
 
 impl FriendGroupDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
     self
   }
 
@@ -61,8 +62,8 @@ impl FriendGroupDTO {
   }
 }
 
-impl From<crate::entities::friend_group::Model> for FriendGroupDTO {
-  fn from(m: crate::entities::friend_group::Model) -> Self {
+impl From<Model> for FriendGroupDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       name: m.name,
@@ -73,8 +74,8 @@ impl From<crate::entities::friend_group::Model> for FriendGroupDTO {
   }
 }
 
-impl From<crate::entities::friend_group::ActiveModel> for FriendGroupDTO {
-  fn from(m: crate::entities::friend_group::ActiveModel) -> Self {
+impl From<ActiveModel> for FriendGroupDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       name: m.name.unwrap(),

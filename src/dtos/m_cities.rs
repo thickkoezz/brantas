@@ -27,6 +27,10 @@ pub struct MCitiesDTO {
 }
 
 impl MCitiesDTO {
+  pub fn get_id(&self) -> ID {
+    self.id.clone()
+  }
+
   pub fn set_id(&mut self, v: i32) -> &mut Self {
     self.id = v;
     self

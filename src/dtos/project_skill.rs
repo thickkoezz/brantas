@@ -1,7 +1,8 @@
+use crate::entities::project_skill::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -22,7 +23,22 @@ pub struct ProjectSkillDTO {
 
 impl ProjectSkillDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (
+      self.person_id.clone(),
+      self.project_created_at.clone(),
+      self.skill_created_at.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.person_id = v.0;
+    self.project_created_at = v.1;
+    self.skill_created_at = v.2;
     self
   }
 
@@ -57,8 +73,8 @@ impl ProjectSkillDTO {
   }
 }
 
-impl From<crate::entities::project_skill::Model> for ProjectSkillDTO {
-  fn from(m: crate::entities::project_skill::Model) -> Self {
+impl From<Model> for ProjectSkillDTO {
+  fn from(m: Model) -> Self {
     Self {
       person_id: m.person_id,
       project_created_at: m.project_created_at,
@@ -70,8 +86,8 @@ impl From<crate::entities::project_skill::Model> for ProjectSkillDTO {
   }
 }
 
-impl From<crate::entities::project_skill::ActiveModel> for ProjectSkillDTO {
-  fn from(m: crate::entities::project_skill::ActiveModel) -> Self {
+impl From<ActiveModel> for ProjectSkillDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       person_id: m.person_id.unwrap(),
       project_created_at: m.project_created_at.unwrap(),

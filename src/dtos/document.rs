@@ -1,7 +1,8 @@
+use crate::entities::document::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -31,7 +32,7 @@ pub struct DocumentDTO {
 
 impl DocumentDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
     self
   }
 
@@ -101,8 +102,8 @@ impl DocumentDTO {
   }
 }
 
-impl From<crate::entities::document::Model> for DocumentDTO {
-  fn from(m: crate::entities::document::Model) -> Self {
+impl From<Model> for DocumentDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       created_at: m.created_at,
@@ -119,8 +120,8 @@ impl From<crate::entities::document::Model> for DocumentDTO {
   }
 }
 
-impl From<crate::entities::document::ActiveModel> for DocumentDTO {
-  fn from(m: crate::entities::document::ActiveModel) -> Self {
+impl From<ActiveModel> for DocumentDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       created_at: m.created_at.unwrap(),

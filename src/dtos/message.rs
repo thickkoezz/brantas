@@ -1,7 +1,8 @@
+use crate::entities::message::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -22,7 +23,22 @@ pub struct MessageDTO {
 
 impl MessageDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
+    self
+  }
+
+  pub fn get_id(&self) -> ID {
+    (
+      self.owner_id.clone(),
+      self.receiver_id.clone(),
+      self.created_at.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.owner_id = v.0;
+    self.receiver_id = v.1;
+    self.created_at = v.2;
     self
   }
 
@@ -57,8 +73,8 @@ impl MessageDTO {
   }
 }
 
-impl From<crate::entities::message::Model> for MessageDTO {
-  fn from(m: crate::entities::message::Model) -> Self {
+impl From<Model> for MessageDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       receiver_id: m.receiver_id,
@@ -70,8 +86,8 @@ impl From<crate::entities::message::Model> for MessageDTO {
   }
 }
 
-impl From<crate::entities::message::ActiveModel> for MessageDTO {
-  fn from(m: crate::entities::message::ActiveModel) -> Self {
+impl From<ActiveModel> for MessageDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       receiver_id: m.receiver_id.unwrap(),

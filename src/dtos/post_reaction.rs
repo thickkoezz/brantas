@@ -1,3 +1,4 @@
+use crate::entities::post_reaction::{ActiveModel, Model};
 use salvo::oapi::ToSchema;
 use salvo::prelude::Extractible;
 use sea_orm::prelude::DateTimeWithTimeZone;
@@ -17,6 +18,21 @@ pub struct PostReactionDTO {
 }
 
 impl PostReactionDTO {
+  pub fn get_id(&self) -> ID {
+    (
+      self.owner_id.clone(),
+      self.reacted_post_owner_id.clone(),
+      self.reacted_post_created_at.clone(),
+    )
+  }
+
+  pub fn set_id(&mut self, v: ID) -> &mut Self {
+    self.owner_id = v.0;
+    self.reacted_post_owner_id = v.1;
+    self.reacted_post_created_at = v.2;
+    self
+  }
+
   pub fn set_owner_id(&mut self, v: Uuid) -> &mut Self {
     self.owner_id = v;
     self
@@ -43,8 +59,8 @@ impl PostReactionDTO {
   }
 }
 
-impl From<crate::entities::post_reaction::Model> for PostReactionDTO {
-  fn from(m: crate::entities::post_reaction::Model) -> Self {
+impl From<Model> for PostReactionDTO {
+  fn from(m: Model) -> Self {
     Self {
       owner_id: m.owner_id,
       reacted_post_owner_id: m.reacted_post_owner_id,
@@ -55,8 +71,8 @@ impl From<crate::entities::post_reaction::Model> for PostReactionDTO {
   }
 }
 
-impl From<crate::entities::post_reaction::ActiveModel> for PostReactionDTO {
-  fn from(m: crate::entities::post_reaction::ActiveModel) -> Self {
+impl From<ActiveModel> for PostReactionDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       owner_id: m.owner_id.unwrap(),
       reacted_post_owner_id: m.reacted_post_owner_id.unwrap(),

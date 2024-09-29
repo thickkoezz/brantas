@@ -1,7 +1,8 @@
+use crate::entities::link::{ActiveModel, Model};
 use salvo::macros::Extractible;
 use salvo::oapi::ToSchema;
 use sea_orm::prelude::DateTimeWithTimeZone;
-use sea_orm::sqlx::types::chrono;
+use sea_orm::sqlx::types::chrono::Local;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
@@ -26,8 +27,12 @@ pub struct LinkDTO {
 
 impl LinkDTO {
   pub fn delete(&mut self) -> &mut Self {
-    self.deleted_at = Option::from(DateTimeWithTimeZone::from(chrono::Local::now()));
+    self.deleted_at = Option::from(DateTimeWithTimeZone::from(Local::now()));
     self
+  }
+
+  pub fn get_id(&self) -> ID {
+    self.id.clone()
   }
 
   pub fn set_id(&mut self, v: Uuid) -> &mut Self {
@@ -71,8 +76,8 @@ impl LinkDTO {
   }
 }
 
-impl From<crate::entities::link::Model> for LinkDTO {
-  fn from(m: crate::entities::link::Model) -> Self {
+impl From<Model> for LinkDTO {
+  fn from(m: Model) -> Self {
     Self {
       id: m.id,
       owner_id: m.owner_id,
@@ -86,8 +91,8 @@ impl From<crate::entities::link::Model> for LinkDTO {
   }
 }
 
-impl From<crate::entities::link::ActiveModel> for LinkDTO {
-  fn from(m: crate::entities::link::ActiveModel) -> Self {
+impl From<ActiveModel> for LinkDTO {
+  fn from(m: ActiveModel) -> Self {
     Self {
       id: m.id.unwrap(),
       owner_id: m.owner_id.unwrap(),

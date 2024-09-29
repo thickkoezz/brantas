@@ -5,6 +5,7 @@ use sea_orm::prelude::DateTimeWithTimeZone;
 use sea_orm::sqlx::types::chrono::Local;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
@@ -29,14 +30,21 @@ impl BlockDTO {
     }
   }
 
-  pub fn validate(&self) -> Result<(), ValidationError> {
-    todo!()
-  }
-
   pub fn create(blocker_id: Uuid, target_id: Uuid) -> Self {
     Self {
       ..Self::new(blocker_id, target_id)
     }
+  }
+
+  pub fn validate(&self) -> Result<(), ValidationError> {
+    if self.blocker_id == self.target_id {
+      return Err(
+        ValidationError::new("block.self").with_message(Cow::from(
+          anyhow::anyhow!(t!("unable_to_block_self")).into(),
+        )),
+      );
+    }
+    Ok(())
   }
 
   pub fn delete(&mut self) -> &mut Self {
